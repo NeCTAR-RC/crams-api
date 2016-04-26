@@ -1,0 +1,13 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+{% load static %}
+
+{% block extrastyle %} <link href="{% get_static_prefix %}applications/app.css" type="text/css" rel="stylesheet"/> {% endblock %}
+
+{% block title %}{{ title }} | {% trans 'Crams-DB site administration' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">{% trans 'Crams-DB Administration' %}</h1>
+{% endblock branding %}
+
+{% block nav-global %}{% endblock %}

@@ -1,0 +1,202 @@
+[
+{
+	"fields": {
+		"password": "pbkdf2_sha256$15000$GNBEDLOjsqTb$C9bjODj+TW0aykV+YFR7JPvVv3F3R1esIQxO1lYTZxU=",
+		"last_login": "2015-11-25 10:16:55",
+		"is_superuser": "True",
+		"username": "crams_user",
+        "keystone_uuid": "sfaer43543tgrwvt34y",
+		"first_name": "crams",
+		"last_name": "user",
+		"email": "crams_user@monash.edu",
+		"is_staff": "True",
+		"is_active": "True",
+		"date_joined": "2015-11-09 17:24:01"
+	},
+	"pk": 15,
+	"model": "account.user"
+},
+{
+    "fields": {
+        "name": "Test Provider",
+        "active": "True",
+        "crams_user": 15,
+        "created_by": null,
+        "creation_ts": "2015-12-01 21:42:48.669521",
+        "description": null,
+        "last_modified_ts": "2015-12-01 21:42:53.378836",
+        "start_date": "2015-12-01",
+        "updated_by": null
+    },
+    "pk":-1,
+    "model": "crams.provider"
+},
+{
+    "fields": {
+        "name": "Applicant"
+    },
+    "pk": 1,
+    "model": "crams.contactrole"
+},
+{
+    "fields": {
+        "name": "Chief Investigator"
+    },
+    "pk": 2,
+    "model": "crams.contactrole"
+},
+{
+    "fields": {
+        "name": "Technical Contact"
+    },
+    "pk": 3,
+    "model": "crams.contactrole"
+},
+{
+	"fields": {
+		"title": "Mr.",
+		"given_name": "crams",
+		"surname": "user",
+		"email": "crams_user@monash.edu",
+		"phone": "123456789",
+		"organisation": "Monash"
+	},
+	"pk": 5,
+	"model": "crams.contact"
+},
+{
+    "fields": {
+        "title": "Mr.",
+        "phone": "2131231",
+        "surname": "Smith",
+        "organisation": "Monash",
+        "email": "john.smith@email.com",
+        "given_name": "John"
+    },
+    "pk": 1,
+    "model": "crams.contact"
+},
+{
+    "fields": {
+        "title": "Mr.",
+        "phone": "123434",
+        "surname": "Doe",
+        "organisation": "Monash",
+        "email": "john.doe@email.com",
+        "given_name": "John"
+    },
+    "pk": 2,
+    "model": "crams.contact"
+},
+{
+    "fields": {
+        "title": "Ms.",
+        "phone": "1232342",
+        "surname": "Doe",
+        "organisation": "Monash",
+        "email": "jane.doe@email.com",
+        "given_name": "Jane"
+    },
+    "pk": 3,
+    "model": "crams.contact"
+},
+{
+    "fields": {
+        "description": "National/Unassigned",
+        "code": "National"
+    },
+    "pk": 1,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "Australian Capital Territory (NCI)",
+        "code": "NCI"
+    },
+    "pk": 2,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "New South Wales (Intersect)",
+        "code": "Intersect"
+    },
+    "pk": 3,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "Queensland (QCIF)",
+        "code": "QCIF"
+    },
+    "pk": 4,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "South Australia (eRSA)",
+        "code": "eRSA"
+    },
+    "pk": 5,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "Tasmania (TPAC)",
+        "code": "TPAC"
+    },
+    "pk": 6,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "Victoria (Melbourne)",
+        "code": "UOM"
+    },
+    "pk": 7,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "Victoria (Monash)",
+        "code": "Monash"
+    },
+    "pk": 8,
+    "model": "crams.allocationhome"
+},
+{
+    "fields": {
+        "description": "Western Australia (Pawsey)",
+        "code": "Pawsey"
+    },
+    "pk": 9,
+    "model": "crams.allocationhome"
+},
+{
+	"fields": {
+		"name": "Reviwer"
+	},
+	"pk": 8,
+	"model": "auth.group"
+},
+{
+	"fields": {
+		"name": "Approver"
+	},
+	"pk": 9,
+	"model": "auth.group"
+},
+{
+    "fields": {
+        "creation_ts": "2015-12-15 16:08:51.666504",
+        "last_modified_ts": "2015-12-15 16:08:51.666541",
+        "status": "S",
+        "created_by": 15,
+        "provider": -1,
+        "updated_by": 15,
+        "message": null
+    },
+    "pk": 1,
+    "model": "crams.provisiondetails"
+}
+]

@@ -1,0 +1,28 @@
+The following is a testing template of mail notification, It will be changed.
+
+<p>
+    Allocation request [{{ request.project.description }}] Received
+</p>
+
+<p>
+    {% if request.request_status.code == 'N' %}
+        An allocation request has been created by "{{ request.created_by.email }}"
+        on {{ request.creation_date }}.
+    {% elif request.status == 'E' %}
+        An allocation request has been edited by "{{ request.updated_by.email }}".
+        on {{ request.last_modified }}.
+    {% else %}
+        An allocation request has been created by "{{ request.created_by.email }}".
+    {% endif %}
+</p>
+
+<p>
+    Project name: {{ request.project.description }}<br/>
+    Start date: {{ request.start_date }} <br/>
+    End date: {{ request.end_date }}
+</p>
+
+
+Best regards,
+<br/>
+Crams Allocation Portal

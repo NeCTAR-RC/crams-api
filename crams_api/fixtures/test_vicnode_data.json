@@ -1,0 +1,174 @@
+[
+{
+  "fields": {
+    "creation_ts": "2016-01-12T02:01:26.164Z",
+    "parent_project": null,
+    "created_by": 15,
+    "description": "Test Collection Description",
+    "last_modified_ts": "2016-01-12T02:01:26.164Z",
+    "title": "Test Collection",
+    "updated_by": 15,
+    "notes": null
+  },
+  "pk": 127,
+  "model": "crams.project"
+},
+{
+  "fields": {
+    "identifier": "Test Collection",
+    "system": 2,
+    "project": 127
+  },
+  "pk": 127,
+  "model": "crams.projectid"
+},
+{
+  "fields": {
+    "end_date": "2017-01-01",
+    "approval_notes": null,
+    "creation_ts": "2016-01-12T02:01:26.183Z",
+    "funding_scheme": 2,
+    "project": 127,
+    "request_status": 3,
+    "parent_request": null,
+    "last_modified_ts": "2016-01-12T02:01:26.183Z",
+    "created_by": 15,
+    "updated_by": 15,
+    "start_date": "2016-01-01"
+  },
+  "pk": 80,
+  "model": "crams.request"
+},
+{
+  "fields": {
+    "provision_details": null,
+    "request": 80,
+    "quota": 120.0,
+    "storage_product": 15,
+    "approved_quota": 120.0
+  },
+  "pk": 50,
+  "model": "crams.storagerequest"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 11,
+    "question_response": "Yes"
+  },
+  "pk": 468,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 12,
+    "question_response": "On a PC"
+  },
+  "pk": 469,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 13,
+    "question_response": "Nah, I'm good."
+  },
+  "pk": 470,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 14,
+    "question_response": "via a PC"
+  },
+  "pk": 471,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 15,
+    "question_response": "Direct access via a PC"
+  },
+  "pk": 472,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 16,
+    "question_response": ".txt"
+  },
+  "pk": 473,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 17,
+    "question_response": "yes"
+  },
+  "pk": 474,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 18,
+    "question_response": "Not easy."
+  },
+  "pk": 475,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "request": 80,
+    "question": 19,
+    "question_response": "Lose job."
+  },
+  "pk": 476,
+  "model": "crams.requestquestionresponse"
+},
+{
+  "fields": {
+    "contact_role": 3,
+    "contact": 1,
+    "project": 127
+  },
+  "pk": 208,
+  "model": "crams.projectcontact"
+},
+{
+  "fields": {
+    "contact_role": 1,
+    "contact": 1,
+    "project": 127
+  },
+  "pk": 209,
+  "model": "crams.projectcontact"
+},
+{
+  "fields": {
+    "for_code": 186,
+    "percentage": 100.0,
+    "project": 127
+  },
+  "pk": 150,
+  "model": "crams.domain"
+},
+{
+    "fields": {
+        "creation_ts": "2015-12-15 16:08:51.666504",
+        "last_modified_ts": "2015-12-15 16:08:51.666541",
+        "status": "S",
+        "created_by": 15,
+        "provider": -1,
+        "updated_by": 15,
+        "message": null
+    },
+    "pk": 1,
+    "model": "crams.provisiondetails"
+}
+]

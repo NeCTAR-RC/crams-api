@@ -1,0 +1,39 @@
+__author__ = 'simonyu, rafi Feroze'
+
+# override the database settings
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'vicnode',                      # Or path to database file if using sqlite3.
+        'USER': 'crams_app',
+        'PASSWORD': 'crams_app',
+        'HOST': '',       # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PORT': '',                # Set to empty string for default.
+    }
+}
+
+#import os
+#BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+#STATIC_ROOT = os.path.join(BASE_DIR, 'static')   #required for running python manage.py collectstatic
+
+# Email notification configuration
+EMAIL_SENDER = 'admin@crams.org.au'
+
+# Send email to the console by default
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Or have an smtp backend, it will send email to admin user
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# django-mailer uses a different settings attribute
+MAILER_EMAIL_BACKEND = EMAIL_BACKEND
+
+# Configure these for outgoing email server
+EMAIL_HOST = 'smtp.monash.edu'
+# EMAIL_PORT = 25
+# EMAIL_HOST_USER = 'crams_admin'
+# EMAIL_HOST_PASSWORD = 'crams_admin_password'
+
+KS_USERNAME = ''
+KS_PASSWORD = ''
+KS_PROJECT = ''
+KS_URL = 'https://keystone.test.rc.nectar.org.au:5000/v3/'

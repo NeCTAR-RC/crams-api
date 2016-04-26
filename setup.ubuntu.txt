@@ -1,0 +1,99 @@
+__author__ = 'rafi m feroze'  #'mmohamed'
+
+1.  Install ubuntu and update
+    sudo apt update
+    ensure clear text password login via ssh is disabled
+      verify in /etc/ssh/sshd_config
+       PasswordAuthentication no
+
+2.  Install python3
+    sudo apt install python
+
+3.  Install pip3
+    sudo apt install python3-pip
+    If necessary, sudo apt update --fix-missing
+
+4.  Install Virtual Env package
+    sudo pip3 install virtualenv
+    sudo pip3 install setuptools
+    sudo pip3 install virtualenvwrapper
+
+5.  add path and exports in ~/.bash_profile
+    export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3
+    export WORKON_HOME=~/Envs
+    source /usr/local/bin/virtualenvwrapper.sh
+
+6.  Exit shell/ssh and re-open/re-login to enable the above exports
+
+7.  Create a new VirtualEnv for cramsdb and activate
+    7.1  mkvirtualenv cramsdb
+    7.2  workon cramsdb     <== remember to invoke this everytime, better add it to ~/.bash_profile
+
+8.  Mysql installation:
+    sudo apt install libmysqlclient-dev
+
+9.  Setup Apache Httpd, Httpd-dev  and enable headers to allow CORS authorization
+    sudo apt install apache2
+    sudo apt install apache2-dev
+    sudo a2enmod headers
+    make sure httpd starts at boot
+      - sudo update-rc.d apache2 defaults
+
+
+10. Setup mod-wsgi
+    sudo apt install libapache2-mod-wsgi-py3
+
+11. Update Apache Config file:
+    edit and insert the following before </VirtualHost>
+        ### CRAMS-DB reporting related #####
+        Alias /media /home/ubuntu/crams-db/media
+        <Directory /home/ubuntu/crams-db/media>
+            Order allow,deny
+            Allow from all
+        </Directory>
+        Alias /static /home/ubuntu/crams-db/static
+        <Directory /home/ubuntu/crams-db/static>
+            Order allow,deny
+            Allow from all
+        </Directory>
+
+        LoadModule wsgi_module modules/mod_wsgi.so
+        WSGIScriptAlias / /home/ubuntu/crams-db/wsgi.py
+        WSGIPythonPath /home/ubuntu/Envs/cramsdb/lib/python3.5/site-packages:/home/ubuntu/crams-db/
+        <Directory /home/ubuntu/crams-db>
+           #Header set Access-Control-Allow-Origin "*"  ====> not required Apache/2.4.18 mod_wsgi/4.3.0 Python/3.5.1+
+           WSGIPassAuthorization On
+           <Files wsgi.py>
+               Order allow,deny
+               Allow from all
+           </Files>
+        </Directory>
+
+
+12. Modify Apache Config params
+   6.1 change Apache User to Vicnode user
+    User <username>
+    #User apache
+
+   6.2 change ServerName variable to the proper domain name
+       For example, the staging server has the following Apache config
+       ServerName crams-staging.erc.monash.edu.au
+
+   ***** Notes ***
+   Cannot load /etc/httpd/modules/mod_wsgi.so into server: libpython3.4m.so.1.0: cannot open shared object file: No such file or directory
+   - Make Sure  /etc/ld.so.conf has entry for /usr/local/lib    (not: append /usr/local/lib)
+     -  run ldconfig as root
+
+13. Enable SSL
+   Install SSL certificates for the host - Apache web server (log a job with service desk)
+        1. Install httpd mod_ssl module: yum install -y mod_ssl
+        2. Configure /etc/httpd/conf.d/ssl.conf to use the signed SSL certificate:
+            SSLCertificateFile /etc/pki/tls/certs/reporting_vicnode.crt
+            SSLCertificateKeyFile /etc/pki/tls/private/reporting_vicnode.key
+        3. Copy /root/ssl_cert/ private and public key to the directories configured in step 2.
+   Ensure the module for rewrite is loaded (check for line LoadModule rewrite_module modules/mod_rewrite.so in apache conf file)
+   Add the following to redirect all http access to https
+           ### HTTPS redirect related #####
+           RewriteEngine on
+           RewriteCond %{SERVER_PORT} !^443$
+           RewriteRule ^/(.*) https://%{HTTP_HOST}/$1 [NC,R=301,L]
