@@ -57,45 +57,30 @@ __author__ = 'rafi m feroze'  #'mmohamed'
        http://modwsgi.readthedocs.io/en/develop/user-guides/quick-installation-guide.html
     sudo apt install libapache2-mod-wsgi-py3
 
-12. For Update Apache Config file:
-    For nonSSL : /etc/apache2/sites-available/000-default.conf
-    For SSL :
-    edit and insert the following before </VirtualHost>
-        ### CRAMS-DB reporting related #####
-        Alias /media /home/ubuntu/crams-api/media
-        <Directory /home/ubuntu/crams-api/media>
-            #Order deny,allow
-            #Allow from all
-            Options All
-            AllowOverride All
-            Require all granted
-        </Directory>
-        Alias /static /home/ubuntu/crams-api/static
-        <Directory /home/ubuntu/crams-api/static>
-            #Order deny,allow
-            #Allow from all
-            Options All
-            AllowOverride All
-            Require all granted
-        </Directory>
-
-        LoadModule wsgi_module modules/mod_wsgi.so
-        WSGIScriptAlias / /home/ubuntu/crams-api/crams_app/wsgi.py
-        #WSGIPythonPath /home/ubuntu/Envs/crams-api/lib/python3.5/site-packages:/home/ubuntu/crams-api/
-        WSGIDaemonProcess python-path=/home/ubuntu/crams-api:/home/ubuntu/Envs/crams-api/lib/python3.5/site-packages
-
-        <Directory /home/ubuntu/crams-api>
-           #Header set Access-Control-Allow-Origin "*"  ====> not required Apache/2.4.18 mod_wsgi/4.3.0 Python/3.5.1+
-           WSGIPassAuthorization On
-           <Files wsgi.py>
-                #Order deny,allow
-                #Allow from all
-                Options All
-                AllowOverride All
-                Require all granted
-           </Files>
-        </Directory>
-
+12. Update Apache Config file:
+    sample config files are in setup-wsgi-apache folder of this source package
+    For non-ssl
+        replace /etc/apache2/sites-available/000-default.conf
+        with setup-wsgi-apache/000-default.conf  and modify params as required
+    For ssl
+        ensure ssl is enabled
+           - sudo a2enmod ssl
+        ensure non https config is diabled
+           - sudo a2dissite 000-default.conf
+        copy ssl site config:
+           - replace /etc/apache2/sites-available/default-ssl.conf
+             with setup-wsgi-apache/default-ssl.conf
+        ensure the ssl certificate and private key used to generate ssl certificate
+        are copied as below
+           - ssl certificate to location pointed by
+             SSLCertificateFile    ==>  /etc/ssl/certs/crams-staging.crt
+           - private key for ssl certificate to location pointed by
+             SSLCertificateKeyFile ==> /etc/ssl/private/crams-staging.pem
+       Add the following to redirect all http access to https
+               ### HTTPS redirect related #####
+               RewriteEngine on
+               RewriteCond %{SERVER_PORT} !^443$
+               RewriteRule ^/(.*) https://%{HTTP_HOST}/$1 [NC,R=301,L]
 
 13. Modify Apache Config params
    1. if needed change Apache User to required user value
@@ -108,26 +93,7 @@ __author__ = 'rafi m feroze'  #'mmohamed'
              ServerName crams-staging.erc.monash.edu.au
 
    ***** Notes ***
-   Cannot load /etc/httpd/modules/mod_wsgi.so into server:
-        libpython3.4m.so.1.0: cannot open shared object file:
-                                    No such file or directory
-   - Make Sure  /etc/ld.so.conf has entry for /usr/local/lib
-               (not: append /usr/local/lib)
+   Cannot load /etc/httpd/modules/mod_wsgi.so into server: libpython3.4m.so.1.0: cannot open shared object file: No such file or directory
+   - Make Sure  /etc/ld.so.conf has entry for /usr/local/lib    (not: append /usr/local/lib)
      -  run ldconfig as root
 
-14. Enable SSL
-   Install SSL certificates for the host - Apache web server
-                           (log a job with service desk)
-        1. Install httpd mod_ssl module: yum install -y mod_ssl
-        2. Configure /etc/httpd/conf.d/ssl.conf to use the signed SSL cert:
-            SSLCertificateFile /etc/pki/tls/certs/reporting_vicnode.crt
-            SSLCertificateKeyFile /etc/pki/tls/private/reporting_vicnode.key
-        3. Copy /root/ssl_cert/ private and public key to the directories
-                       configured in step 2.
-   Ensure the module for rewrite is loaded (check for line LoadModule
-                 rewrite_module modules/mod_rewrite.so in apache conf file)
-   Add the following to redirect all http access to https
-           ### HTTPS redirect related #####
-           RewriteEngine on
-           RewriteCond %{SERVER_PORT} !^443$
-           RewriteRule ^/(.*) https://%{HTTP_HOST}/$1 [NC,R=301,L]
