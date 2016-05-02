@@ -10,6 +10,8 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import PrimaryKeyRelatedField
 
+from crams_api.APIConstants import OVERRIDE_READONLY_DATA
+
 from crams.DBConstants import ADMIN_STATES
 from crams.DBConstants import APPROVAL_STATES
 from crams.DBConstants import DECLINED_STATES
@@ -58,7 +60,7 @@ class ComputeQuestionResponseSerializer(AbstractQuestionResponseSerializer):
         fields = ('id', 'question_response', 'question')
 
 
-class ComputeRequestSerializer(ModelSerializer):
+class ComputeRequestSerializer(ActionStateModelSerializer):
     """class ComputeRequestSerializer."""
 
     compute_product = PrimaryKeyLookupField(
@@ -84,6 +86,15 @@ class ComputeRequestSerializer(ModelSerializer):
             'provision_details')
         read_only_fields = ('provision_details')
 
+    def validate(self, data):
+        """validate.
+
+        :param data:
+        :return validated_data:
+        """
+        self._setActionState()
+        return data
+
     def create(self, validated_data):
         """create.
 
@@ -100,7 +111,8 @@ class ComputeRequestSerializer(ModelSerializer):
 
         provision_details = validated_data.pop('provision_details', None)
         if provision_details:
-            pSerializer = ProvisionDetailsSerializer(data=provision_details)
+            pSerializer = ProvisionDetailsSerializer(
+                data=provision_details, context=self.context)
             pSerializer.is_valid(raise_exception=True)
             validated_data['provision_details'] = pSerializer.save()
 
@@ -126,7 +138,7 @@ class StorageQuestionResponseSerializer(AbstractQuestionResponseSerializer):
         fields = ('id', 'question_response', 'question')
 
 
-class StorageRequestSerializer(ModelSerializer):
+class StorageRequestSerializer(ActionStateModelSerializer):
     """class StorageRequestSerializer."""
 
     storage_product = StorageProductZoneOnlySerializer(required=True)
@@ -140,6 +152,15 @@ class StorageRequestSerializer(ModelSerializer):
         fields = ('id', 'quota', 'approved_quota', 'storage_product',
                   'storage_question_responses', 'provision_details')
         read_only_fields = ('provision_details')
+
+    def validate(self, data):
+        """validate.
+
+        :param data:
+        :return validated_data:
+        """
+        self._setActionState()
+        return data
 
     def create(self, validated_data):
         """create.
@@ -159,7 +180,8 @@ class StorageRequestSerializer(ModelSerializer):
 
         provision_details = validated_data.pop('provision_details', None)
         if provision_details:
-            pSerializer = ProvisionDetailsSerializer(data=provision_details)
+            pSerializer = ProvisionDetailsSerializer(
+                data=provision_details, context=self.context)
             pSerializer.is_valid(raise_exception=True)
             validated_data['provision_details'] = pSerializer.save()
 
@@ -475,10 +497,12 @@ class CramsRequestSerializer(ActionStateModelSerializer):
 
         request = Request.objects.create(**validated_data)
 
+        product_request_context = self.context
+
         if compute_requests_data:
             for compute_req_data in compute_requests_data:
                 compute_request = ComputeRequestSerializer(
-                    data=compute_req_data)
+                    data=compute_req_data, context=product_request_context)
                 compute_request.is_valid(raise_exception=True)
                 compute_request.save(request=request)
         elif not cramsActionState.is_create_action:  # partial update  or Clone
@@ -489,7 +513,8 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                 #    - This allows for business logic to be
                 #       encapsulated in one place, i.e., the serializer.
                 temp = ComputeRequestSerializer(computeInstance)
-                compute_request = ComputeRequestSerializer(data=temp.data)
+                compute_request = ComputeRequestSerializer(
+                    data=temp.data, context=product_request_context)
                 # cannot call save without checking is_valid()
                 compute_request.is_valid(raise_exception=True)
                 compute_request.save(request=request)
@@ -498,14 +523,15 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         if storage_requests_data:
             for storage_req_data in storage_requests_data:
                 storage_request = StorageRequestSerializer(
-                    data=storage_req_data)
+                    data=storage_req_data, context=product_request_context)
                 storage_request.is_valid(raise_exception=True)
                 storage_request.save(request=request)
         elif not cramsActionState.is_create_action:  # partial update or Clone
             for storageInstance in \
                     existingRequestInstance.storage_requests.all():
                 temp = StorageRequestSerializer(storageInstance)
-                storage_request = StorageRequestSerializer(data=temp.data)
+                storage_request = StorageRequestSerializer(
+                    data=temp.data, context=product_request_context)
                 storage_request.is_valid(raise_exception=True)
                 storage_request.save(request=request)
 

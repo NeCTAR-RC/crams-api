@@ -1,6 +1,5 @@
 # coding=utf-8
 """utilitySerializers."""
-from rest_framework.serializers import ModelSerializer
 from crams_api.serializers.lookupSerializers import ProviderSerializer
 from crams_api.dataUtils.lookupData import get_provider_obj
 
@@ -14,11 +13,33 @@ from rest_framework import serializers
 
 from crams.models import Question, ProvisionDetails
 from crams_api.serializers.utils import CramsActionState
+from crams_api.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
 
 __author__ = 'rafi m feroze'
 
 
-class ProvisionDetailsSerializer(ModelSerializer):
+class ActionStateModelSerializer(serializers.ModelSerializer):
+    """class ActionStateModelSerializer."""
+
+    def pprint(self, obj):
+        """pprint.
+
+        :param obj:
+        """
+        if not hasattr(self, 'pp'):
+            self.pp = pprint.PrettyPrinter(indent=4)  # For Debug
+        self.pp.pprint(obj)
+
+    def _setActionState(self):
+        if not hasattr(self, 'cramsActionState'):
+            self.cramsActionState = CramsActionState(self)
+            if self.cramsActionState.error_message:
+                raise ValidationError(
+                    'ActionStateModelSerializer: ' +
+                    self.cramsActionState.error_message)
+
+
+class ProvisionDetailsSerializer(ActionStateModelSerializer):
     """class ProvisionDetailsSerializer."""
 
     provider = ProviderSerializer(many=False)
@@ -34,6 +55,8 @@ class ProvisionDetailsSerializer(ModelSerializer):
         :param data:
         :return validated_data:
         """
+        self._setActionState()
+
         if data['status'] in ProvisionDetails.SET_OF_SENT:
             parentProductRequest = ''
             if self.instance:
@@ -48,10 +71,20 @@ class ProvisionDetailsSerializer(ModelSerializer):
 
         return data
 
+    def _get_new_provision_status(self, existing_status):
+
+        if existing_status == ProvisionDetails.PROVISIONED:
+            override_data = self.cramsActionState.override_data
+            key = DO_NOT_OVERRIDE_PROVISION_DETAILS
+            if not override_data.get(key, False):
+                return ProvisionDetails.POST_PROVISION_UPDATE
+
+        return existing_status
+
     def create(self, validated_data):
         p_status = validated_data.get('status')
-        if p_status == ProvisionDetails.PROVISIONED:
-            validated_data['status'] = ProvisionDetails.POST_PROVISION_UPDATE
+
+        validated_data['status'] = self._get_new_provision_status(p_status)
 
         providerDict = validated_data.pop('provider')
         providerName = providerDict['name']
@@ -346,27 +379,6 @@ class ProjectAdminField(RelatedField):
             ret_list.append({'system': id.system.system, 'id': id.identifier})
 
         return {'title': value.title, 'ids': ret_list, 'id': value.id}
-
-
-class ActionStateModelSerializer(serializers.ModelSerializer):
-    """class ActionStateModelSerializer."""
-
-    def pprint(self, obj):
-        """pprint.
-
-        :param obj:
-        """
-        if not hasattr(self, 'pp'):
-            self.pp = pprint.PrettyPrinter(indent=4)  # For Debug
-        self.pp.pprint(obj)
-
-    def _setActionState(self):
-        if not hasattr(self, 'cramsActionState'):
-            self.cramsActionState = CramsActionState(self)
-            if self.cramsActionState.error_message:
-                raise ValidationError(
-                    'ActionStateModelSerializer: ' +
-                    self.cramsActionState.error_message)
 
 
 class AbstractQuestionResponseSerializer(serializers.ModelSerializer):

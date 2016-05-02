@@ -6,7 +6,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-readme = open('README').read()
+readme = open('README.md').read()
 
 setup(
     name='crams-db',
