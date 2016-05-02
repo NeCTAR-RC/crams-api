@@ -25,39 +25,24 @@ __author__ = 'rafi m feroze'  #'mmohamed'
 
 6.  Exit shell/ssh and re-open/re-login to enable the above exports
 
-7.  Create a new VirtualEnv for crams-api and activate
-    7.1  mkvirtualenv crams-api
-    7.2  workon crams-api     <== remember to invoke this everytime,
-                                   better add it to ~/.bash_profile
+7.  Create a new VirtualEnv for cramsdb and activate
+    7.1  mkvirtualenv cramsdb
+    7.2  workon cramsdb     <== remember to invoke this everytime, better add it to ~/.bash_profile
 
 8.  Mysql installation:
     sudo apt install libmysqlclient-dev
-    For Dev environment only install mysql client
-      for easy access to Database from command line
-      - apt-get install mysql-client
 
-9.  install python modules
-       workon crams-api
-       pip3 install dev-requirements.txt
-
-10. Setup Apache Httpd, Httpd-dev  and
-       enable headers to allow CORS authorization
+9.  Setup Apache Httpd, Httpd-dev  and enable headers to allow CORS authorization
     sudo apt install apache2
     sudo apt install apache2-dev
     sudo a2enmod headers
     make sure httpd starts at boot
       - sudo update-rc.d apache2 defaults
 
-
-11. Setup mod-wsgi
-    Better to build wsgi with latest source code to manage security issues
-    1. download source code from :
-       https://github.com/GrahamDumpleton/mod_wsgi/releases
-    2. To install, follow instruction on
-       http://modwsgi.readthedocs.io/en/develop/user-guides/quick-installation-guide.html
+10. Setup mod-wsgi
     sudo apt install libapache2-mod-wsgi-py3
 
-12. Update Apache Config file:
+11. Update Apache Config file:
     sample config files are in setup-wsgi-apache folder of this source package
     For non-ssl
         replace /etc/apache2/sites-available/000-default.conf
@@ -82,18 +67,16 @@ __author__ = 'rafi m feroze'  #'mmohamed'
                RewriteCond %{SERVER_PORT} !^443$
                RewriteRule ^/(.*) https://%{HTTP_HOST}/$1 [NC,R=301,L]
 
-13. Modify Apache Config params
-   1. if needed change Apache User to required user value
+12. Modify Apache Config params
+   6.1 change Apache User to Vicnode user
     User <username>
     #User apache
 
-   2. change ServerName variable to the proper domain name
-       For example, the staging server has the following Apache config in
-       /etc/apache2/apache2.conf -
-             ServerName crams-staging.erc.monash.edu.au
+   6.2 change ServerName variable to the proper domain name
+       For example, the staging server has the following Apache config
+       ServerName crams-staging.erc.monash.edu.au
 
    ***** Notes ***
    Cannot load /etc/httpd/modules/mod_wsgi.so into server: libpython3.4m.so.1.0: cannot open shared object file: No such file or directory
    - Make Sure  /etc/ld.so.conf has entry for /usr/local/lib    (not: append /usr/local/lib)
      -  run ldconfig as root
-
