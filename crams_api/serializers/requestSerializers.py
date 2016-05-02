@@ -462,6 +462,8 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         # set Request Status
         requestStatusInstance = self.evaluateRequestStatus(
             fundingSchemeInstance, cramsActionState)
+        print(' ===== calculated status', requestStatusInstance)
+
         if not requestStatusInstance:
             raise ParseError('Request status could not be determined')
         validated_data['request_status'] = requestStatusInstance
@@ -565,6 +567,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         if not cramsActionState:
             raise ParseError('CramsActionState required')
         existingRequestInstance = cramsActionState.existing_instance
+        print(' -------- existing req status', existingRequestInstance.request_status)
 
         if cramsActionState.is_create_action:
             status_code = REQUEST_STATUS_NEW
