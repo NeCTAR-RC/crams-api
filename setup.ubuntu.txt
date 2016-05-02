@@ -39,7 +39,6 @@ __author__ = 'rafi m feroze'  #'mmohamed'
     make sure httpd starts at boot
       - sudo update-rc.d apache2 defaults
 
-
 10. Setup mod-wsgi
     sudo apt install libapache2-mod-wsgi-py3
 
