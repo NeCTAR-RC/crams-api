@@ -141,9 +141,12 @@ class ProvisionDetails(CramsCommon):
     POST_PROVISION_UPDATE = 'U'
     POST_PROVISION_UPDATE_SENT = 'X'
     FAILED = 'F'
-    SET_OF_SENT = [SENT, POST_PROVISION_UPDATE_SENT]
+    RESEND_LATER = 'L'
+    SET_OF_SENT = frozenset([SENT, POST_PROVISION_UPDATE_SENT])
+    READY_TO_SEND_SET = frozenset([RESEND_LATER, POST_PROVISION_UPDATE])
     STATUS_CHOICES = ((SENT, 'Sent'), (PROVISIONED, 'Provisioned'),
-                      (FAILED, 'Failed'), (POST_PROVISION_UPDATE, 'Updated'),
+                      (FAILED, 'Failed'), (RESEND_LATER, 'Resend'),
+                      (POST_PROVISION_UPDATE, 'Updated'),
                       (POST_PROVISION_UPDATE_SENT, 'Update Sent'), )
     status = models.CharField(
         max_length=1, choices=STATUS_CHOICES, default=SENT)
