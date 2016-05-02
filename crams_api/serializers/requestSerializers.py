@@ -569,6 +569,11 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         existingRequestInstance = cramsActionState.existing_instance
         print(' -------- existing req status', existingRequestInstance.request_status)
 
+        print('create action', cramsActionState.is_create_action)
+        print('upd action', cramsActionState.is_update_action)
+        print('clone action', cramsActionState.is_clone_action)
+        print('partial action', cramsActionState.is_partial_action)
+        
         if cramsActionState.is_create_action:
             status_code = REQUEST_STATUS_NEW
             if fundingSchemeInstance and \
