@@ -93,13 +93,12 @@ class ProvisionProjectSerializer(ReadOnlyProjectSerializer):
         if not Provider.is_provider(current_user):
             return ret_list
 
-        status_filter_set = set()
-        status_filter_set.add(ProvisionDetails.POST_PROVISION_UPDATE)
+        status_filter_set = ProvisionDetails.READY_TO_SEND_SET
 
         new_only = context_request.query_params.get('new_request', None)
         if not new_only:
-            status_filter_set = status_filter_set.union(
-                status_filter_set, ProvisionDetails.SET_OF_SENT)
+            status_filter_set = \
+                status_filter_set.union(ProvisionDetails.SET_OF_SENT)
 
         provider_provision_details = fetch_project_provision_list_for_provider(
             project_obj, current_user.provider)
@@ -109,7 +108,7 @@ class ProvisionProjectSerializer(ReadOnlyProjectSerializer):
                 current_user, status=ProvisionDetails.SENT)
             project_provision.provision_details = new_project_pd
             project_provision.save()
-            status_filter_set.add(ProvisionDetails.SENT)
+            status_filter_set.union(ProvisionDetails.SENT)
 
         query_set = provider_provision_details.filter(
             provision_details__status__in=status_filter_set)
@@ -180,7 +179,7 @@ class ProvisionRequestSerializer(ReadOnlyCramsRequestSerializer):
             return ret_list
 
         query_filter = Q(provision_details__isnull=True) | Q(
-            provision_details__status=ProvisionDetails.POST_PROVISION_UPDATE)
+            provision_details__status__in=ProvisionDetails.READY_TO_SEND_SET)
         new_only = context_request.query_params.get('new_request', None)
         if not new_only:
             query_filter = query_filter | Q(
@@ -431,7 +430,11 @@ class ComputeRequestProvisionSerializer(BaseProvisionMessageSerializer):
         if success:
             provision_details.status = ProvisionDetails.PROVISIONED
         else:
-            provision_details.status = ProvisionDetails.FAILED
+            resend = validated_data.get('resend', False)
+            if resend:
+                provision_details.status = ProvisionDetails.RESEND_LATER
+            else:
+                provision_details.status = ProvisionDetails.FAILED
             provision_details.message = validated_data.get('message', None)
 
         provision_details.save()
@@ -519,7 +522,12 @@ class StorageRequestProvisionSerializer(BaseProvisionMessageSerializer):
         if success:
             provision_details.status = ProvisionDetails.PROVISIONED
         else:
-            provision_details.status = ProvisionDetails.FAILED
+            resend = validated_data.get('resend', False)
+            if resend:
+                provision_details.status = ProvisionDetails.RESEND_LATER
+            else:
+                provision_details.status = ProvisionDetails.FAILED
+
             provision_details.message = validated_data.get('message', None)
 
         provision_details.save()
@@ -788,7 +796,11 @@ class UpdateProvisionProjectSerializer(BaseProvisionMessageSerializer):
             if success:
                 provision_details.status = ProvisionDetails.PROVISIONED
             else:
-                provision_details.status = ProvisionDetails.FAILED
+                resend = validated_data.get('resend', False)
+                if resend:
+                    provision_details.status = ProvisionDetails.RESEND_LATER
+                else:
+                    provision_details.status = ProvisionDetails.FAILED
 
             message = validated_data.get('message', None)
             if message:
