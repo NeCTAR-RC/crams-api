@@ -53,7 +53,7 @@ class CramsActionState(object):
 
         self.rest_request = parent_obj.context.get('request', None)
 
-        self.override_data = parent_obj.context.pop(OVERRIDE_READONLY_DATA,
+        self.override_data = parent_obj.context.get(OVERRIDE_READONLY_DATA,
                                                     None)
         if self.override_data:
             if CLONE in self.override_data:

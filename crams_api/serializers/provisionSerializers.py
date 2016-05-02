@@ -21,7 +21,11 @@ from crams.models import ProvisionDetails
 from crams.models import Request
 from crams.models import StorageProduct
 from crams.models import StorageRequest
+
 from crams_api.APIConstants import OVERRIDE_READONLY_DATA
+from crams_api.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
+
+
 from crams_api.dataUtils.lookupData import get_compute_product_obj
 from crams_api.dataUtils.lookupData import get_storage_product_obj
 from crams_api.serializers.projectSerializers import ProjectIDSerializer
@@ -670,7 +674,6 @@ class UpdateProvisionRequestSerializer(BaseProvisionSerializer):
         for cpr in instance.compute_requests.all():
             if not (cpr.provision_details and cpr.provision_details.status ==
                     ProvisionDetails.PROVISIONED):
-                print('cp provision fail for ', cpr.id, cpr.provision_details)
                 status_code_to_update = None
                 break
 
@@ -679,7 +682,6 @@ class UpdateProvisionRequestSerializer(BaseProvisionSerializer):
                 if not (spr.provision_details and
                         spr.provision_details.status ==
                         ProvisionDetails.PROVISIONED):
-                    print('sp provision fail: ', spr.id, spr.provision_details)
                     status_code_to_update = None
                     break
 
@@ -688,7 +690,9 @@ class UpdateProvisionRequestSerializer(BaseProvisionSerializer):
             context['request'] = self.context['request']
 
             context[OVERRIDE_READONLY_DATA] = {
-                'request_status': status_code_to_update}
+                'request_status': status_code_to_update,
+                DO_NOT_OVERRIDE_PROVISION_DETAILS: True
+            }
             newRequest = CramsRequestSerializer(
                 instance, data={}, partial=True, context=context)
             newRequest.is_valid(raise_exception=True)
