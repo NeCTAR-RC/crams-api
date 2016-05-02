@@ -76,7 +76,9 @@ class ProvisionDetailsSerializer(ActionStateModelSerializer):
         if existing_status == ProvisionDetails.PROVISIONED:
             override_data = self.cramsActionState.override_data
             key = DO_NOT_OVERRIDE_PROVISION_DETAILS
-            if not override_data.get(key, False):
+            if override_data and override_data.get(key, False):
+                pass
+            else:
                 return ProvisionDetails.POST_PROVISION_UPDATE
 
         return existing_status
