@@ -14,6 +14,7 @@ from rest_framework import serializers
 from crams.models import Question, ProvisionDetails
 from crams_api.serializers.utils import CramsActionState
 from crams_api.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
+from crams_api.APIConstants import OVERRIDE_READONLY_DATA
 
 __author__ = 'rafi m feroze'
 
@@ -55,15 +56,20 @@ class ProvisionDetailsSerializer(ActionStateModelSerializer):
         :param data:
         :return validated_data:
         """
-        self._setActionState()
+        # self._setActionState()  #Do not use this now, requires passing context
+        # everywhere this serializer is called, phase 2 perhaps
+        self.override_data = dict()
+        if self.context:
+            self.override_data = self.context.get(
+                OVERRIDE_READONLY_DATA, None)
 
         if data['status'] in ProvisionDetails.SET_OF_SENT:
             parentProductRequest = ''
-            if self.instance:
-                if self.instance.compute_request:
-                    parentProductRequest = self.instance.compute_request
-                elif self.instance.storage_request:
-                    parentProductRequest = self.instance.storage_request
+            if self.existing:
+                if self.existing.compute_requests:
+                    parentProductRequest = self.existing.compute_requests
+                elif self.existing.storage_requests:
+                    parentProductRequest = self.existing.storage_requests
             raise ValidationError({'Product Request ':
                                    '{} cannot be updated while being \
                                    provisioned'
@@ -74,9 +80,8 @@ class ProvisionDetailsSerializer(ActionStateModelSerializer):
     def _get_new_provision_status(self, existing_status):
 
         if existing_status == ProvisionDetails.PROVISIONED:
-            override_data = self.cramsActionState.override_data
             key = DO_NOT_OVERRIDE_PROVISION_DETAILS
-            if override_data and override_data.get(key, False):
+            if self.override_data and self.override_data.get(key, False):
                 pass
             else:
                 return ProvisionDetails.POST_PROVISION_UPDATE

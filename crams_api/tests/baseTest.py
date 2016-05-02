@@ -19,6 +19,7 @@ __author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
 class CRAMSApiTstCase(APITestCase):
 
     def setUp(self):
+        super().setUp()
         self.pp = pprint.PrettyPrinter(indent=4)
         self.roleList = None
         testEmail = 'tests.merc@monash.edu'
@@ -49,6 +50,11 @@ class CRAMSApiTstCase(APITestCase):
         if idStr:
             return view(request, pk=idStr)
         return view(request)
+        # self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        # data = {}
+        # if idStr:
+        #     data['pk'] = idStr
+        # return self.client.get(url, data, format='json')
 
     def _create_project_common(self, test_data):
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
@@ -160,8 +166,7 @@ class CRAMSApiTstCase(APITestCase):
         request = self.factory.put(
             'api/project',
             test_data,
-            HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+            HTTP_AUTHORIZATION='Token {}'.format(self.token.key))
         request.user = self.user
         response = view(request, pk=test_data.get('id'))
 
