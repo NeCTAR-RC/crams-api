@@ -97,13 +97,15 @@ def provision_auth_token_view(request):
         data = json_loads(json_data.decode())
         return data.get("token", None)
 
-    # crams_token = auth_token_common(rawTokenExtractFn, request)
-    #
-    # return JsonResponse({
-    #     'token': crams_token.key
-    # })
+    response_data = auth_token_common(rawTokenExtractFn, request)
 
-    return auth_token_common(rawTokenExtractFn, request)
+    if isinstance(response_data, CramsToken):
+        return JsonResponse({
+            'token': response_data.key
+        })
+    
+    return response_data
+
 
 @csrf_exempt
 def nectar_token_auth_view(request):
