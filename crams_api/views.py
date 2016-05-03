@@ -97,12 +97,13 @@ def provision_auth_token_view(request):
         data = json_loads(json_data.decode())
         return data.get("token", None)
 
-    crams_token = auth_token_common(rawTokenExtractFn, request)
+    # crams_token = auth_token_common(rawTokenExtractFn, request)
+    #
+    # return JsonResponse({
+    #     'token': crams_token.key
+    # })
 
-    return JsonResponse({
-        'token': crams_token.key
-    })
-
+    return auth_token_common(rawTokenExtractFn, request)
 
 @csrf_exempt
 def nectar_token_auth_view(request):
