@@ -22,19 +22,19 @@ from crams.models import Request
 from crams.models import StorageProduct
 from crams.models import StorageRequest
 
-from crams_api.APIConstants import OVERRIDE_READONLY_DATA
-from crams_api.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
+from api.APIConstants import OVERRIDE_READONLY_DATA
+from api.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
 
 
-from crams_api.dataUtils.lookupData import get_compute_product_obj
-from crams_api.dataUtils.lookupData import get_storage_product_obj
-from crams_api.serializers.projectSerializers import ProjectIDSerializer
-from crams_api.serializers.projectSerializers import ReadOnlyProjectSerializer
-from crams_api.serializers.requestSerializers import CramsRequestSerializer
-from crams_api.serializers.requestSerializers import \
+from api.dataUtils.lookupData import get_compute_product_obj
+from api.dataUtils.lookupData import get_storage_product_obj
+from api.serializers.projectSerializers import ProjectIDSerializer
+from api.serializers.projectSerializers import ReadOnlyProjectSerializer
+from api.serializers.requestSerializers import CramsRequestSerializer
+from api.serializers.requestSerializers import \
     ReadOnlyCramsRequestSerializer
-from crams_api.serializers.utilitySerializers import PrimaryKeyLookupField
-from crams_api.serializers.utilitySerializers import ProvisionDetailsSerializer
+from api.serializers.utilitySerializers import PrimaryKeyLookupField
+from api.serializers.utilitySerializers import ProvisionDetailsSerializer
 __author__ = 'rafi m feroze'
 
 PROVISION_ENABLE_REQUEST_STATUS = [

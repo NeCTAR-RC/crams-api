@@ -2,9 +2,9 @@ import pprint
 import json
 from rest_framework import status
 from account.models import User
-from crams_api.views import ProjectViewSet, ApproveRequestViewSet
-from crams_api.views import DeclineRequestViewSet, ProvisionProjectViewSet
-from crams_api.views import UpdateProvisionProjectViewSet
+from api.views import ProjectViewSet, ApproveRequestViewSet
+from api.views import DeclineRequestViewSet, ProvisionProjectViewSet
+from api.views import UpdateProvisionProjectViewSet
 from rest_framework.test import APITestCase, APIRequestFactory
 from crams.models import Contact, CramsToken, Provider, ComputeProduct
 from crams.models import StorageProduct

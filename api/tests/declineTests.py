@@ -3,8 +3,8 @@ from django.db.models import Q
 from rest_framework import status
 from crams.models import FundingBody, FundingScheme, Project, RequestStatus
 from crams.models import Request
-from crams_api.tests.baseTest import AdminBaseTstCase
-from crams_api.views import DeclineRequestViewSet
+from api.tests.baseTest import AdminBaseTstCase
+from api.views import DeclineRequestViewSet
 
 __author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
 

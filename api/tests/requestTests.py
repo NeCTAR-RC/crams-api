@@ -1,8 +1,8 @@
 from rest_framework import status
 
 from crams.models import Project, Request
-from crams_api.tests.baseTest import CRAMSApiTstCase
-from crams_api.views import ProjectViewSet, RequestViewSet
+from api.tests.baseTest import CRAMSApiTstCase
+from api.views import ProjectViewSet, RequestViewSet
 from tests.sampleData import get_base_nectar_project_data
 
 __author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'

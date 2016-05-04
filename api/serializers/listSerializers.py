@@ -1,26 +1,26 @@
 # coding=utf-8
 """List Serializers."""
 
-from crams_api.serializers.lookupSerializers import ComputeProductSerializer
-from crams_api.serializers.lookupSerializers import QuestionSerializer
-from crams_api.serializers.lookupSerializers import StorageProductSerializer
-from crams_api.serializers.projectSerializers import ContactSerializer
-from crams_api.serializers.projectSerializers import DomainSerializer
-from crams_api.serializers.projectSerializers import GrantSerializer
-from crams_api.serializers.projectSerializers import ProjectContactSerializer
-from crams_api.serializers.projectSerializers import ProjectIDSerializer
-from crams_api.serializers.projectSerializers import \
+from api.serializers.lookupSerializers import ComputeProductSerializer
+from api.serializers.lookupSerializers import QuestionSerializer
+from api.serializers.lookupSerializers import StorageProductSerializer
+from api.serializers.projectSerializers import ContactSerializer
+from api.serializers.projectSerializers import DomainSerializer
+from api.serializers.projectSerializers import GrantSerializer
+from api.serializers.projectSerializers import ProjectContactSerializer
+from api.serializers.projectSerializers import ProjectIDSerializer
+from api.serializers.projectSerializers import \
     ProjectQuestionResponseSerializer
-from crams_api.serializers.projectSerializers import ProjectSerializer
-from crams_api.serializers.projectSerializers import PublicationSerializer
-from crams_api.serializers.projectSerializers import \
+from api.serializers.projectSerializers import ProjectSerializer
+from api.serializers.projectSerializers import PublicationSerializer
+from api.serializers.projectSerializers import \
     SupportedInstitutionSerializer
-from crams_api.serializers.requestSerializers import ComputeRequestSerializer
-from crams_api.serializers.requestSerializers import CramsRequestSerializer
-from crams_api.serializers.requestSerializers import \
+from api.serializers.requestSerializers import ComputeRequestSerializer
+from api.serializers.requestSerializers import CramsRequestSerializer
+from api.serializers.requestSerializers import \
     RequestQuestionResponseSerializer
-from crams_api.serializers.requestSerializers import StorageRequestSerializer
-from crams_api.serializers.utilitySerializers import \
+from api.serializers.requestSerializers import StorageRequestSerializer
+from api.serializers.utilitySerializers import \
     DynamicFieldsBaseSerializer
 
 __author__ = 'rafi m feroze'

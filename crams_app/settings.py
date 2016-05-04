@@ -47,7 +47,7 @@ INSTALLED_APPS = (
     'crams_app',
     'account',
     'crams',
-    'crams_api',
+    'api',
     # 'ttags',
     # 'csvimport',
 )

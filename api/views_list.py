@@ -13,9 +13,9 @@ from rest_condition import And, Or  # ,ConditionalPermission, C, Not
 
 from crams.models import Request, FundingBody
 from crams.DBConstants import APPROVER_APPEND_STR
-from crams_api.serializers.requestSerializers import RequestHistorySerializer
+from api.serializers.requestSerializers import RequestHistorySerializer
 from crams.permissions import IsRequestApprover, IsProjectContact
-from crams_api.utils import get_user_role_prefix_list
+from api.utils import get_user_role_prefix_list
 
 __author__ = 'rafi m feroze'
 

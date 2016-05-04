@@ -1,0 +1,16 @@
+local.settings.py merge=ours
+**/.idea/
+.idea/ merge=ours export-ignore
+.idea/codeStyleSettings.xml  merge=ours
+.idea/encodings.xml   merge=ours
+.idea/.name   merge=ours
+.idea/misc.xml   merge=ours
+.idea/vcs.xml   merge=ours
+.idea/compiler.xml   merge=ours
+.idea/modules.xml   merge=ours
+.idea/uiDesigner.xml   merge=ours
+.idea/vicnode.iml   merge=ours
+.idea/inspectionProfiles/Project_Default.xml   merge=ours
+.idea/inspectionProfiles/profiles_settings.xml  merge=ours
+.idea/scopes/scope_settings.xml    merge=ours
+.idea/workspace.xml   merge=ours

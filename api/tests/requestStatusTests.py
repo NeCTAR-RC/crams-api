@@ -1,9 +1,9 @@
 from rest_framework import status
 
 from crams.DBConstants import *
-from crams_api.tests.baseCramsFlow import BaseCramsFlow
+from api.tests.baseCramsFlow import BaseCramsFlow
 from crams.dbUtils import get_request_status_lookups
-from crams_api.utils import get_random_string
+from api.utils import get_random_string
 from tests.sampleData import get_vicnode_test_data
 from tests.sampleData import get_base_nectar_project_data
 

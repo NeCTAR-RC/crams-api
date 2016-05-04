@@ -3,11 +3,11 @@ from rest_framework import status
 from crams.DBConstants import *
 from crams.models import Request, Project, Contact, ContactRole
 from crams.models import ProjectContact, ProvisionDetails
-from crams_api.tests.baseTest import ProvisionBaseTstCase
+from api.tests.baseTest import ProvisionBaseTstCase
 from tests.sampleData import get_base_nectar_project_data
-from crams_api.tests.baseCramsFlow import BaseCramsFlow
-from crams_api.views import ProvisionProjectViewSet, ProvisionRequestViewSet
-from crams_api.views import UpdateProvisionProjectViewSet, ProjectViewSet
+from api.tests.baseCramsFlow import BaseCramsFlow
+from api.views import ProvisionProjectViewSet, ProvisionRequestViewSet
+from api.views import UpdateProvisionProjectViewSet, ProjectViewSet
 
 __author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
 

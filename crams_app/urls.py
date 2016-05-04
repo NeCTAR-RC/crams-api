@@ -7,13 +7,13 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.auth import views as auth_views
 from django.conf import settings
-from crams_api.views import nectar_token_auth_view, provision_auth_token_view
+from api.views import nectar_token_auth_view, provision_auth_token_view
 
 urlpatterns = [
     url(r'^$', auth_views.login),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/login/$', auth_views.login),
-    url(r'^api/', include('crams_api.urls')),
+    url(r'^api/', include('api.urls')),
     url(r'^nectar_token_auth', nectar_token_auth_view),
     url(r'^json_token_auth', provision_auth_token_view),
 ]

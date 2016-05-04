@@ -6,8 +6,8 @@ from rest_framework.serializers import ValidationError
 
 from crams_app.django_utils import get_model_field_value
 
-from crams_api.APIConstants import CLONE
-from crams_api.APIConstants import OVERRIDE_READONLY_DATA
+from api.APIConstants import CLONE
+from api.APIConstants import OVERRIDE_READONLY_DATA
 
 __author__ = 'rafi m feroze'
 

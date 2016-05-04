@@ -7,10 +7,10 @@ from crams.DBConstants import REQUEST_STATUS_SUBMITTED
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
 from crams.models import Project, RequestStatus, Request, FundingBody
 from crams.models import FundingScheme
-from crams_api.projectRequestListAPI import ApproverReviewerRequestListView
-from crams_api.projectRequestListAPI import FundingBodyAllocationsCounter
-from crams_api.tests.baseTest import AdminBaseTstCase
-from crams_api.views import ApproveRequestViewSet
+from api.projectRequestListAPI import ApproverReviewerRequestListView
+from api.projectRequestListAPI import FundingBodyAllocationsCounter
+from api.tests.baseTest import AdminBaseTstCase
+from api.views import ApproveRequestViewSet
 
 __author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
 

@@ -23,18 +23,18 @@ from crams_app.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
 from crams.DBConstants import CRAMS_NECTAR_APPROVER_ROLE, NECTARDB_APPROVER, \
     APPROVER_APPEND_STR
 from crams.dbUtils import fetch_active_provider_object_for_user
-from crams_api.utils import get_keystone_admin_client
+from api.utils import get_keystone_admin_client
 from crams.models import Project, Request, Contact, Provider, CramsToken, \
     UserEvents, ProvisionDetails
-from crams_api.serializers.requestSerializers import CramsRequestSerializer
-from crams_api.serializers.projectSerializers import ProjectSerializer, \
+from api.serializers.requestSerializers import CramsRequestSerializer
+from api.serializers.projectSerializers import ProjectSerializer, \
     ContactSerializer, ContactRestrictedFieldSerializer
 from crams.permissions import IsRequestApprover, IsProjectContact, \
     IsActiveProvider
-from crams_api.serializers.adminSerializers import \
+from api.serializers.adminSerializers import \
     ApproveRequestModelSerializer, DeclineRequestModelSerializer, \
     ADMIN_ENABLE_REQUEST_STATUS
-from crams_api.serializers.provisionSerializers import \
+from api.serializers.provisionSerializers import \
     ProvisionRequestSerializer, ProvisionProjectSerializer, \
     UpdateProvisionProjectSerializer, PROVISION_ENABLE_REQUEST_STATUS
 
@@ -103,7 +103,7 @@ def provision_auth_token_view(request):
         return JsonResponse({
             'token': response_data.key
         })
-    
+
     return response_data
 
 

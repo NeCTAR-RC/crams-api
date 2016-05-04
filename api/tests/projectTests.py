@@ -1,8 +1,8 @@
 from rest_framework import status
 from crams.models import Contact, CramsToken
-from crams_api.tests.baseTest import CRAMSApiTstCase
-from crams_api.tests.baseCramsFlow import _AbstractCramsBase
-from crams_api.views import ProjectViewSet
+from api.tests.baseTest import CRAMSApiTstCase
+from api.tests.baseCramsFlow import _AbstractCramsBase
+from api.views import ProjectViewSet
 from crams.dbUtils import get_request_status_lookups
 from tests.sampleData import get_project_only_no_request_data
 from tests.sampleData import get_base_nectar_project_data

@@ -11,14 +11,14 @@ from crams.DBConstants import REQUEST_STATUS_SUBMITTED
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED
 from crams.models import Request
-from crams_api.APIConstants import OVERRIDE_READONLY_DATA
-from crams_api.serializers.requestSerializers import ComputeRequestSerializer
-from crams_api.serializers.requestSerializers import CramsRequestSerializer
-from crams_api.serializers.requestSerializers import StorageRequestSerializer
-from crams_api.serializers.utilitySerializers import ProjectAdminField
-from crams_api.serializers.utilitySerializers import UpdateOnlyModelSerializer
-from crams_api.serializers.utils import FieldsRequiredValidator
-from crams_api.serializers.utils import validate_dry_principle
+from api.APIConstants import OVERRIDE_READONLY_DATA
+from api.serializers.requestSerializers import ComputeRequestSerializer
+from api.serializers.requestSerializers import CramsRequestSerializer
+from api.serializers.requestSerializers import StorageRequestSerializer
+from api.serializers.utilitySerializers import ProjectAdminField
+from api.serializers.utilitySerializers import UpdateOnlyModelSerializer
+from api.serializers.utils import FieldsRequiredValidator
+from api.serializers.utils import validate_dry_principle
 
 __author__ = 'rafi m feroze'
 

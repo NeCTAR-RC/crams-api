@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+local/local_settings.py
+*.coverage
+tests/reporter/*.xml
+.idea/*
+coverage.xml
+reports/*
+*/.tox/*
+
+.DS_Store

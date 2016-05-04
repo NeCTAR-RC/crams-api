@@ -1,8 +1,8 @@
 from django.forms import model_to_dict
 from rest_framework import status
 from crams.models import Contact
-from crams_api.tests.baseTest import CRAMSApiTstCase
-from crams_api.views import ContactViewSet, SearchContact
+from api.tests.baseTest import CRAMSApiTstCase
+from api.views import ContactViewSet, SearchContact
 
 __author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
 

@@ -6,7 +6,7 @@ from rest_framework.exceptions import ParseError
 
 from crams.models import GrantType, ProjectIDSystem, ContactRole, FORCode, \
     FundingScheme, ComputeProduct, StorageProduct, RequestStatus, Provider
-from crams_api.serializers.lookupSerializers import GrantTypeSerializer, \
+from api.serializers.lookupSerializers import GrantTypeSerializer, \
     ProjectIDSystemSerializer, ContactRoleSerializer, FORCodeSerializer, \
     FundingSchemeSerializer, ComputeProductSerializer, \
     StorageProductSerializer, RequestStatusSerializer, ProviderSerializer

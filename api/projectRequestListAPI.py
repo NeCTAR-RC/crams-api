@@ -3,7 +3,7 @@
  project request lost APIs
 """
 from django.db.models import Q
-from crams_api.utils import get_user_role_prefix_list
+from api.utils import get_user_role_prefix_list
 
 from rest_framework.response import Response
 from rest_framework.exceptions import ParseError
@@ -12,12 +12,12 @@ from rest_framework.permissions import IsAuthenticated
 
 from crams.models import Project, Request, FundingBody
 from crams.DBConstants import APPROVER_APPEND_STR
-from crams_api.serializers.requestSerializers import ComputeRequestSerializer
-from crams_api.serializers.requestSerializers import StorageRequestSerializer
-from crams_api.serializers.lookupSerializers import UserSerializer
-from crams_api import APIConstants
+from api.serializers.requestSerializers import ComputeRequestSerializer
+from api.serializers.requestSerializers import StorageRequestSerializer
+from api.serializers.lookupSerializers import UserSerializer
+from api import APIConstants
 from collections import OrderedDict
-from crams_api.serializers.utilitySerializers import ProvisionDetailsSerializer
+from api.serializers.utilitySerializers import ProvisionDetailsSerializer
 import datetime
 
 __author__ = 'rafi m feroze, Simon Yu'

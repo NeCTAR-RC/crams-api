@@ -33,15 +33,15 @@ from crams.models import RequestQuestionResponse
 from crams.models import RequestStatus
 from crams.models import StorageRequest
 from crams.models import StorageRequestQuestionResponse
-from crams_api.dataUtils.lookupData import get_funding_scheme_obj
-from crams_api.serializers.lookupSerializers import \
+from api.dataUtils.lookupData import get_funding_scheme_obj
+from api.serializers.lookupSerializers import \
     StorageProductZoneOnlySerializer
-from crams_api.serializers.utilitySerializers import \
+from api.serializers.utilitySerializers import \
     AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
-from crams_api.serializers.utilitySerializers import ActionStateModelSerializer
-from crams_api.serializers.utilitySerializers import PrimaryKeyLookupField
-from crams_api.dataUtils.lookupData import get_compute_product_obj
-from crams_api.dataUtils.lookupData import get_storage_product_obj
+from api.serializers.utilitySerializers import ActionStateModelSerializer
+from api.serializers.utilitySerializers import PrimaryKeyLookupField
+from api.dataUtils.lookupData import get_compute_product_obj
+from api.dataUtils.lookupData import get_storage_product_obj
 
 __author__ = 'simonyu, rafi m feroze'
 

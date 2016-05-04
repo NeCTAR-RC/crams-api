@@ -1,6 +1,6 @@
-from crams_api.tests.baseTest import CRAMSApiTstCase
+from api.tests.baseTest import CRAMSApiTstCase
 from tests.sampleData import get_base_nectar_project_data
-from crams_api.utils import get_random_string
+from api.utils import get_random_string
 from crams.models import Contact
 
 __author__ = 'rafi m feroze'  # 'mmohamed'

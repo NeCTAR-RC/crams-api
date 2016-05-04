@@ -1,7 +1,7 @@
 # coding=utf-8
 """utilitySerializers."""
-from crams_api.serializers.lookupSerializers import ProviderSerializer
-from crams_api.dataUtils.lookupData import get_provider_obj
+from api.serializers.lookupSerializers import ProviderSerializer
+from api.dataUtils.lookupData import get_provider_obj
 
 import pprint
 
@@ -12,9 +12,9 @@ from rest_framework.relations import RelatedField
 from rest_framework import serializers
 
 from crams.models import Question, ProvisionDetails
-from crams_api.serializers.utils import CramsActionState
-from crams_api.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
-from crams_api.APIConstants import OVERRIDE_READONLY_DATA
+from api.serializers.utils import CramsActionState
+from api.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
+from api.APIConstants import OVERRIDE_READONLY_DATA
 
 __author__ = 'rafi m feroze'
 

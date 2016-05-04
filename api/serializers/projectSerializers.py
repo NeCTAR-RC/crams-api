@@ -24,18 +24,18 @@ from crams.models import Publication
 from crams.models import Request
 from crams.models import SupportedInstitution
 from crams.models import ProjectProvisionDetails
-from crams_api.APIConstants import CLONE
-from crams_api.APIConstants import OVERRIDE_READONLY_DATA
-from crams_api.dataUtils.lookupData import get_system_obj
-from crams_api.dataUtils.lookupData import LookupDataModel
-from crams_api.serializers.requestSerializers import CramsRequestSerializer
-from crams_api.serializers.utilitySerializers import \
+from api.APIConstants import CLONE
+from api.APIConstants import OVERRIDE_READONLY_DATA
+from api.dataUtils.lookupData import get_system_obj
+from api.dataUtils.lookupData import LookupDataModel
+from api.serializers.requestSerializers import CramsRequestSerializer
+from api.serializers.utilitySerializers import \
     AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
-from crams_api.serializers.utilitySerializers import ActionStateModelSerializer
-from crams_api.serializers.utilitySerializers import \
+from api.serializers.utilitySerializers import ActionStateModelSerializer
+from api.serializers.utilitySerializers import \
     DynamicFieldsModelSerializer
-from crams_api.serializers.utilitySerializers import PrimaryKeyLookupField
-from crams_api.serializers.utilitySerializers import UpdatableSerializer
+from api.serializers.utilitySerializers import PrimaryKeyLookupField
+from api.serializers.utilitySerializers import UpdatableSerializer
 
 __author__ = 'rafi m feroze, simonyu'
 

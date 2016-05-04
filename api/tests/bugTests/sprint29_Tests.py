@@ -1,8 +1,8 @@
 from rest_framework import status
-from crams_api.tests.baseTest import CRAMSApiTstCase
+from api.tests.baseTest import CRAMSApiTstCase
 from crams.models import FundingBody
-from crams_api.utils import power_set_generator, compare_two_lists_or_sets
-from crams_api.views_list import CurrentUserApproverRoleList
+from api.utils import power_set_generator, compare_two_lists_or_sets
+from api.views_list import CurrentUserApproverRoleList
 from crams.DBConstants import APPROVER_APPEND_STR
 
 __author__ = 'rafi m feroze'  # 'mmohamed'

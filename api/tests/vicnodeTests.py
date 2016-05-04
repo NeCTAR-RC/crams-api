@@ -1,7 +1,7 @@
 from rest_framework import status
 from crams.models import Project
-from crams_api.tests.baseTest import CRAMSApiTstCase
-from crams_api.views import ProjectViewSet
+from api.tests.baseTest import CRAMSApiTstCase
+from api.views import ProjectViewSet
 from tests.sampleData import get_vicnode_test_data
 
 __author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'

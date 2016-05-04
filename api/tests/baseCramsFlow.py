@@ -1,12 +1,12 @@
 from rest_framework import status
 from crams.DBConstants import *
-from crams_api.utils import get_random_string
-from crams_api.serializers.provisionSerializers import \
+from api.utils import get_random_string
+from api.serializers.provisionSerializers import \
     UpdateProvisionProjectSerializer
-from crams_api.tests.baseTest import CRAMSApiTstCase, AdminBaseTstCase
-from crams_api.tests.baseTest import ProvisionBaseTstCase
+from api.tests.baseTest import CRAMSApiTstCase, AdminBaseTstCase
+from api.tests.baseTest import ProvisionBaseTstCase
 from crams.models import Project, ProvisionDetails
-from crams_api.dataUtils.lookupData import get_provider_obj
+from api.dataUtils.lookupData import get_provider_obj
 
 __author__ = 'rafi m feroze'  # 'mmohamed'
 
