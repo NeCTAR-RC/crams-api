@@ -8,5 +8,6 @@ tests/reporter/*.xml
 coverage.xml
 reports/*
 */.tox/*
-
+.tox/*
+crams_db.egg-info/*
 .DS_Store

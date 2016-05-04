@@ -1,0 +1,621 @@
+# coding=utf-8
+"""RequestSerializers."""
+import logging
+
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.db import transaction
+from rest_framework.exceptions import ParseError
+from rest_framework.exceptions import ValidationError
+from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import PrimaryKeyRelatedField
+
+from crams.DBConstants import ADMIN_STATES
+from crams.DBConstants import APPROVAL_STATES
+from crams.DBConstants import DECLINED_STATES
+from crams.DBConstants import FUNDING_BODY_NECTAR
+from crams.DBConstants import LEGACY_STATES
+from crams.DBConstants import NON_ADMIN_STATES
+from crams.DBConstants import REQUEST_STATUS_DECLINED
+from crams.DBConstants import REQUEST_STATUS_NEW
+from crams.DBConstants import REQUEST_STATUS_PROVISIONED
+from crams.DBConstants import REQUEST_STATUS_SUBMITTED
+from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
+from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED
+from crams.mail import mail_sender
+from crams.models import ComputeProduct
+from crams.models import ComputeRequest
+from crams.models import ComputeRequestQuestionResponse
+from crams.models import FundingScheme
+from crams.models import Project
+from crams.models import Request
+from crams.models import RequestQuestionResponse
+from crams.models import RequestStatus
+from crams.models import StorageRequest
+from crams.models import StorageRequestQuestionResponse
+from api.v1.dataUtils.lookupData import get_funding_scheme_obj
+from api.v1.serializers.lookupSerializers import \
+    StorageProductZoneOnlySerializer
+from api.v1.serializers.utilitySerializers import \
+    AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
+from api.v1.serializers.utilitySerializers import ActionStateModelSerializer
+from api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
+from api.v1.dataUtils.lookupData import get_compute_product_obj
+from api.v1.dataUtils.lookupData import get_storage_product_obj
+
+__author__ = 'simonyu, rafi m feroze'
+
+
+User = get_user_model()
+LOG = logging.getLogger(__name__)
+
+
+class ComputeQuestionResponseSerializer(AbstractQuestionResponseSerializer):
+    """class ComputeQuestionResponseSerializer."""
+
+    class Meta(object):
+        model = ComputeRequestQuestionResponse
+        fields = ('id', 'question_response', 'question')
+
+
+class ComputeRequestSerializer(ModelSerializer):
+    """class ComputeRequestSerializer."""
+
+    compute_product = PrimaryKeyLookupField(
+        many=False, required=True, fields=[
+            'id', 'name'], queryset=ComputeProduct.objects.all())
+    compute_question_responses = ComputeQuestionResponseSerializer(
+        many=True, read_only=False, allow_null=True, required=False)
+    provision_details = ProvisionDetailsSerializer(
+        many=False, required=False, allow_null=True)
+
+    class Meta(object):
+        model = ComputeRequest
+        fields = (
+            'id',
+            'instances',
+            'approved_instances',
+            'cores',
+            'approved_cores',
+            'core_hours',
+            'approved_core_hours',
+            'compute_product',
+            'compute_question_responses',
+            'provision_details')
+        read_only_fields = ('provision_details')
+
+    def create(self, validated_data):
+        """create.
+
+        :param validated_data:
+        :return compute_request:
+        """
+        compute_product = validated_data.pop('compute_product', None)
+        if not compute_product or 'id' not in compute_product:
+            raise ParseError('Compute product is required')
+
+        compute_product_id = compute_product['id']
+        compute_question_responses = validated_data.pop(
+            'compute_question_responses', None)
+
+        provision_details = validated_data.pop('provision_details', None)
+        if provision_details:
+            pSerializer = ProvisionDetailsSerializer(
+                data=provision_details, context=self.context)
+            pSerializer.is_valid(raise_exception=True)
+            validated_data['provision_details'] = pSerializer.save()
+
+        validated_data['compute_product'] = get_compute_product_obj({
+            'pk': compute_product_id
+        })
+
+        compute_request = ComputeRequest.objects.create(**validated_data)
+        if compute_question_responses:
+            for cqr in compute_question_responses:
+                cqrSerializer = ComputeQuestionResponseSerializer(data=cqr)
+                cqrSerializer.is_valid(raise_exception=True)
+                cqrSerializer.save(compute_request=compute_request)
+
+        return compute_request
+
+
+class StorageQuestionResponseSerializer(AbstractQuestionResponseSerializer):
+    """class StorageQuestionResponseSerializer."""
+
+    class Meta(object):
+        model = StorageRequestQuestionResponse
+        fields = ('id', 'question_response', 'question')
+
+
+class StorageRequestSerializer(ModelSerializer):
+    """class StorageRequestSerializer."""
+
+    storage_product = StorageProductZoneOnlySerializer(required=True)
+    storage_question_responses = StorageQuestionResponseSerializer(
+        many=True, read_only=False, allow_null=True, required=False)
+    provision_details = ProvisionDetailsSerializer(
+        many=False, required=False, allow_null=True)
+
+    class Meta(object):
+        model = StorageRequest
+        fields = ('id', 'quota', 'approved_quota', 'storage_product',
+                  'storage_question_responses', 'provision_details')
+        read_only_fields = ('provision_details')
+
+    def create(self, validated_data):
+        """create.
+
+        :param validated_data:
+        :return storage_request:
+        """
+        # not used, use initial_data instead
+        validated_data.pop('storage_product', None)
+        storage_product = self.initial_data.pop('storage_product', None)
+        if not storage_product or 'id' not in storage_product:
+            raise ParseError('Storage product is required')
+
+        storage_product_id = storage_product['id']
+        storage_question_responses = validated_data.pop(
+            'storage_question_responses', None)
+
+        provision_details = validated_data.pop('provision_details', None)
+        if provision_details:
+            pSerializer = ProvisionDetailsSerializer(
+                data=provision_details, context=self.context)
+            pSerializer.is_valid(raise_exception=True)
+            validated_data['provision_details'] = pSerializer.save()
+
+        validated_data['storage_product'] = get_storage_product_obj({
+            'pk': storage_product_id
+        })
+
+        storage_request = StorageRequest.objects.create(**validated_data)
+
+        if storage_question_responses:
+            for sqr in storage_question_responses:
+                sqrSerializer = StorageQuestionResponseSerializer(data=sqr)
+                sqrSerializer.is_valid(raise_exception=True)
+                sqrSerializer.save(storage_request=storage_request)
+
+        return storage_request
+
+
+class RequestQuestionResponseSerializer(AbstractQuestionResponseSerializer):
+    """class RequestQuestionResponseSerializer."""
+
+    class Meta(object):
+        model = RequestQuestionResponse
+        fields = ('id', 'question_response', 'question')
+
+
+class RequestHistorySerializer(ModelSerializer):
+    """class RequestHistorySerializer."""
+
+    project = PrimaryKeyLookupField(
+        many=False, fields=['id', 'title'], read_only=True, model=Project)
+    request_status = PrimaryKeyLookupField(
+        many=False,
+        fields=[
+            'code',
+            'status'],
+        read_only=True,
+        model=RequestStatus)
+
+    class Meta(object):
+        model = Request
+        fields = ('id', 'request_status', 'project',
+                  'last_modified_ts', 'parent_request')
+        read_only_fields = ('request_status', 'project',
+                            'last_modified_ts', 'parent_request')
+
+
+class CramsRequestSerializer(ActionStateModelSerializer):
+    """class CramsRequestSerializer."""
+
+    # Make sure all foreign keys that are not updated from input are set to
+    # PrimaryKeyRelatedField or its derivate PrimaryKeyLookupField
+    project = PrimaryKeyRelatedField(
+        many=False,
+        required=False,
+        queryset=Project.objects.filter(
+            parent_project__isnull=True))
+
+    compute_requests = ComputeRequestSerializer(many=True, read_only=False)
+
+    storage_requests = StorageRequestSerializer(many=True, read_only=False)
+
+    # request question response
+    request_question_responses = RequestQuestionResponseSerializer(
+        many=True, read_only=False)
+
+    request_status = PrimaryKeyLookupField(
+        many=False, read_only=True, fields=[
+            'id', 'code', 'status'], model=RequestStatus)
+
+    funding_scheme = PrimaryKeyLookupField(
+        many=False, required=True, fields=[
+            'id', 'funding_scheme'], queryset=FundingScheme.objects.all())
+
+    created_by = PrimaryKeyLookupField(
+        many=False,
+        required=True,
+        fields=[
+            'id',
+            'email',
+            'first_name',
+            'last_name'],
+        queryset=User.objects.all())
+    updated_by = PrimaryKeyLookupField(
+        many=False,
+        required=True,
+        fields=[
+            'id',
+            'email',
+            'first_name',
+            'last_name'],
+        queryset=User.objects.all())
+
+    class Meta(object):
+        model = Request
+        field = ('id', 'start_date', 'end_date', 'approval_notes',
+                 'compute_requests', 'storage_requests', 'funding_scheme')
+        read_only_fields = (
+            'creation_ts', 'last_modified_ts', 'request_status')
+
+    def validate(self, data):
+        """validate.
+
+        :param data:
+        :return validated_data:
+        """
+        self._setActionState()
+        cramsActionState = self.cramsActionState
+        if cramsActionState.error_message:
+            raise ValidationError(
+                'CramsRequestSerializer: ' +
+                self.cramsActionState.error_message)
+
+        funding_scheme = None
+        if cramsActionState.is_create_action:
+            if ('compute_requests' not in data and
+                    'storage_requests' not in data):
+                raise ValidationError({'compute_requests / storage_requests':
+                                       'This field is required.'})
+
+            if 'funding_scheme' not in data:
+                raise ValidationError({
+                    'funding_scheme': 'This field is required.'
+                })
+            funding_scheme = get_funding_scheme_obj(data['funding_scheme'])
+
+            if 'start_date' not in data:
+                raise ValidationError({
+                    'start_date': 'This field is required.'
+                })
+
+            if 'end_date' not in data:
+                raise ValidationError({
+                    'end_date': 'This field is required.'
+                })
+
+        if not funding_scheme:
+            funding_scheme = cramsActionState.existing_instance.funding_scheme
+
+        if cramsActionState.is_partial_action:
+            if (cramsActionState.override_data and 'request_status' in
+                    cramsActionState.override_data):
+                inStatusCode = cramsActionState.override_data['request_status']
+                existingStatusCode = (cramsActionState.existing_instance
+                                      .request_status.code)
+
+                if (inStatusCode in LEGACY_STATES or existingStatusCode
+                        in LEGACY_STATES):
+                    raise ValidationError('Request Status : legacy states \
+                                          partial update not implemented yet \
+                                          {}/{}'.format(inStatusCode,
+                                                        existingStatusCode))
+
+                if inStatusCode not in ADMIN_STATES:
+                    raise ValidationError('Request Status {}: partial update \
+                                          denied, Not an Admin action'
+                                          .format(inStatusCode))
+
+                if existingStatusCode == inStatusCode:
+                    raise ValidationError('Request Status: Action cancelled \
+                                          current state is same as new state \
+                                          {}'.format(cramsActionState
+                                                     .existing_instance
+                                                     .request_status.status))
+
+                elif existingStatusCode in DECLINED_STATES:
+                    if inStatusCode not in [
+                            REQUEST_STATUS_UPDATE_OR_EXTEND,
+                            REQUEST_STATUS_SUBMITTED]:
+                        raise ValidationError('Request Status: Declined \
+                                               applications can only move \
+                                               to edit states')
+                    elif (existingStatusCode ==
+                            REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED and
+                            inStatusCode != REQUEST_STATUS_UPDATE_OR_EXTEND):
+                        raise ValidationError('Request Status: requests in \
+                                              extend_decline_status can only \
+                                              move to update_or_extend status')
+
+                    elif (existingStatusCode == REQUEST_STATUS_DECLINED and
+                            inStatusCode != REQUEST_STATUS_SUBMITTED):
+                        raise ValidationError('Request Status: requests in \
+                                              declined status can only move \
+                                              to submitted status')
+
+        elif cramsActionState.is_update_action:
+            inStatusCodeDict = data.get('request_status', None)
+            if inStatusCodeDict:
+                raise ValidationError('Request Status: status is a \
+                                      calculated value, cannot be set')
+
+        return data
+
+    @transaction.atomic
+    def update(self, instance, validated_data):
+        """update.
+
+        :para instance:
+        :param validated_data:
+        :return new_request:
+        """
+        # Cannot update request being provisioned
+        if (self.cramsActionState.is_update_action and
+                self.instance.request_status.code in APPROVAL_STATES):
+            if not (self.cramsActionState.is_partial_action and
+                    self.cramsActionState.override_data):
+                raise ValidationError({'request id {}'
+                                       .format(self.instance.id):
+                                       'Request cannot updated while \
+                                       being provisioned'})
+
+        newRequest = self._saveRequest(validated_data, instance)
+        # update parent_request property for the project archive, required to
+        # identify list for history
+        instance.parent_request = newRequest
+        instance.save()
+        Request.objects.filter(parent_request=instance).update(
+            parent_request=newRequest)
+
+        return newRequest
+
+    @transaction.atomic
+    def create(self, validated_data):
+        """create.
+
+        :param validated_data:
+        :return new_request:
+        """
+        newRequest = self._saveRequest(validated_data, None)
+
+        # send email notification
+        # self.send_notification(newRequest)
+        return newRequest
+
+    def _saveRequest(self, validated_data, existingRequestInstance):
+
+        cramsActionState = self.cramsActionState
+        if not cramsActionState:
+            raise ParseError('CramsRequestSerializer.saveRequest: ActionState \
+                             not found, contact tech support')
+
+        parent_request = validated_data.pop('parent_request', None)
+        if parent_request:
+            raise ParseError('Requests with parent_request value set \
+                             are archived, readonly records. Update fail')
+
+        # ComputeRequest data
+        compute_requests_data = validated_data.pop('compute_requests', None)
+
+        # At a later stage we use initial_data as this will provide id's for
+        # storage product which restFramework removes from validated_data
+        # pop StorageRequest data, not used.
+        validated_data.pop('storage_requests', None)
+
+        # Request Question responses
+        request_question_responses_data = validated_data.pop(
+            'request_question_responses', None)
+
+        # Set funding scheme
+        funding_scheme = validated_data.pop('funding_scheme', None)
+        if funding_scheme and 'id' in funding_scheme:
+            funding_scheme_id = funding_scheme['id']
+            try:
+                fundingSchemeInstance = FundingScheme.objects.get(
+                    pk=funding_scheme_id)
+            except FundingScheme.DoesNotExist:
+                raise ParseError('Funding Scheme not found for id {}'
+                                 .format(funding_scheme_id))
+            except FundingScheme.MultipleObjectsReturned:
+                raise ParseError('Multiple Funding Schemes found for id {}'
+                                 .format(funding_scheme_id))
+        elif not cramsActionState.is_create_action:  # partial update or Clone
+            fundingSchemeInstance = existingRequestInstance.funding_scheme
+        else:
+            raise ParseError('Request funding_scheme could not be determined')
+        validated_data['funding_scheme'] = fundingSchemeInstance
+
+        # set Request Status
+        requestStatusInstance = self.evaluateRequestStatus(
+            fundingSchemeInstance, cramsActionState)
+        if not requestStatusInstance:
+            raise ParseError('Request status could not be determined')
+        validated_data['request_status'] = requestStatusInstance
+
+        # set remaining fields
+        current_user = cramsActionState.rest_request.user
+        validated_data['updated_by'] = current_user
+        if cramsActionState.is_create_action:
+            validated_data['created_by'] = current_user
+            validated_data['approval_notes'] = None
+        else:  # partial update  or Clone
+            if 'start_date' not in validated_data:
+                validated_data[
+                    'start_date'] = existingRequestInstance.start_date
+
+            if 'end_date' not in validated_data:
+                validated_data['end_date'] = existingRequestInstance.end_date
+
+            if 'project' not in validated_data:
+                validated_data['project'] = existingRequestInstance.project
+
+            validated_data['creation_ts'] = existingRequestInstance.creation_ts
+            validated_data['created_by'] = existingRequestInstance.created_by
+            if cramsActionState.is_clone_action:
+                validated_data[
+                    'approval_notes'] = existingRequestInstance.approval_notes
+                validated_data['last_modified_ts'] = \
+                    existingRequestInstance.last_modified_ts
+                validated_data[
+                    'updated_by'] = existingRequestInstance.updated_by
+            elif requestStatusInstance.code in NON_ADMIN_STATES:
+                validated_data['approval_notes'] = None
+
+        request = Request.objects.create(**validated_data)
+
+        if compute_requests_data:
+            for compute_req_data in compute_requests_data:
+                compute_request = ComputeRequestSerializer(
+                    data=compute_req_data, context=self.context)
+                compute_request.is_valid(raise_exception=True)
+                compute_request.save(request=request)
+        elif not cramsActionState.is_create_action:  # partial update  or Clone
+            for computeInstance in \
+                    existingRequestInstance.compute_requests.all():
+                # use the compute serializer instead of creating
+                # a new model instance directly.
+                #    - This allows for business logic to be
+                #       encapsulated in one place, i.e., the serializer.
+                temp = ComputeRequestSerializer(computeInstance)
+                compute_request = ComputeRequestSerializer(
+                    data=temp.data, context=self.context)
+                # cannot call save without checking is_valid()
+                compute_request.is_valid(raise_exception=True)
+                compute_request.save(request=request)
+
+        storage_requests_data = self.initial_data.pop('storage_requests', None)
+        if storage_requests_data:
+            for storage_req_data in storage_requests_data:
+                storage_request = StorageRequestSerializer(
+                    data=storage_req_data, context=self.context)
+                storage_request.is_valid(raise_exception=True)
+                storage_request.save(request=request)
+        elif not cramsActionState.is_create_action:  # partial update or Clone
+            for storageInstance in \
+                    existingRequestInstance.storage_requests.all():
+                temp = StorageRequestSerializer(storageInstance)
+                storage_request = StorageRequestSerializer(
+                    data=temp.data, context=self.context)
+                storage_request.is_valid(raise_exception=True)
+                storage_request.save(request=request)
+
+        if request_question_responses_data:
+            for req_question_response_data in request_question_responses_data:
+                req_question_resp_serializer =\
+                    RequestQuestionResponseSerializer(
+                        data=req_question_response_data)
+                req_question_resp_serializer.is_valid(raise_exception=True)
+                req_question_resp_serializer.save(request=request)
+        elif not cramsActionState.is_create_action:  # partial update or Clone
+            for reqQuestionInstance in \
+                    existingRequestInstance.request_question_responses.all():
+                temp = RequestQuestionResponseSerializer(reqQuestionInstance)
+                req_question_resp_serializer =\
+                    RequestQuestionResponseSerializer(data=temp.data)
+                req_question_resp_serializer.is_valid(raise_exception=True)
+                req_question_resp_serializer.save(request=request)
+
+        return request
+
+    @classmethod
+    def evaluateRequestStatus(cls, fundingSchemeInstance, cramsActionState):
+        """evaluate request status.
+
+        :param cls:
+        :param fundingSchemeInstance:
+        :param cramsActionState:
+        :return:
+        """
+        if not cramsActionState:
+            raise ParseError('CramsActionState required')
+        existingRequestInstance = cramsActionState.existing_instance
+
+        if cramsActionState.is_create_action:
+            status_code = REQUEST_STATUS_NEW
+            if fundingSchemeInstance and \
+                    fundingSchemeInstance.funding_body.name.strip() ==\
+                    FUNDING_BODY_NECTAR:
+                status_code = REQUEST_STATUS_SUBMITTED
+            return RequestStatus.objects.get(code=status_code)
+
+        move_to_extend_status_codes = [
+            REQUEST_STATUS_UPDATE_OR_EXTEND,
+            REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED,
+            REQUEST_STATUS_PROVISIONED]
+        if cramsActionState.is_clone_action:
+            status_code = existingRequestInstance.request_status.code
+        elif (cramsActionState.override_data and
+                'request_status' in cramsActionState.override_data):
+            status_code = cramsActionState.override_data['request_status']
+        elif (existingRequestInstance.request_status.code ==
+                REQUEST_STATUS_NEW or
+                existingRequestInstance.request_status.code ==
+                REQUEST_STATUS_DECLINED):
+            status_code = REQUEST_STATUS_SUBMITTED
+        elif (existingRequestInstance.request_status.code in
+                move_to_extend_status_codes):
+            status_code = REQUEST_STATUS_UPDATE_OR_EXTEND
+        else:
+            status_code = existingRequestInstance.request_status.code
+
+        return RequestStatus.objects.get(code=status_code)
+
+    def send_notification(self, alloc_req):
+        """send notification.
+
+        :param alloc_req:
+        """
+        try:
+            sender = settings.EMAIL_SENDER
+            desc = alloc_req.project.description
+            subject = 'Allocation request - ' + desc
+            tpl_name = 'mail_tpl/notification.html'
+            funding_body_email = alloc_req.funding_scheme.funding_body.email
+            recipient_list = [funding_body_email]
+            mail_sender.send_notification(
+                sender=sender,
+                subject=subject,
+                mail_content=alloc_req,
+                template_name=tpl_name,
+                recipient_list=recipient_list,
+                cc_list=None,
+                bcc_list=None,
+                reply_to=None)
+        except Exception:
+            LOG.error('Could not send notification email for allocation {}.'
+                      .format(desc))
+            if settings.DEBUG:
+                raise
+
+
+class ReadOnlyCramsRequestSerializer(CramsRequestSerializer):
+    """class ReadOnlyCramsRequestSerializer."""
+
+    def create(self, validated_data):
+        """create.
+
+        :param validated_data:
+        """
+        raise ParseError('Create not allowed ')
+
+    def update(self, instance, validated_data):
+        """update.
+
+        :param instance:
+        :param validated_data:
+        """
+        raise ParseError('Update not allowed ')

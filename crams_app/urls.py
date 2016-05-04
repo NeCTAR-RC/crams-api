@@ -14,9 +14,11 @@ urlpatterns = [
     url(r'^$', auth_views.login),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/login/$', auth_views.login),
-    url(r'^api/', include('api.v1.urls')),
     url(r'^nectar_token_auth', nectar_token_auth_view),
     url(r'^json_token_auth', provision_auth_token_view),
+    # API Versions
+    url(r'^v1/api/', include('api.v1.urls', namespace='v1')),
+    url(r'^v2/api/', include('api.v2.urls', namespace='v2')),
 ]
 
 if settings.DEBUG:
