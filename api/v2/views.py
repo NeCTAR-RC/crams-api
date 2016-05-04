@@ -1,7 +1,7 @@
 __author__ = 'rafi m feroze'  #'mmohamed'
 
-from rest_framework.response import Response
+from django.http import HttpResponse
 
 
 def not_implemented(request):
-    return Response('<H3>Not implemented</H3>')
+    return HttpResponse('<H3>Not implemented</H3>')
