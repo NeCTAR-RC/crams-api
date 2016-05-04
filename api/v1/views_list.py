@@ -5,17 +5,17 @@
 from functools import reduce
 from json import loads as json_loads
 
+from api.v1.serializers.requestSerializers import RequestHistorySerializer
 from django.db.models import Q
+from rest_condition import And, Or  # ,ConditionalPermission, C, Not
 from rest_framework import viewsets, permissions, generics
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
-from rest_condition import And, Or  # ,ConditionalPermission, C, Not
 
-from crams.models import Request, FundingBody
 from crams.DBConstants import APPROVER_APPEND_STR
-from api.serializers.requestSerializers import RequestHistorySerializer
+from crams.models import Request, FundingBody
 from crams.permissions import IsRequestApprover, IsProjectContact
-from api.utils import get_user_role_prefix_list
+from api.v1.utils import get_user_role_prefix_list
 
 __author__ = 'rafi m feroze'
 

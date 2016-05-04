@@ -8,17 +8,17 @@ from rest_framework import routers
 # from rest_framework.authtoken import views
 from crams.views import debug_add_approver_role, debug_add_provisioner_role
 
-from api.views import RequestViewSet, ContactViewSet, ContactDetail, \
+from api.v1.views import RequestViewSet, ContactViewSet, ContactDetail, \
     ProjectViewSet, ApproveRequestViewSet, DeclineRequestViewSet, \
     SearchContact, ProvisionRequestViewSet, ProvisionProjectViewSet, \
     UpdateProvisionProjectViewSet
 
-from api.auth import CramsLoginAuthToken
+from api.v1.auth import CramsLoginAuthToken
 
-from api.views_list import CurrentUserApproverRoleList, \
+from api.v1.views_list import CurrentUserApproverRoleList, \
     RequestHistoryViewSet, CurrentUserRolesView
-from api import lookup, auth
-from api.projectRequestListAPI import ApproverReviewerRequestListView, \
+from v1 import lookup, auth
+from api.v1.projectRequestListAPI import ApproverReviewerRequestListView, \
     UserProjectListView, UserProjectRequestListView, \
     FundingBodyAllocationsCounter
 

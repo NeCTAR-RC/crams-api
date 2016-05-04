@@ -5,38 +5,37 @@
 # import pprint
 from json import dumps as json_dumps, loads as json_loads
 
-from rest_framework import viewsets, generics, mixins
-from rest_framework import permissions, filters
-from rest_framework.response import Response
-from rest_condition import And, Or  # ,ConditionalPermission, C, Not
-from django.db.models import Q
-from django.http import JsonResponse
-
+from api.v1.serializers.adminSerializers import \
+    ApproveRequestModelSerializer, DeclineRequestModelSerializer, \
+    ADMIN_ENABLE_REQUEST_STATUS
+from api.v1.serializers.projectSerializers import ProjectSerializer, \
+    ContactSerializer, ContactRestrictedFieldSerializer
+from api.v1.serializers.provisionSerializers import \
+    ProvisionRequestSerializer, ProvisionProjectSerializer, \
+    UpdateProvisionProjectSerializer, PROVISION_ENABLE_REQUEST_STATUS
+from api.v1.serializers.requestSerializers import CramsRequestSerializer
 from django.core.exceptions import PermissionDenied
-from rest_framework.exceptions import NotFound, AuthenticationFailed
+from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from keystoneclient.exceptions import ClientException
+from rest_condition import And, Or  # ,ConditionalPermission, C, Not
+from rest_framework import permissions, filters
+from rest_framework import viewsets, generics, mixins
+from rest_framework.exceptions import NotFound, AuthenticationFailed
+from rest_framework.response import Response
 
 from account.models import User
-from crams_app.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
 from crams.DBConstants import CRAMS_NECTAR_APPROVER_ROLE, NECTARDB_APPROVER, \
     APPROVER_APPEND_STR
 from crams.dbUtils import fetch_active_provider_object_for_user
-from api.utils import get_keystone_admin_client
 from crams.models import Project, Request, Contact, Provider, CramsToken, \
     UserEvents, ProvisionDetails
-from api.serializers.requestSerializers import CramsRequestSerializer
-from api.serializers.projectSerializers import ProjectSerializer, \
-    ContactSerializer, ContactRestrictedFieldSerializer
 from crams.permissions import IsRequestApprover, IsProjectContact, \
     IsActiveProvider
-from api.serializers.adminSerializers import \
-    ApproveRequestModelSerializer, DeclineRequestModelSerializer, \
-    ADMIN_ENABLE_REQUEST_STATUS
-from api.serializers.provisionSerializers import \
-    ProvisionRequestSerializer, ProvisionProjectSerializer, \
-    UpdateProvisionProjectSerializer, PROVISION_ENABLE_REQUEST_STATUS
+from crams_app.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
+from api.v1.utils import get_keystone_admin_client
 
 __author__ = 'rafi m feroze'
 
