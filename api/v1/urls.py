@@ -17,7 +17,7 @@ from api.v1.auth import CramsLoginAuthToken
 
 from api.v1.views_list import CurrentUserApproverRoleList, \
     RequestHistoryViewSet, CurrentUserRolesView
-from v1 import lookup, auth
+from api.v1 import lookup, auth
 from api.v1.projectRequestListAPI import ApproverReviewerRequestListView, \
     UserProjectListView, UserProjectRequestListView, \
     FundingBodyAllocationsCounter
