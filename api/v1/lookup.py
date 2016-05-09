@@ -111,12 +111,8 @@ def nectar_storage_product(request):
     :param request:
     :return:
     """
-    searchKey = request.query_params.get('fb', None)
-    if not searchKey:
-        searchKey = 'NeCTAR'
-
     nectar_sps = StorageProduct.objects.filter(
-        funding_body__name__iexact=searchKey.lower()).order_by('id')
+        funding_body__name='NeCTAR').order_by('id')
 
     sp_list = []
     for sp in nectar_sps:
