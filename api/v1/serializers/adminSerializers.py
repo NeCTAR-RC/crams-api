@@ -8,6 +8,8 @@ from api.v1.serializers.utilitySerializers import UpdateOnlyModelSerializer
 from api.v1.serializers.utils import FieldsRequiredValidator
 from api.v1.serializers.utils import validate_dry_principle
 from api.v1.serializers.lookupSerializers import FundingBodySerializer
+
+from rest_framework import serializers
 from rest_framework.exceptions import ParseError
 from rest_framework.serializers import SlugRelatedField
 
@@ -132,7 +134,7 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
     storage_requests = StorageRequestSerializer(
         many=True, read_only=False, validators=[
             ApproveStorReqValid()])
-    funding_body = FundingBodySerializer(many=False, read_only=True)
+    funding_body = serializers.SerializerMethodField(method_name='get_fbody')
 
     class Meta(object):
         """meta for class ApproveRequestModelSerializer."""
@@ -150,6 +152,10 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
             'project')
         read_only_fields = ('funding_body', 'request_status', 'start_date',
                             'end_date', 'project')
+
+    def get_fbody(self, request_obj):
+        fb = request_obj.funding_scheme.funding_body
+        return FundingBodySerializer(fb).data
 
     def validate(self, data):
         """validate.
