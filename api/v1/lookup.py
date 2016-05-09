@@ -105,13 +105,12 @@ def for_codes(request):
 
 # noinspection PyUnusedLocal
 @api_view(http_method_names=['GET'])
-def nectar_storage_product(request):
+def fb_storage_product(request, searchKey):
     """
         get Storage Product Objects as Dict
     :param request:
     :return:
     """
-    searchKey = request.query_params.get('fb', None)
     if not searchKey:
         searchKey = 'NeCTAR'
 
@@ -124,21 +123,21 @@ def nectar_storage_product(request):
     return Response(sp_list)
 
 
-# noinspection PyUnusedLocal
-@api_view(http_method_names=['GET'])
-def vicnode_storage_product(request):
-    """
-        Vicnode Storage Product
-    :param request:
-    :return:
-    """
-    vicnode_sps = StorageProduct.objects.filter(
-        funding_body__name='VicNode').order_by('id')
-
-    sp_list = []
-    for sp in vicnode_sps:
-        sp_list.append({'id': sp.id, 'name': sp.name})
-    return Response(sp_list)
+# # noinspection PyUnusedLocal
+# @api_view(http_method_names=['GET'])
+# def vicnode_storage_product(request):
+#     """
+#         Vicnode Storage Product
+#     :param request:
+#     :return:
+#     """
+#     vicnode_sps = StorageProduct.objects.filter(
+#         funding_body__name='VicNode').order_by('id')
+#
+#     sp_list = []
+#     for sp in vicnode_sps:
+#         sp_list.append({'id': sp.id, 'name': sp.name})
+#     return Response(sp_list)
 
 
 # noinspection PyUnusedLocal
