@@ -13,6 +13,7 @@ from rest_framework.decorators import api_view
 
 from crams.models import AllocationHome, Duration, GrantType, \
     FORCode, StorageProduct, Contact
+from api.v1.serializers.lookupSerializers import StorageProductSerializer
 
 __author__ = 'simonyu, rafi m feroze'
 
@@ -119,7 +120,7 @@ def fb_storage_product(request, searchKey):
 
     sp_list = []
     for sp in nectar_sps:
-        sp_list.append({'id': sp.id, 'name': sp.name})
+        sp_list.append(StorageProductSerializer(sp).data)
     return Response(sp_list)
 
 
