@@ -1,6 +1,6 @@
-__author__ = 'rafi m feroze'  #'mmohamed'
-
 from django.http import HttpResponse
+
+__author__ = 'rafi m feroze'  # 'mmohamed'
 
 
 def not_implemented(request):
