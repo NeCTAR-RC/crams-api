@@ -119,7 +119,7 @@ class ApproveStorReqValid(FieldsRequiredValidator):
 
         :return:
         """
-        return [] # issue 822/ task 823  'quota', {'storage_product': ['id']}]
+        return []  # issue 822/ task 823  'quota', {'storage_product': ['id']}]
 
 
 class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):

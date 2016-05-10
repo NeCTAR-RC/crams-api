@@ -55,7 +55,7 @@ urlpatterns = [
     url(r'durations', lookup.durations),
     url(r'grant_types', lookup.grant_types),
     url(r'for_codes', lookup.for_codes),
-    #Storage Products
+    # Storage Products
     url(r'nectar_sps', lookup.fb_storage_product, {'searchKey': 'NeCTAR'}),
     url(r'vicnode_sps', lookup.fb_storage_product, {'searchKey': 'VicNode'}),
 
