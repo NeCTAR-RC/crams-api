@@ -11,7 +11,7 @@ from crams.models import Request, Project, ProjectContact, Contact, FundingBody,
 
 __author__ = 'rafi m feroze'  # 'mmohamed'
 
-# from account.models import User
+# from crams.account.models import User
 # admin.site.register(User)
 
 

@@ -3,7 +3,7 @@
 Crams Models
 """
 from django.db import models
-from account.models import User
+from crams.account.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework.authtoken.models import Token
 

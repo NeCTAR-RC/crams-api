@@ -5,7 +5,7 @@ Email Tests
 
 from django.core import mail
 from django.test import TestCase
-from account.models import User
+from crams.account.models import User
 
 from crams.models import Project, Request, RequestStatus
 from crams.mail import mail_sender

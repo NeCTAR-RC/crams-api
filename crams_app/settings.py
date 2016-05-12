@@ -45,9 +45,9 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'crams_app',
-    'account',
+    'crams.account',
     'crams',
-    'api',
+    'crams.api',
     # 'ttags',
     # 'csvimport',
 )
