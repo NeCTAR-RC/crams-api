@@ -1,0 +1,30 @@
+#!/bin/sh -e
+
+if [ "$1" = "configure" ]; then
+    if ! getent group crams > /dev/null 2>&1; then
+        addgroup --system crams >/dev/null
+    fi
+
+    if ! getent passwd crams > /dev/null 2>&1; then
+        adduser --system --home /var/lib/crams --ingroup crams --no-create-home --shell /bin/false crams
+    fi
+
+    if [ "$(id -gn crams)"  = "nogroup" ]; then
+      usermod -g crams crams
+    fi
+
+    if [ -z "$2" ]; then
+      # New install - blanket permissions
+      find /var/lib/crams/ -o -exec chown crams:crams {} \;
+    fi	
+
+    chown -R crams:crams /etc/crams
+    chown -R crams:adm /var/log/crams
+
+    chmod 0640 /etc/crams/crams.conf
+    chmod 0750 /etc/crams
+    chmod 0750 /var/log/crams
+
+fi
+
+#DEBHELPER#
