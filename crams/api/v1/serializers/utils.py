@@ -5,7 +5,7 @@ from abc import ABCMeta
 
 from rest_framework.serializers import ValidationError
 
-from crams_app.django_utils import get_model_field_value
+from crams.django_utils import get_model_field_value
 from crams.api.v1.APIConstants import CLONE
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 

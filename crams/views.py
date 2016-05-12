@@ -8,7 +8,7 @@ from django.http import HttpResponse
 
 from crams.DBConstants import APPROVER_APPEND_STR, CRAMS_PROVISIONER_ROLE
 from crams.models import Provider
-from crams_app.settings import DEBUG_APPROVERS, APP_ENV
+from crams.settings import DEBUG_APPROVERS, APP_ENV
 # Create your views here.
 
 

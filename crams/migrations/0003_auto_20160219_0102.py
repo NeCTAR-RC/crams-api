@@ -5,7 +5,7 @@ from django.db import models, migrations
 
 
 def load_forcode_data_from_sql():
-    from crams_app.settings import BASE_DIR
+    from crams.settings import BASE_DIR
 
     import os
 

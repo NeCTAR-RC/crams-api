@@ -34,7 +34,7 @@ from crams.models import Project, Request, Contact, Provider, CramsToken, \
     UserEvents, ProvisionDetails
 from crams.permissions import IsRequestApprover, IsProjectContact, \
     IsActiveProvider
-from crams_app.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
+from crams.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
 from crams.api.v1.utils import get_keystone_admin_client
 
 __author__ = 'rafi m feroze'

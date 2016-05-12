@@ -2,16 +2,18 @@
 """
     Test setting.py
 """
-from crams_app.settings import *
+from crams.settings import *
 
 __author__ = 'simonyu, rafi m feroze'
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join('crams_app', 'crams_test.db'),
+        'NAME': os.path.join('tests', 'crams_test.db'),
     }
 }
+
+SECRET_KEY = 'secret'
 
 # Set the djangorestframework testing
 REST_FRAMEWORK.update({
