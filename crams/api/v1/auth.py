@@ -12,7 +12,7 @@ from crams.account.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from crams.settings import CRAMS_RC_SHIB_URL_PART
+from django.conf import settings
 
 __author__ = 'rafi m feroze'   # 'mmohamed'
 
@@ -51,7 +51,7 @@ def redirect_to_rc_shib(request):
     """
     try:
         auth_path = request.build_absolute_uri('/nectar_token_auth')
-        ret_path = CRAMS_RC_SHIB_URL_PART + auth_path
+        ret_path = settings.CRAMS_RC_SHIB_URL_PART + auth_path
 
         # try:
         #    ks_login_url = request.query_params.get('ks_login_url', None)

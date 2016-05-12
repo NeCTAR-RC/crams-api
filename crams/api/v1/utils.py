@@ -10,8 +10,8 @@ from rest_framework.exceptions import ParseError
 from itertools import chain, combinations
 
 from keystoneclient.v3 import client as ks_client_v3
-from crams.settings import KS_PASSWORD, KS_PROJECT, KS_USERNAME, \
-    KEYSTONE_AUTH_URL
+from django.conf import settings
+
 
 __author__ = 'rafi m feroze'  # 'mmohamed'
 
@@ -22,10 +22,10 @@ def get_keystone_admin_client():
    get_keystone_admin_client
     :return:
     """
-    return ks_client_v3.Client(username=KS_USERNAME,
-                               password=KS_PASSWORD,
-                               project_name=KS_PROJECT,
-                               auth_url=KEYSTONE_AUTH_URL)
+    return ks_client_v3.Client(username=settings.KS_USERNAME,
+                               password=settings.KS_PASSWORD,
+                               project_name=settings.KS_PROJECT,
+                               auth_url=settings.KEYSTONE_AUTH_URL)
 
 
 def get_user_role_prefix_list(role_type_suffix_list, request):
