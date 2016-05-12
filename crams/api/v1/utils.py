@@ -10,7 +10,7 @@ from rest_framework.exceptions import ParseError
 from itertools import chain, combinations
 
 from keystoneclient.v3 import client as ks_client_v3
-from crams_app.settings import KS_PASSWORD, KS_PROJECT, KS_USERNAME, \
+from crams.settings import KS_PASSWORD, KS_PROJECT, KS_USERNAME, \
     KEYSTONE_AUTH_URL
 
 __author__ = 'rafi m feroze'  # 'mmohamed'

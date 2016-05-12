@@ -17,8 +17,8 @@ urlpatterns = [
     url(r'^nectar_token_auth', nectar_token_auth_view),
     url(r'^json_token_auth', provision_auth_token_view),
     # API Versions
-    url(r'^api/v1/', include('api.v1.urls', namespace='v1')),
-    url(r'^api/v2/', include('api.v2.urls', namespace='v2')),
+    url(r'^api/v1/', include('crams.api.v1.urls', namespace='v1')),
+    url(r'^api/v2/', include('crams.api.v2.urls', namespace='v2')),
 ]
 
 if settings.DEBUG:
