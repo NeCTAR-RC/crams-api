@@ -64,7 +64,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'crams_app.urls'
+ROOT_URLCONF = 'crams.urls'
 
 TEMPLATES = [
     {

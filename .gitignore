@@ -9,5 +9,5 @@ coverage.xml
 reports/*
 */.tox/*
 .tox/*
-crams_db.egg-info/*
+crams.egg-info/*
 .DS_Store

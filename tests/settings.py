@@ -2,7 +2,7 @@
 """
     Test setting.py
 """
-from crams_app.settings import *
+from crams.settings import *
 
 __author__ = 'simonyu, rafi m feroze'
 
