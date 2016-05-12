@@ -15,7 +15,7 @@ setup(
     long_description=readme,
     author='Simon Yu, Melvin Luong, Rafi M feroze',
     author_email='xm.yuau@gmail.com, melvin.luong@monash.edu, mohamed.feroze@monash.edu',
-    url='https://github.com/monash-merc/crams-db',
+    url='https://github.com/NeCTAR-RC/crams-api',
     packages=find_packages(exclude=['tests', 'local']),
     include_package_data=True,
     install_requires=[
