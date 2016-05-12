@@ -9,7 +9,7 @@ except ImportError:
 readme = open('README.md').read()
 
 setup(
-    name='crams-db',
+    name='crams',
     version='0.1.0',
     description='crams API',
     long_description=readme,
@@ -69,7 +69,7 @@ setup(
                       ],
     license="GPLv3+",
     zip_safe=False,
-    keywords='monash-merc/crams-db',
+    keywords='crams',
     platforms='Ubuntu16',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

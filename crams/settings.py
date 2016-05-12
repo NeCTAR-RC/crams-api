@@ -18,16 +18,11 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$(p5&qqx4q6z1o)@83u)dp7ez#b$!p9%*d4dccb=1$40@5xbcz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']
-
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,14 +37,14 @@ INSTALLED_APPS = (
     # A Django App that adds CORS (Cross-Origin Resource Sharing) headers to
     # responses.
     'corsheaders',
-    'rest_framework',
-    'rest_framework.authtoken',
-    'crams_app',
     'crams.account',
     'crams',
     'crams.api',
     # 'ttags',
     # 'csvimport',
+    'rest_framework',
+    'rest_framework.authtoken',
+
 )
 
 MIDDLEWARE_CLASSES = (
@@ -64,7 +59,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'crams_app.urls'
+ROOT_URLCONF = 'crams.urls'
 
 TEMPLATES = [
     {
@@ -85,10 +80,8 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'crams_app.wsgi.application'
-
 # Custom User model
-AUTH_USER_MODEL = 'account.User'
+AUTH_USER_MODEL = 'crams.account.User'
 
 # A Django App that adds CORS (Cross-Origin Resource Sharing) headers to
 # responses. CorsMiddleware needs to come before Django's CommonMiddleware
@@ -113,11 +106,11 @@ CORS_ORIGIN_ALLOW_ALL = True
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.',
         # 'vicnode',  # Or path to database file if using sqlite3.
-        'NAME': 'melvin',
-        'USER': 'vn_reporting',
-        'PASSWORD': 'vn_reporting',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
         # Empty for localhost through domain sockets or '127.0.0.1' for
         # localhost through TCP.
         'HOST': '',
@@ -153,19 +146,17 @@ KS_PASSWORD = ''
 KS_PROJECT = ''
 
 # NeCTAR Keystone auth url
-KEYSTONE_AUTH_URL = "https://keystone.test.rc.nectar.org.au:5000/v3/"
+KEYSTONE_AUTH_URL = ""
 
 # CRAMS Frontend Keystone login page
 CRAMS_CLIENT_COOKIE_KEY = 'client_url'
 # Do not remove trailing slash
-NECTAR_CLIENT_URL = 'http://118.138.245.209/#/ks-login/'
-CRAMS_RC_SHIB_URL_PART = \
-    'https://accounts.test.rc.nectar.org.au/rcshibboleth/?return-path='
-# CRAMS_KS_LOGIN_URL = "http://118.138.245.209/app/#/ks-login/"
+NECTAR_CLIENT_URL = ''
+CRAMS_RC_SHIB_URL_PART = 'https://example.org/rcshibboleth/?return-path='
 
 # Default Email setup to console
 # Email notification configuration
-EMAIL_SENDER = 'admin@crams.org.au'
+EMAIL_SENDER = 'admin@example.org'
 
 # Send email to the console by default
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -173,19 +164,15 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 MAILER_EMAIL_BACKEND = EMAIL_BACKEND
 
 # Configure these for outgoing email server
-EMAIL_HOST = 'smtp.monash.edu'
+#EMAIL_HOST = 'localhost'
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
 LANGUAGE_CODE = 'en-au'
-
 TIME_ZONE = 'Australia/Melbourne'
-
 USE_I18N = True
-
 USE_L10N = True
-
 USE_TZ = True
 
 
@@ -204,7 +191,6 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 APPEND_SLASH = False
-
 
 # DEBUG_RELATED
 APP_ENV = None
