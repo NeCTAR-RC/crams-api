@@ -44,7 +44,6 @@ INSTALLED_APPS = (
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
-    'crams_app',
     'crams.account',
     'crams',
     'crams.api',

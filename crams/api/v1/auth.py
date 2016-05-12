@@ -12,7 +12,7 @@ from crams.account.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from crams_app.settings import CRAMS_RC_SHIB_URL_PART
+from crams.settings import CRAMS_RC_SHIB_URL_PART
 
 __author__ = 'rafi m feroze'   # 'mmohamed'
 
