@@ -11,3 +11,6 @@ reports/*
 .tox/*
 crams.egg-info/*
 .DS_Store
+crams.db
+.venv/*
+crams/local/local_settings.py
