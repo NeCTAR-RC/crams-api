@@ -5,18 +5,18 @@ This is a stand-alone WSGI application to manage NeCTAR resource allocation requ
 
 This component's RESTful API is developed using django rest framework (http://www.django-rest-framework.org/)
 
-# License
+Setting up a Dev env
+====================
 
-Copyright 2016 Monash University eResearch
+virtualenv -p python3.5 .venv
+. .venv/bin/activate
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
+pip install -e .
 
-       http://www.apache.org/licenses/LICENSE-2.0
+cp crams/local/local_settings.py.example crams/local/local_settings.py
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+Edit settings
+
+django-admin syncdb
+django-admin runserver
+
