@@ -15,7 +15,7 @@ if [ "$1" = "configure" ]; then
 
     if [ -z "$2" ]; then
       # New install - blanket permissions
-      find /var/lib/crams/ -o -exec chown crams:crams {} \;
+      find /var/lib/crams/ -exec chown crams:crams {} \;
     fi	
 
     chown -R crams:crams /etc/crams
