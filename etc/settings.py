@@ -3,7 +3,7 @@ __author__ = 'simonyu, rafi Feroze'
 # override the database settings
 
 # Use `django-admin generate_secret_key` to set a secret key
-#SECRET_KEY = ''
+# SECRET_KEY = ''
 
 DEBUG = True
 
@@ -13,7 +13,7 @@ ALLOWED_HOSTS = [
 ]
 
 # Set DB settings (if not set will use sqlite)
-#DATABASES = {
+# DATABASES = {
 #    'default': {
 #        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
 #        'NAME': 'crams',                      # Or path to database file if using sqlite3.
@@ -22,7 +22,7 @@ ALLOWED_HOSTS = [
 #        'HOST': '',       # Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
 #        'PORT': '',                # Set to empty string for default.
 #    }
-#}
+# }
 
 STATIC_ROOT = '/usr/share/crams/static/'
 
