@@ -21,7 +21,7 @@ if [ "$1" = "configure" ]; then
     chown -R crams:crams /etc/crams
     chown -R crams:adm /var/log/crams
 
-    chmod 0640 /etc/crams/crams.conf
+    chmod 0640 /etc/crams/settings.py
     chmod 0750 /etc/crams
     chmod 0750 /var/log/crams
 
