@@ -198,4 +198,10 @@ DEBUG_APPROVERS = None
 try:
     from crams.local.local_settings import *
 except ImportError:
-    logging.warning("No local_settings file found.")
+    logging.debug("No local_settings file found.")
+
+# Used for production installs
+try:
+    execfile('/etc/crams/settings.py')
+except IOError:
+    logging.debug("No settings file found at /etc/crams/settings.py.")

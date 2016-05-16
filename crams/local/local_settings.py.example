@@ -3,7 +3,7 @@ __author__ = 'simonyu, rafi Feroze'
 # override the database settings
 
 # Use `django-admin generate_secret_key` to set a secret key
-SECRET_KEY = '#^7t0w+f%vgntv3yts*dbea#%(-4zps)3)kz$4%sed2b0sj50r'
+#SECRET_KEY = ''
 
 DEBUG = True
 
