@@ -1,0 +1,6 @@
+crams/*
+crams.db
+crams.egg-info/*
+tests/*
+.tox/*
+.venv/*
