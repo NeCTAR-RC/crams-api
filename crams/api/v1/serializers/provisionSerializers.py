@@ -434,7 +434,8 @@ class ComputeRequestProvisionSerializer(BaseProvisionMessageSerializer):
                 provision_details.status = ProvisionDetails.RESEND_LATER
             else:
                 provision_details.status = ProvisionDetails.FAILED
-            provision_details.message = validated_data.get('message', None)
+
+        provision_details.message = validated_data.get('message', None)
 
         provision_details.save()
         validated_data['update_success'] = True
@@ -527,7 +528,7 @@ class StorageRequestProvisionSerializer(BaseProvisionMessageSerializer):
             else:
                 provision_details.status = ProvisionDetails.FAILED
 
-            provision_details.message = validated_data.get('message', None)
+        provision_details.message = validated_data.get('message', None)
 
         provision_details.save()
         validated_data['update_success'] = True

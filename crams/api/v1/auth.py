@@ -12,7 +12,8 @@ from crams.account.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
-from django.conf import settings
+from crams.settings import CRAMS_RC_SHIB_URL_PART
+from crams.settings import CRAMS_CLIENT_COOKIE_KEY
 
 __author__ = 'rafi m feroze'   # 'mmohamed'
 
@@ -51,17 +52,19 @@ def redirect_to_rc_shib(request):
     """
     try:
         auth_path = request.build_absolute_uri('/nectar_token_auth')
-        ret_path = settings.CRAMS_RC_SHIB_URL_PART + auth_path
+        ret_path = CRAMS_RC_SHIB_URL_PART + auth_path
 
-        # try:
-        #    ks_login_url = request.query_params.get('ks_login_url', None)
-        # except Exception:
-        #    ks_login_url = request.META.get('HTTP_REFERER') + '#/ks_login'
+        try:
+            ks_login_url = request.query_params.get('ks_login_url', None)
+            # Temp Fix, until we figure out why #/ks_login is not returned
+            ks_login_url = ks_login_url + '#/ks_login'
+        except Exception:
+            ks_login_url = request.META.get('HTTP_REFERER') + '#/ks_login'
 
         response = HttpResponseRedirect(ret_path)
-        # response.set_cookie(CRAMS_CLIENT_COOKIE_KEY, ks_login_url)
-        # response.set_cookie('redirect', retPath)
-        # response.set_cookie('authpath', authPath)
+        response.set_cookie(CRAMS_CLIENT_COOKIE_KEY, ks_login_url)
+        response.set_cookie('redirect', ret_path)
+        response.set_cookie('authpath', auth_path)
         return response
     except Exception as e:
         return HttpResponse(str(e))
