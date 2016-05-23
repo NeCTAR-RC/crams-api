@@ -121,7 +121,6 @@ def nectar_token_auth_view(request):
     if not client_url:
         print('No Client URL cookie, set default')
         client_url = NECTAR_CLIENT_URL
-    print('client_url', NECTAR_CLIENT_URL)
 
     crams_token = auth_token_common(rawTokenExtractFn, request)
 
