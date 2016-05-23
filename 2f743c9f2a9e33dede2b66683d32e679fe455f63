@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bad4c104_c8e591a9",
+        "filename": "crams/api/v1/auth.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-05-23T23:24:43Z",
+      "side": 1,
+      "message": "why add all this commented code?",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 37
+      },
+      "revId": "2f743c9f2a9e33dede2b66683d32e679fe455f63",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bad4c104_e8e2559e",
+        "filename": "crams/api/v1/views.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-05-23T23:24:43Z",
+      "side": 1,
+      "message": "Another print statement here too",
+      "range": {
+        "startLine": 122,
+        "startChar": 8,
+        "endLine": 122,
+        "endChar": 50
+      },
+      "revId": "2f743c9f2a9e33dede2b66683d32e679fe455f63",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
