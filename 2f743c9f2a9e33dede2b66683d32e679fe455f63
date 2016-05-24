@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bad4c104_c8811191",
+        "filename": "crams/api/v1/auth.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 68,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-05-24T03:09:04Z",
+      "side": 1,
+      "message": "I will remove it, \nUsually, we try not to lose old code until we are confident new one works",
+      "parentUuid": "bad4c104_c8e591a9",
+      "range": {
+        "startLine": 47,
+        "startChar": 0,
+        "endLine": 68,
+        "endChar": 37
+      },
+      "revId": "2f743c9f2a9e33dede2b66683d32e679fe455f63",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bad4c104_e8e2559e",
         "filename": "crams/api/v1/views.py",
         "patchSetId": 4
@@ -36,6 +60,30 @@
       "writtenOn": "2016-05-23T23:24:43Z",
       "side": 1,
       "message": "Another print statement here too",
+      "range": {
+        "startLine": 122,
+        "startChar": 8,
+        "endLine": 122,
+        "endChar": 50
+      },
+      "revId": "2f743c9f2a9e33dede2b66683d32e679fe455f63",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bad4c104_e87ed5ad",
+        "filename": "crams/api/v1/views.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 122,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-05-24T03:09:04Z",
+      "side": 1,
+      "message": "We need this for time being until.\nWill remove once pre-prod integration with front-end is completed successfully",
+      "parentUuid": "bad4c104_e8e2559e",
       "range": {
         "startLine": 122,
         "startChar": 8,
