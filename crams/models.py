@@ -2,12 +2,13 @@
 """
 Crams Models
 """
+import datetime
+
 from django.db import models
-from crams.account.models import User
 from django.core.validators import MinValueValidator, MaxValueValidator
 from rest_framework.authtoken.models import Token
 
-import datetime
+from crams.account.models import User
 
 
 class CramsToken(Token):
@@ -16,6 +17,8 @@ class CramsToken(Token):
     """
     ks_roles = models.TextField(null=True, blank=True)
 
+    class Meta:
+        app_label='crams'
 
 class CramsCommon(models.Model):
     """
@@ -36,6 +39,7 @@ class CramsCommon(models.Model):
 
     class Meta:
         abstract = True
+        app_label='crams'
 
 
 class UserEvents(CramsCommon):
@@ -43,6 +47,9 @@ class UserEvents(CramsCommon):
     UserEvents Model
     """
     event_message = models.TextField()
+
+    class Meta:
+        app_label='crams'
 
 
 class ContactRole(models.Model):
@@ -52,6 +59,10 @@ class ContactRole(models.Model):
     name = models.CharField(
         max_length=100, unique=True
     )
+
+    class Meta:
+        app_label='crams'
+
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -82,6 +93,9 @@ class Contact(models.Model):
     organisation = models.CharField(
         max_length=200, blank=True, null=True
     )
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{0} {1} {2} {3}'.format(
@@ -121,6 +135,9 @@ class Provider(CramsCommon):
             return 'inActive'
         return 'current'
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}'.format(self.name)
 
@@ -153,6 +170,9 @@ class ProvisionDetails(CramsCommon):
     provider = models.ForeignKey(Provider, related_name='provisioned_requests')
     message = models.TextField(blank=True, null=True)
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}. {} : {}'.format(self.id, self.status, self.message)
 
@@ -166,6 +186,7 @@ class ProvisionableItem(models.Model):
 
     class Meta:
         abstract = True
+        app_label='crams'
 
     def get_provider(self):
         """
@@ -184,6 +205,9 @@ class ProjectIDSystem(models.Model):
         max_length=100
     )
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}'.format(self.system)
 
@@ -197,6 +221,9 @@ class FundingBody(models.Model):
     )
 
     email = models.EmailField()
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{} - {}'.format(self.name, self.email)
@@ -212,6 +239,9 @@ class FundingScheme(models.Model):
 
     funding_body = models.ForeignKey(
         FundingBody, related_name='funding_schemes')
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{} {}'.format(self.funding_body.name, self.funding_scheme)
@@ -239,6 +269,10 @@ class Project(CramsCommon):
         max_length=1024
     )
 
+    class Meta:
+        app_label='crams'
+
+
     def __str__(self):
         if self.parent_project:
             return '{}.{} - (Parent) {}'.format(self.id,
@@ -257,6 +291,9 @@ class ProjectContact(models.Model):
     contact_role = models.ForeignKey(
         ContactRole, related_name='project_contacts')
 
+    class Meta:
+        app_label='crams'
+
 
 class ProjectProvisionDetails(models.Model):
     """
@@ -266,6 +303,9 @@ class ProjectProvisionDetails(models.Model):
         Project, related_name='linked_provisiondetails')
     provision_details = models.ForeignKey(
         ProvisionDetails, related_name='linked_projects')
+
+    class Meta:
+        app_label='crams'
 
 
 class ProjectID(models.Model):
@@ -287,6 +327,9 @@ class ProjectID(models.Model):
             return self.provision_details.provider
         return None
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{} {}'.format(self.identifier, self.project)
 
@@ -302,6 +345,9 @@ class RequestStatus(models.Model):
     status = models.CharField(
         max_length=100
     )
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{} {} {}'.format(self.id, self.code, self.status)
@@ -332,6 +378,9 @@ class Request(CramsCommon):
         max_length=1024
     )
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}.{}'.format(self.id, self.project.title)
 
@@ -348,6 +397,7 @@ class ProductCommon(models.Model):
 
     class Meta:
         abstract = True
+        app_label='crams'
 
     def __str__(self):
         return '{} {}'.format(self.id, self.name)
@@ -407,6 +457,9 @@ class ComputeRequest(ProvisionableItem):
         """
         return self.compute_product.provider
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}/{}: {} {} {}'.format(self.id,
                                         self.request.id,
@@ -427,6 +480,9 @@ class FORCode(models.Model):
         max_length=200
     )
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{} {}'.format(self.code, self.description)
 
@@ -442,6 +498,9 @@ class Domain(models.Model):
     project = models.ForeignKey(Project, related_name='domains')
 
     for_code = models.ForeignKey(FORCode, related_name='domains')
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{} {} {}'.format(
@@ -460,6 +519,9 @@ class SupportedInstitution(models.Model):
 
     project = models.ForeignKey(Project, related_name='institutions')
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}'.format(self.institution)
 
@@ -474,6 +536,9 @@ class Publication(models.Model):
 
     project = models.ForeignKey(Project, related_name='publications')
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}'.format(self.reference)
 
@@ -485,6 +550,9 @@ class GrantType(models.Model):
     description = models.CharField(
         max_length=200
     )
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{} {}'.format(self.id, self.description)
@@ -522,6 +590,9 @@ class Grant(models.Model):
         default=0.0
     )
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{} {} {}'.format(
             self.grant_type,
@@ -537,6 +608,9 @@ class StorageType(models.Model):
         max_length=100
     )
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}'.format(self.storage_type)
 
@@ -547,6 +621,9 @@ class Zone(models.Model):
     """
     name = models.CharField(max_length=64)
     description = models.TextField()
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{}'.format(self.name)
@@ -561,6 +638,9 @@ class StorageProduct(ProductCommon):
 
     storage_type = models.ForeignKey(
         StorageType, related_name='storage_products')
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{} - {}'.format(self.name, self.provider)
@@ -591,6 +671,9 @@ class StorageRequest(ProvisionableItem):
         """
         return self.storage_product.provider
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{}/{}: {} {}'.format(self.id,
                                      self.request.id,
@@ -614,6 +697,9 @@ class Question(models.Model):
         max_length=200
     )
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{} {} {}'.format(self.key, self.question_type, self.question)
 
@@ -633,6 +719,9 @@ class ComputeRequestQuestionResponse(models.Model):
     compute_request = models.ForeignKey(
         ComputeRequest, related_name='compute_question_responses')
 
+    class Meta:
+        app_label='crams'
+
 
 class StorageRequestQuestionResponse(models.Model):
     """
@@ -648,6 +737,9 @@ class StorageRequestQuestionResponse(models.Model):
 
     storage_request = models.ForeignKey(
         StorageRequest, related_name='storage_question_responses')
+
+    class Meta:
+        app_label='crams'
 
 
 class ProjectQuestionResponse(models.Model):
@@ -666,6 +758,9 @@ class ProjectQuestionResponse(models.Model):
     project = models.ForeignKey(
         Project, related_name='project_question_responses')
 
+    class Meta:
+        app_label='crams'
+
 
 class RequestQuestionResponse(models.Model):
     """
@@ -682,6 +777,9 @@ class RequestQuestionResponse(models.Model):
     request = models.ForeignKey(
         Request, related_name='request_question_responses')
 
+    class Meta:
+        app_label='crams'
+
 
 class Duration(models.Model):
     """
@@ -694,6 +792,9 @@ class Duration(models.Model):
     duration_label = models.CharField(
         max_length=50
     )
+
+    class Meta:
+        app_label='crams'
 
     def __str__(self):
         return '{} {}'.format(self.duration, self.duration_label)
@@ -710,5 +811,20 @@ class AllocationHome(models.Model):
         max_length=200
     )
 
+    class Meta:
+        app_label='crams'
+
     def __str__(self):
         return '{} {} {}'.format(self.id, self.code, self.description)
+
+
+class InternalMigrationData(models.Model):
+    system = models.ForeignKey(ProjectIDSystem)
+    project = models.ForeignKey(Project)
+    request = models.ForeignKey(Request, null=True, blank=True)
+    contact = models.ForeignKey(Contact, null=True, blank=True)
+    data = models.TextField()
+
+    class Meta:
+        app_label = 'crams'
+
