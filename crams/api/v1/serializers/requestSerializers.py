@@ -38,7 +38,8 @@ from crams.api.v1.serializers.lookupSerializers import \
     StorageProductZoneOnlySerializer
 from crams.api.v1.serializers.utilitySerializers import \
     AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
-from crams.api.v1.serializers.utilitySerializers import ActionStateModelSerializer
+from crams.api.v1.serializers.utilitySerializers import \
+     ActionStateModelSerializer
 from crams.api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
 from crams.api.v1.dataUtils.lookupData import get_compute_product_obj
 from crams.api.v1.dataUtils.lookupData import get_storage_product_obj

@@ -1,5 +1,6 @@
 from rcportal_migration.settings import CRAMS_DB
 
+
 class AccountRouter(object):
     """
     A router to control all database operations on models in the
@@ -27,7 +28,7 @@ class AccountRouter(object):
         """
         if obj1._meta.app_label == 'account' or \
            obj2._meta.app_label == 'account':
-           return True
+            return True
         return None
 
     def allow_migrate(self, db, app_label, model=None, **hints):

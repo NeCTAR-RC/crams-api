@@ -1,10 +1,13 @@
 # coding=utf-8
 """Admin Serializers."""
-from crams.api.v1.serializers.requestSerializers import ComputeRequestSerializer
+from crams.api.v1.serializers.requestSerializers import \
+     ComputeRequestSerializer
 from crams.api.v1.serializers.requestSerializers import CramsRequestSerializer
-from crams.api.v1.serializers.requestSerializers import StorageRequestSerializer
+from crams.api.v1.serializers.requestSerializers import \
+     StorageRequestSerializer
 from crams.api.v1.serializers.utilitySerializers import ProjectAdminField
-from crams.api.v1.serializers.utilitySerializers import UpdateOnlyModelSerializer
+from crams.api.v1.serializers.utilitySerializers import \
+     UpdateOnlyModelSerializer
 from crams.api.v1.serializers.utils import FieldsRequiredValidator
 from crams.api.v1.serializers.utils import validate_dry_principle
 from crams.api.v1.serializers.lookupSerializers import FundingBodySerializer

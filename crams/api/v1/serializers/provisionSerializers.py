@@ -5,12 +5,14 @@ import pprint
 from crams.api.v1.dataUtils.lookupData import get_compute_product_obj
 from crams.api.v1.dataUtils.lookupData import get_storage_product_obj
 from crams.api.v1.serializers.projectSerializers import ProjectIDSerializer
-from crams.api.v1.serializers.projectSerializers import ReadOnlyProjectSerializer
+from crams.api.v1.serializers.projectSerializers import \
+     ReadOnlyProjectSerializer
 from crams.api.v1.serializers.requestSerializers import CramsRequestSerializer
 from crams.api.v1.serializers.requestSerializers import \
     ReadOnlyCramsRequestSerializer
 from crams.api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
-from crams.api.v1.serializers.utilitySerializers import ProvisionDetailsSerializer
+from crams.api.v1.serializers.utilitySerializers import \
+     ProvisionDetailsSerializer
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import serializers

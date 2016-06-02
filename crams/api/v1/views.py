@@ -239,8 +239,9 @@ class RequestViewSet(viewsets.ModelViewSet):
                 requests__id=request_id).distinct()
         else:
             # noinspection PyPep8
+            email = self.request.user.email
             queryset = Request.objects.filter(
-                project__project_contacts__contact__email=self.request.user.email,
+                project__project_contacts__contact__email=email,
                 parent_request__isnull=True).distinct()
         serializer = CramsRequestSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -390,13 +391,13 @@ class ProvisionProjectViewSet(viewsets.ReadOnlyModelViewSet):
         if not valid_provider:
             raise NotFound('User {} does not have an active provider Role'.
                            format(repr(crams_user)))
+        vp = valid_provider
+        provider_filter = \
+            Q(requests__compute_requests__compute_product__provider=vp) | \
+            Q(requests__storage_requests__storage_product__provider=vp)
         # noinspection PyPep8
-        provider_filter = Q(
-            requests__compute_requests__compute_product__provider=valid_provider) | Q(
-            requests__storage_requests__storage_product__provider=valid_provider)
-        # noinspection PyPep8
-        exclude_filter = Q(
-            linked_provisiondetails__provision_details__status=ProvisionDetails.FAILED)
+        exclude_filter = \
+            Q(linked_provisiondetails__provision_details__status=ProvisionDetails.FAILED)  # noqa
         return queryset.filter(provider_filter).\
             exclude(exclude_filter).all().distinct()
 

@@ -6,9 +6,12 @@ import datetime
 from collections import OrderedDict
 
 from crams.api.v1.serializers.lookupSerializers import UserSerializer
-from crams.api.v1.serializers.requestSerializers import ComputeRequestSerializer
-from crams.api.v1.serializers.requestSerializers import StorageRequestSerializer
-from crams.api.v1.serializers.utilitySerializers import ProvisionDetailsSerializer
+from crams.api.v1.serializers.requestSerializers import \
+     ComputeRequestSerializer
+from crams.api.v1.serializers.requestSerializers import \
+     StorageRequestSerializer
+from crams.api.v1.serializers.utilitySerializers import \
+     ProvisionDetailsSerializer
 from django.db.models import Q
 from rest_framework.exceptions import ParseError
 from rest_framework.permissions import IsAuthenticated

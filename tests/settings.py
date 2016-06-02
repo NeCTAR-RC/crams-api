@@ -2,7 +2,9 @@
 """
     Test setting.py
 """
-from crams.settings import *
+from crams.settings import *   # noqa
+from crams.settings import REST_FRAMEWORK   # to avoid F405
+import os  # To avoid F405
 
 __author__ = 'simonyu, rafi m feroze'
 

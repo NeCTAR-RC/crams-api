@@ -5,7 +5,8 @@ from crams.api.v1.dataUtils.lookupData import get_system_obj
 from crams.api.v1.serializers.requestSerializers import CramsRequestSerializer
 from crams.api.v1.serializers.utilitySerializers import \
     AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
-from crams.api.v1.serializers.utilitySerializers import ActionStateModelSerializer
+from crams.api.v1.serializers.utilitySerializers import \
+     ActionStateModelSerializer
 from crams.api.v1.serializers.utilitySerializers import \
     DynamicFieldsModelSerializer
 from crams.api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
@@ -397,7 +398,8 @@ class ProjectSerializer(ActionStateModelSerializer):
         """
         ret_list = []
         for p in project_obj.linked_provisiondetails.all():
-            ret_list.append(ProvisionDetailsSerializer(p.provision_details).data)
+            ret_list.append(
+                ProvisionDetailsSerializer(p.provision_details).data)
 
         return ret_list
 

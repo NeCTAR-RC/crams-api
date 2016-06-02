@@ -7,7 +7,8 @@ from crams.api.v1.serializers.lookupSerializers import StorageProductSerializer
 from crams.api.v1.serializers.projectSerializers import ContactSerializer
 from crams.api.v1.serializers.projectSerializers import DomainSerializer
 from crams.api.v1.serializers.projectSerializers import GrantSerializer
-from crams.api.v1.serializers.projectSerializers import ProjectContactSerializer
+from crams.api.v1.serializers.projectSerializers import \
+     ProjectContactSerializer
 from crams.api.v1.serializers.projectSerializers import ProjectIDSerializer
 from crams.api.v1.serializers.projectSerializers import \
     ProjectQuestionResponseSerializer
@@ -15,11 +16,13 @@ from crams.api.v1.serializers.projectSerializers import ProjectSerializer
 from crams.api.v1.serializers.projectSerializers import PublicationSerializer
 from crams.api.v1.serializers.projectSerializers import \
     SupportedInstitutionSerializer
-from crams.api.v1.serializers.requestSerializers import ComputeRequestSerializer
+from crams.api.v1.serializers.requestSerializers import \
+     ComputeRequestSerializer
 from crams.api.v1.serializers.requestSerializers import CramsRequestSerializer
 from crams.api.v1.serializers.requestSerializers import \
     RequestQuestionResponseSerializer
-from crams.api.v1.serializers.requestSerializers import StorageRequestSerializer
+from crams.api.v1.serializers.requestSerializers import \
+     StorageRequestSerializer
 from crams.api.v1.serializers.utilitySerializers import \
     DynamicFieldsBaseSerializer
 

@@ -46,9 +46,8 @@ class IsRequestApprover(permissions.BasePermission):
         :return:
         """
         if request.user and isinstance(obj, Request):
-            crams_request = obj
-            required_role = crams_request.funding_scheme.funding_body.name.strip() + \
-                APPROVER_APPEND_STR
+            required_role = obj.funding_scheme.funding_body.name.strip() + \
+                            APPROVER_APPEND_STR
             return user_has_roles(request.user, [required_role.lower()])
         return False
 

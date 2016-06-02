@@ -1,7 +1,7 @@
 from django.db.models import Q
 from rest_framework import status
 
-from crams.DBConstants import *
+from crams.DBConstants import REQUEST_STATUS_PROVISIONED
 from crams.models import ProjectContact, ProvisionDetails
 from crams.models import Request, Project, Contact, ContactRole
 from tests.sampleData import get_base_nectar_project_data

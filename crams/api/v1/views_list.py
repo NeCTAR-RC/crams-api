@@ -5,9 +5,10 @@
 from functools import reduce
 from json import loads as json_loads
 
-from crams.api.v1.serializers.requestSerializers import RequestHistorySerializer
+from crams.api.v1.serializers.requestSerializers import \
+     RequestHistorySerializer
 from django.db.models import Q
-from rest_condition import And, Or  # ,ConditionalPermission, C, Not
+from rest_condition import And, Or
 from rest_framework import viewsets, permissions, generics
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response

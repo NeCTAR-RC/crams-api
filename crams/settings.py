@@ -15,6 +15,7 @@ import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+
 SECRET_KEY = 'secret-development-key-override-in-local-settings'
 
 # Quick-start development settings - unsuitable for production
@@ -100,7 +101,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -117,25 +117,12 @@ DATABASES = {
 }
 
 REST_FRAMEWORK = {
-    # Use Django's standard `django.contrib.auth` permissions,
-    # or allow read-only access for unauthenticated users.
-    #    'DEFAULT_PERMISSION_CLASSES': [
-    #        'rest_framework.permissions.IsAuthenticatedOrReadOnly'
-    #        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    #    ]
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
-    # Other
     'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
-    # 'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.NamespaceVersioning',
-    # 'ALLOWED_VERSIONS': ['v1', 'v2'],
-    # 'DEFAULT_VERSION': 'v1',
-    # Pagination Fields
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    # 'PAGE_SIZE': 2,
 }
 
 # Keystone Admin client
@@ -196,7 +183,7 @@ DEBUG_APPROVERS = None
 # Import the local_settings.py to override some of the default settings,
 # like database settings
 try:
-    from crams.local.local_settings import *
+    from crams.local.local_settings import *   # noqa
 except ImportError:
     logging.debug("No local_settings file found.")
 

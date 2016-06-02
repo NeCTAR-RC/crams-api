@@ -96,7 +96,8 @@ class DeclineRequestViewSetTest(AdminBaseTstCase):
         # Expecting 2 results from response
         # get submitted and update/extend requests
         projects = Project.objects.filter(
-            Q(requests__request_status__code="E") | Q(requests__request_status__code="X"))
+            Q(requests__request_status__code="E") |
+            Q(requests__request_status__code="X"))
         self.assertEqual(len(response.data), len(projects))
         self.assertEqual(response.data[0]['project'][
                          'title'], 'Test Project 1', response.data)
