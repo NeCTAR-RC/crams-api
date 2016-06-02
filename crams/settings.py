@@ -15,6 +15,7 @@ import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+
 SECRET_KEY = 'secret-development-key-override-in-local-settings'
 
 # Quick-start development settings - unsuitable for production
@@ -100,7 +101,6 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
 DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
