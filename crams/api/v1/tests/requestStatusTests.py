@@ -1,6 +1,13 @@
 from rest_framework import status
 
-from crams.DBConstants import *
+from crams.DBConstants import REQUEST_STATUS_SUBMITTED
+from crams.DBConstants import REQUEST_STATUS_DECLINED
+from crams.DBConstants import REQUEST_STATUS_APPROVED
+from crams.DBConstants import REQUEST_STATUS_PROVISIONED
+from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
+from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED
+from crams.DBConstants import REQUEST_STATUS_NEW
+
 from crams.dbUtils import get_request_status_lookups
 from tests.sampleData import get_base_nectar_project_data
 from tests.sampleData import get_vicnode_test_data

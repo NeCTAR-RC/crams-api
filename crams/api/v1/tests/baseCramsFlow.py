@@ -3,7 +3,12 @@ from crams.api.v1.serializers.provisionSerializers import \
     UpdateProvisionProjectSerializer
 from rest_framework import status
 
-from crams.DBConstants import *
+from crams.DBConstants import REQUEST_STATUS_APPROVED
+from crams.DBConstants import REQUEST_STATUS_DECLINED
+from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED
+from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
+from crams.DBConstants import REQUEST_STATUS_PROVISIONED
+
 from crams.models import Project, ProvisionDetails
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase, AdminBaseTstCase
 from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
