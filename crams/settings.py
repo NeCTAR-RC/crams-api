@@ -15,6 +15,7 @@ import logging
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
+
 SECRET_KEY = 'secret-development-key-override-in-local-settings'
 
 # Quick-start development settings - unsuitable for production
@@ -100,6 +101,12 @@ CORS_ORIGIN_ALLOW_ALL = True
 
 # Database
 # https://docs.djangoproject.com/en/1.7/ref/settings/#databases
+
+# SQL scripts for mysql require special encoding
+# - For example, if a table field is same as a mysql keyword, it must be quoted
+# -  INSERT INTO crams_zone(id, `name`, description) VALUES ...
+# -  see migrations/0002_auto_20160218_0650.py for usage example
+DB_MYSQL = False
 
 DATABASES = {
     'default': {
