@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bad4c104_3f154af1",
+        "filename": "crams/migrations/0002_auto_20160218_0650.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-06-03T06:21:56Z",
+      "side": 1,
+      "message": "prob can get rid of this",
+      "range": {
+        "startLine": 14,
+        "startChar": 4,
+        "endLine": 14,
+        "endChar": 53
+      },
+      "revId": "e210a2dd4fac6915443237b32ee92ec151e3f324",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bad4c104_5ff92ec7",
+        "filename": "crams/settings.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-06-03T06:21:56Z",
+      "side": 1,
+      "message": "can\u0027t you just use the value of ENGINE? Don\u0027t think there is a need for another variable here?",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 16
+      },
+      "revId": "e210a2dd4fac6915443237b32ee92ec151e3f324",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
