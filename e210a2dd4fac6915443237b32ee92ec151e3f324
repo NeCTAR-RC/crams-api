@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "bad4c104_a7a06c44",
+        "filename": "crams/migrations/0002_auto_20160218_0650.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 14,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-06-20T01:04:24Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "bad4c104_3f154af1",
+      "range": {
+        "startLine": 14,
+        "startChar": 4,
+        "endLine": 14,
+        "endChar": 53
+      },
+      "revId": "e210a2dd4fac6915443237b32ee92ec151e3f324",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "bad4c104_5ff92ec7",
         "filename": "crams/settings.py",
         "patchSetId": 3
@@ -36,6 +60,30 @@
       "writtenOn": "2016-06-03T06:21:56Z",
       "side": 1,
       "message": "can\u0027t you just use the value of ENGINE? Don\u0027t think there is a need for another variable here?",
+      "range": {
+        "startLine": 105,
+        "startChar": 0,
+        "endLine": 109,
+        "endChar": 16
+      },
+      "revId": "e210a2dd4fac6915443237b32ee92ec151e3f324",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bad4c104_679664f2",
+        "filename": "crams/settings.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 109,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-06-20T01:04:24Z",
+      "side": 1,
+      "message": "Currently there are three python DB API drivers for mysql and there could be more in the future. Using ENGINE value would require us to know all the driver names when coding   migrations/0002_auto_20160218_0650.py.\n\nhttps://docs.djangoproject.com/en/1.9/ref/databases/#mysql-db-api-drivers",
+      "parentUuid": "bad4c104_5ff92ec7",
       "range": {
         "startLine": 105,
         "startChar": 0,
