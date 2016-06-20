@@ -22,6 +22,30 @@
       "revId": "8f5005fc5c173b5b59e32db11703e1866d0adad6",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "bad4c104_127314e8",
+        "filename": "tox.ini",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-06-20T08:07:15Z",
+      "side": 1,
+      "message": "Removed F405 and F823.\nKept F401, required to ignore local_settings.* import",
+      "parentUuid": "bad4c104_b2cb48a4",
+      "range": {
+        "startLine": 36,
+        "startChar": 7,
+        "endLine": 36,
+        "endChar": 31
+      },
+      "revId": "8f5005fc5c173b5b59e32db11703e1866d0adad6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
