@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "bad4c104_b2cb48a4",
+        "filename": "tox.ini",
+        "patchSetId": 5
+      },
+      "lineNbr": 36,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-06-20T04:10:14Z",
+      "side": 1,
+      "message": "Not sure why this is changing? From the looks of it with no ignores only F403 errors appear. (these could be fixed by not doing a import * and importing the module which is a lot safer and recommended)",
+      "range": {
+        "startLine": 36,
+        "startChar": 7,
+        "endLine": 36,
+        "endChar": 31
+      },
+      "revId": "8f5005fc5c173b5b59e32db11703e1866d0adad6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
