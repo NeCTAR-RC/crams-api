@@ -1,0 +1,2 @@
+recursive-include crams/sql *.sql
+global-exclude *.pyc
