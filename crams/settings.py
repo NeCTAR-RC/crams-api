@@ -131,7 +131,7 @@ KS_PASSWORD = ''
 KS_PROJECT = ''
 
 # NeCTAR Keystone auth url
-KEYSTONE_AUTH_URL = ""
+KS_URL = ""
 
 # CRAMS Frontend Keystone login page
 CRAMS_CLIENT_COOKIE_KEY = 'client_url'

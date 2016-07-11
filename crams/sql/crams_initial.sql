@@ -37,6 +37,8 @@ INSERT INTO crams_granttype (id, description) VALUES (7, 'Industry funding');
 INSERT INTO crams_contactrole (id, name) VALUES (1, 'Applicant');
 INSERT INTO crams_contactrole (id, name) VALUES (2, 'Chief Investigator');
 INSERT INTO crams_contactrole (id, name) VALUES (3, 'Technical Contact');
+INSERT INTO crams_contactrole (id, `name`) VALUES (4, 'Data Custodian');
+INSERT INTO crams_contactrole (id, `name`) VALUES (5, 'Data Provider');
 
 INSERT INTO crams_projectidsystem (id, system) VALUES (1, 'NeCTAR');
 INSERT INTO crams_projectidsystem (id, system) VALUES (2, 'VicNode');
@@ -44,16 +46,17 @@ INSERT INTO crams_projectidsystem (id, system) VALUES (3, 'SONAS');
 INSERT INTO crams_projectidsystem (id, system) VALUES(4, 'NeCTAR_UUID');
 INSERT INTO crams_projectidsystem (id, system) VALUES(5, 'NeCTAR_Created_By');
 INSERT INTO crams_projectidsystem (id, system) VALUES(6, 'NeCTAR_DB_Id');
+INSERT INTO crams_projectidsystem (id, system) VALUES(7, 'DB_SYSTEM_ID_VicNode');
 
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (1, 'Intersect', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (2, 'UoM', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (3, 'Monash', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (4, 'NCI', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (5, 'Pawsey', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (6, 'QCIF', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (7, 'eRSA', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (8, 'TPAC', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
-INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (9, 'NeCTAR', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', '', '2016-02-01 09:42:48.669521+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (1, 'Intersect', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (2, 'UoM', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (3, 'Monash', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (4, 'NCI', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (5, 'Pawsey', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (6, 'QCIF', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (7, 'eRSA', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (8, 'TPAC', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
+INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (9, 'NeCTAR', true, NULL, NULL, '2016-02-01 09:42:48.669521+11', '', '2016-02-01 09:42:48.669521+11', '2016-02-01', NULL);
 
 INSERT INTO crams_requeststatus (id, code, status) VALUES (1, 'N', 'New');
 INSERT INTO crams_requeststatus (id, code, status) VALUES (2, 'E', 'Submitted');
@@ -141,6 +144,4 @@ INSERT INTO crams_question (id, key, question_type, question) VALUES (20, 'vn_da
 INSERT INTO crams_question (id, key, question_type, question) VALUES (21, 'vn_only_copy', 'vicnode-usage information-request', 'Will VicNode be hosting the only copy of the collection?');
 INSERT INTO crams_question (id, key, question_type, question) VALUES (22, 'vn_can_be_regenerated', 'vicnode-usage information-request', 'If yes, how easily can the data be regenerated? Delete the options that do not apply.');
 INSERT INTO crams_question (id, key, question_type, question) VALUES (23, 'vn_loss_impact', 'vicnode-usage information-request', 'What would be the impact and/or cost incurred if data is lost?');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (24, 'vn_current_size_vst1', 'vicnode-usage information-request', 'Current size of data on Vault (VST1)');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (25, 'vn_current_size_vst2', 'vicnode-usage information-request', 'Current size of data on Market (VST2)');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (26, 'vn_current_size_vst3', 'vicnode-usage information-request', 'Current size of data on Computational (VST3)');
+INSERT INTO crams_question (id, key, question_type, question) VALUES (24, 'vn_current_size', 'vicnode-usage information-request', 'Current size of data ');
