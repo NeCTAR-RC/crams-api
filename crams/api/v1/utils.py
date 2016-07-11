@@ -25,7 +25,7 @@ def get_keystone_admin_client():
     return ks_client_v3.Client(username=settings.KS_USERNAME,
                                password=settings.KS_PASSWORD,
                                project_name=settings.KS_PROJECT,
-                               auth_url=settings.KEYSTONE_AUTH_URL)
+                               auth_url=settings.KS_URL)
 
 
 def get_user_role_prefix_list(role_type_suffix_list, request):
