@@ -57,9 +57,9 @@ def redirect_to_rc_shib(request):
         try:
             ks_login_url = request.query_params.get('ks_login_url', None)
             # Temp Fix, until we figure out why #/ks_login is not returned
-            ks_login_url = ks_login_url + '#/ks_login/'
+            ks_login_url = ks_login_url + '#/ks-login/'
         except Exception:
-            ks_login_url = request.META.get('HTTP_REFERER') + '#/ks_login/'
+            ks_login_url = request.META.get('HTTP_REFERER') + '#/ks-login/'
 
         response = HttpResponseRedirect(ret_path)
         response.set_cookie(CRAMS_CLIENT_COOKIE_KEY, ks_login_url)

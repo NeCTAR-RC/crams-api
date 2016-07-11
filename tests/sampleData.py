@@ -251,7 +251,7 @@ def get_vicnode_test_data(user_id, contact_obj):
                             {
                                 "question_response": 10,
                                 "question": {
-                                    "key": "vn_current_size_vst1"
+                                    "key": "vn_current_size"
                                 }
                             }
                         ]
