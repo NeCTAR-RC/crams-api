@@ -10,7 +10,7 @@ from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
 from crams.api.v1.views import ProvisionProjectViewSet, ProvisionRequestViewSet
 from crams.api.v1.views import UpdateProvisionProjectViewSet, ProjectViewSet
 
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
+__author__ = 'melvin luong, rafi m feroze'
 
 
 class ProvisionProjectViewSetTest(ProvisionBaseTstCase):
@@ -259,11 +259,7 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
 
         # update the existing request
         view = ProjectViewSet.as_view({'get': 'retrieve', 'put': 'update'})
-        request = self.factory.put(
-            'api/project',
-            test_data,
-            HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+        request = self.factory.put('api/project', test_data)
         request.user = self.user
         response = view(request, pk=str(projectId))
 

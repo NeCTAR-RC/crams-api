@@ -4,7 +4,7 @@ Database Utilities
 """
 from crams.models import RequestStatus
 
-__author__ = 'rafi m feroze'  # 'mmohamed'
+__author__ = 'rafi m feroze'
 
 
 def fetch_active_provider_object_for_user(crams_user):

@@ -19,22 +19,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from crams.api.v1 import APIConstants
-from crams.DBConstants import APPROVER_APPEND_STR
 from crams.models import Project, Request, FundingBody
-from crams.api.v1.utils import get_user_role_prefix_list
+from crams.api.v1.utils import get_authorised_funding_bodies
 
 __author__ = 'rafi m feroze, Simon Yu'
 
 
-def get_funding_schemes_for_api_request(request, role_type_append_list):
+def get_funding_schemes_for_request_user(request):
     """
         get_funding_schemes_for_api_request
     :param request:
     :param role_type_append_list:
     :return: :raise ParseError:
     """
-    funding_body_name_list = get_user_role_prefix_list(
-        role_type_append_list, request)
+    funding_body_name_list = get_authorised_funding_bodies(request.user)
 
     funding_schemes = set()
     requested_funding_id = request.query_params.get('funding_body_id', None)
@@ -53,7 +51,7 @@ def get_funding_schemes_for_api_request(request, role_type_append_list):
 
     else:
         for fb in FundingBody.objects.all():
-            if fb.name.strip().lower() in funding_body_name_list:
+            if fb.name in funding_body_name_list:
                 funding_schemes.update(fb.funding_schemes.all())
 
     return funding_schemes
@@ -74,12 +72,7 @@ class FundingBodyAllocationsCounter(APIView):
         :return:
         """
         ret_dict = {}
-        user_funding_schemes = get_funding_schemes_for_api_request(
-            request, [APPROVER_APPEND_STR])
-
-        # status_params = request.query_params.get('req_status', None)
-        # if status_params:
-        #     req_status = status_params
+        user_funding_schemes = get_funding_schemes_for_request_user(request)
 
         if user_funding_schemes:
             projects_dict = query_projects(user_funding_schemes, 'new')
@@ -118,8 +111,7 @@ class ApproverReviewerRequestListView(APIView):
         :return:
         """
         ret_dict = {}
-        user_funding_schemes = get_funding_schemes_for_api_request(
-            request, [APPROVER_APPEND_STR])
+        user_funding_schemes = get_funding_schemes_for_request_user(request)
 
         status_params = request.query_params.get('req_status', None)
         req_status = 'new'

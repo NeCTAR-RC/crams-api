@@ -7,7 +7,7 @@ from django.contrib import admin
 from crams import models
 
 
-__author__ = 'rafi m feroze'  # 'mmohamed'
+__author__ = 'rafi m feroze'
 
 
 class RequestAdmin(admin.ModelAdmin):
