@@ -8,13 +8,13 @@ from crams.account.models import User
 from crams.models import Contact, CramsToken, Provider, ComputeProduct
 from crams.models import Request
 from crams.models import StorageProduct
+from crams.roleUtils import ROLE_FB_MAP
+
 from tests.testUtils import get_compute_requests_for_request
 from tests.testUtils import get_storage_requests_for_request
 from crams.api.v1.views import DeclineRequestViewSet, ProvisionProjectViewSet
 from crams.api.v1.views import ProjectViewSet, ApproveRequestViewSet
 from crams.api.v1.views import UpdateProvisionProjectViewSet
-
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
 
 
 class CRAMSApiTstCase(APITestCase):
@@ -51,19 +51,11 @@ class CRAMSApiTstCase(APITestCase):
         if idStr:
             return view(request, pk=idStr)
         return view(request)
-        # self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
-        # data = {}
-        # if idStr:
-        #     data['pk'] = idStr
-        # return self.client.get(url, data, format='json')
 
     def _create_project_common(self, test_data):
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
-        request = self.factory.post(
-            'api/project',
-            test_data,
-            HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+        request = self.factory.post('api/project', test_data)
+        request.user = self.user
         response = view(request)
 
         self.assertEqual(response.status_code,
@@ -76,10 +68,8 @@ class CRAMSApiTstCase(APITestCase):
 
     def _get_project_data_by_id(self, project_id):
         view = ProjectViewSet.as_view({'get': 'retrieve'})
-        request = self.factory.get(
-            'api/project',
-            HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+        request = self.factory.get('api/project')
+        request.user = self.user
         response = view(request, pk=str(project_id))
         # Expecting HTTP 200 response status
         self.assertEqual(response.status_code,
@@ -164,10 +154,7 @@ class CRAMSApiTstCase(APITestCase):
             return response
 
         view = ProjectViewSet.as_view({'get': 'retrieve', 'put': 'update'})
-        request = self.factory.put(
-            'api/project',
-            test_data,
-            HTTP_AUTHORIZATION='Token {}'.format(self.token.key))
+        request = self.factory.put('api/project', test_data)
         request.user = self.user
         response = view(request, pk=test_data.get('id'))
 
@@ -181,8 +168,8 @@ class AdminBaseTstCase(CRAMSApiTstCase):
 
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
-        approverRoles = ['nectar_approver', 'vicnode_approver']
-        self._setUserRoles(approverRoles)
+        approver_roles = list(ROLE_FB_MAP.keys())
+        self._setUserRoles(approver_roles)
 
     def _assert_approve_request(self, projectId, approval_notes="",
                                 expected_http_status=status.HTTP_200_OK,

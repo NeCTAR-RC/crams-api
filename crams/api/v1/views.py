@@ -27,17 +27,16 @@ from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.response import Response
 
 from crams.account.models import User
-from crams.DBConstants import CRAMS_NECTAR_APPROVER_ROLE, NECTARDB_APPROVER, \
-    APPROVER_APPEND_STR
+from crams.roleUtils import ROLE_FB_MAP
+from crams.lang_utils import generate_project_role
 from crams.dbUtils import fetch_active_provider_object_for_user
-from crams.models import Project, Request, Contact, Provider, CramsToken, \
-    UserEvents, ProvisionDetails
-from crams.permissions import IsRequestApprover, IsProjectContact, \
-    IsActiveProvider
+from crams.models import Project, Request, Contact, Provider, CramsToken
+from crams.models import UserEvents, ProvisionDetails
+from crams.permissions import IsRequestApprover, IsProjectContact
+from crams.permissions import IsActiveProvider
 from crams.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
+from crams.settings import CRAMS_PROVISIONER_ROLE
 from crams.api.v1.utils import get_keystone_admin_client
-
-__author__ = 'rafi m feroze'
 
 
 @csrf_exempt
@@ -123,6 +122,12 @@ def nectar_token_auth_view(request):
         client_url = NECTAR_CLIENT_URL
 
     crams_token = auth_token_common(rawTokenExtractFn, request)
+    if not isinstance(crams_token, CramsToken):
+        if isinstance(crams_token, HttpResponse):
+            return crams_token
+        raise PermissionDenied('Error fetching Keystone token {}'.format(
+            repr(crams_token)
+        ))
 
     username = crams_token.user.username
     query_string = "?username=%s&rest_token=%s" % (username, crams_token.key)
@@ -189,20 +194,20 @@ def _get_crams_token_for_keystone_user(request, ks_user):
 
     # get rest token to log user in frontend
     crams_token, created = CramsToken.objects.get_or_create(user=user)
+
+    configurable_roles = list(ROLE_FB_MAP.values())
+    configurable_roles.append(CRAMS_PROVISIONER_ROLE)
+
     user_roles = []
     for (project, roles) in ks_user.get("roles", {}).items():
         for r in roles:
             role = r.name.strip().lower()
-            if role == NECTARDB_APPROVER:
-                user_roles.append(CRAMS_NECTAR_APPROVER_ROLE)
-            elif role.endswith(APPROVER_APPEND_STR):
+            if role in configurable_roles:
                 user_roles.append(role)
             else:
-                user_roles.append(project.strip().lower() + '_' + role)
-
-    # Temp solution
-    if len(user_roles) < 1:
-        user_roles.append(CRAMS_NECTAR_APPROVER_ROLE)
+                p_role = generate_project_role(project.strip().lower(), role)
+                if p_role not in configurable_roles:  # additional security
+                    user_roles.append(p_role)
 
     # store User Roles provided by Keystone host in Crams DB,
     #      Note: session variables will not work - reDirection to external host
