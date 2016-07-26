@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_670f80e2",
+        "filename": "crams/api/v1/projectRequestListAPI.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-07-26T05:47:08Z",
+      "side": 1,
+      "message": "Could this be rewritten to\n\nfor fb in FundingBody.objects.filter(name__in\u003dfunding_body_name_list) (I think that is the django syntax, been a while!)",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 49
+      },
+      "revId": "c60f539d6359373426408e616f8a7ec6c2bf9f43",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_c7f5b4cc",
+        "filename": "crams/api/v1/views_list.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-07-26T05:47:08Z",
+      "side": 1,
+      "message": "Can\u0027t you use name__in\u003dfb_name_list instead of some complicated regex?",
+      "range": {
+        "startLine": 62,
+        "startChar": 20,
+        "endLine": 62,
+        "endChar": 70
+      },
+      "revId": "c60f539d6359373426408e616f8a7ec6c2bf9f43",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_872bac2f",
+        "filename": "crams/views.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-07-26T05:47:08Z",
+      "side": 1,
+      "message": "You\u0027re importing a private method here, I think you should rename this method to strip_lower, no need for the underscore at the start",
+      "range": {
+        "startLine": 11,
+        "startChar": 29,
+        "endLine": 11,
+        "endChar": 41
+      },
+      "revId": "c60f539d6359373426408e616f8a7ec6c2bf9f43",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
