@@ -6,9 +6,10 @@ from django.contrib.auth.decorators import login_required
 from json import loads as json_loads, dumps as json_dumps
 from django.http import HttpResponse
 
-from crams.DBConstants import APPROVER_APPEND_STR, CRAMS_PROVISIONER_ROLE
 from crams.models import Provider
-from crams.settings import DEBUG_APPROVERS, APP_ENV
+from crams.DBConstants import ROLE_FB_MAP
+from crams.lang_utils import _strip_lower
+from crams.settings import DEBUG_APPROVERS, APP_ENV, CRAMS_PROVISIONER_ROLE
 # Create your views here.
 
 
@@ -39,7 +40,10 @@ def debug_add_approver_role(request, fb_name):
     :return:
     """
     if fb_name:
-        new_role = fb_name.strip().lower() + APPROVER_APPEND_STR
+        new_role = ROLE_FB_MAP.get(_strip_lower(fb_name))
+        if not new_role:
+            return HttpResponse('<H3>Role Not defined for {}<H3><BR>'.
+                                format(repr(fb_name)))
         user = request.user
         return _add_debug_role(user, new_role)
 

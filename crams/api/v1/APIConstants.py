@@ -3,7 +3,7 @@
 API Constants
 """
 
-__author__ = 'mmohamed'
+__author__ = 'rafi m feroze'
 
 CLONE = 'clone'
 REQ_NEW = 'new'

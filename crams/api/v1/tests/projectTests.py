@@ -8,7 +8,7 @@ from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.tests.baseCramsFlow import _AbstractCramsBase
 from crams.api.v1.views import ProjectViewSet
 
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
+__author__ = 'melvin luong, rafi m feroze'
 
 
 class ProjectViewSetTest(CRAMSApiTstCase):
@@ -18,11 +18,8 @@ class ProjectViewSetTest(CRAMSApiTstCase):
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
         project_data = get_project_only_no_request_data(self.user.id,
                                                         self.contact)
-        request = self.factory.post(
-            'api/project',
-            project_data,
-            HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+        request = self.factory.post('api/project', project_data)
+        request.user = self.user
 
         response = view(request)
 

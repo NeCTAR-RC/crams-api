@@ -12,8 +12,9 @@ from itertools import chain, combinations
 from keystoneclient.v3 import client as ks_client_v3
 from django.conf import settings
 
+from crams.DBConstants import ROLE_FB_MAP
 
-__author__ = 'rafi m feroze'  # 'mmohamed'
+__author__ = 'rafi m feroze'
 
 
 def get_keystone_admin_client():
@@ -28,38 +29,22 @@ def get_keystone_admin_client():
                                auth_url=settings.KS_URL)
 
 
-def get_user_role_prefix_list(role_type_suffix_list, request):
+def get_approver_role_fb_for_user(request):
     """
-    get_user_role_prefix_list
-    :param role_type_suffix_list:
+
     :param request:
-    :return: :raise ParseError:
+    :return:
     """
+
     if not hasattr(request.user, 'auth_token'):
         raise ParseError('Current user has no token, hence roles not set')
 
-    def get_substring_before_ends_with(ends_with_str, str_list):
-        """
-        get_substring_before_ends_with
-        :param ends_with_str:
-        :param str_list:
-        :return:
-        """
-        return [elem.rpartition(ends_with_str)[0]
-                for elem in str_list if elem.endswith(ends_with_str)]
-
-    user_roles = []
     json_roles = request.user.auth_token.cramstoken.ks_roles
     if json_roles:
-        user_roles = json_loads(json_roles)
+        roles = set(json_loads(json_roles))
+        return [ROLE_FB_MAP.get(r) for r in roles]
 
-    ret_prefix_list = []
-    if len(user_roles) > 0:
-        for roleStr in role_type_suffix_list:
-            ret_prefix_list = ret_prefix_list + \
-                get_substring_before_ends_with(roleStr, user_roles)
-
-    return ret_prefix_list
+    return []
 
 
 def get_random_string(num):

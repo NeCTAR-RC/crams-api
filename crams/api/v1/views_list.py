@@ -2,21 +2,19 @@
 """
     views list
 """
-from functools import reduce
 from json import loads as json_loads
 
 from crams.api.v1.serializers.requestSerializers import \
      RequestHistorySerializer
-from django.db.models import Q
 from rest_condition import And, Or
 from rest_framework import viewsets, permissions, generics
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
-from crams.DBConstants import APPROVER_APPEND_STR
 from crams.models import Request, FundingBody
 from crams.permissions import IsRequestApprover, IsProjectContact
-from crams.api.v1.utils import get_user_role_prefix_list
+from crams.api.v1.utils import get_approver_role_fb_for_user
+from crams.DBConstants import JSON_APPROVER_STR
 
 __author__ = 'rafi m feroze'
 
@@ -41,7 +39,6 @@ class CurrentUserRolesView(generics.RetrieveAPIView):
                 and user.auth_token.cramstoken.ks_roles:
             ret_dict['roles'] = json_loads(user.auth_token.cramstoken.ks_roles)
         ret_dict['user'] = {'name': user.get_full_name(), 'email': user.email}
-        print(repr(ret_dict))
         return Response(ret_dict)
 
 
@@ -59,16 +56,13 @@ class CurrentUserApproverRoleList(viewsets.ViewSet):
         :return:
         """
         ret_list = []
-        funding_names_of_interest = get_user_role_prefix_list(
-            [APPROVER_APPEND_STR], request)
-        if len(funding_names_of_interest) > 0:
-            q_list1 = map(lambda n: Q(name__iexact=n),
-                          [i for i in funding_names_of_interest])
-            q_list = reduce(lambda a, b: a | b, [i for i in q_list1])
-            for fb in FundingBody.objects.filter(q_list).order_by('name'):
+        fb_name_list = get_approver_role_fb_for_user(request)
+        if len(fb_name_list) > 0:
+            for fb in FundingBody.objects.filter(
+                    name__iregex=r'(' + '|'.join(fb_name_list) + ')'):
                 current_dict = {'id': fb.id, 'name': fb.name}
                 ret_list.append(current_dict)
-                current_dict[APPROVER_APPEND_STR[1:].lower()] = True
+                current_dict[JSON_APPROVER_STR] = True
         return Response(ret_list)
 
 
