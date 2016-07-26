@@ -1,12 +1,9 @@
 from crams.api.v1.views_list import CurrentUserApproverRoleList
 from rest_framework import status
 
-from crams.DBConstants import APPROVER_APPEND_STR
-from crams.models import FundingBody
+from crams.roleUtils import FB_ROLE_MAP_REVERSE
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.utils import power_set_generator, compare_two_lists_or_sets
-
-__author__ = 'rafi m feroze'  # 'mmohamed'
 
 
 class Bug_740_TestCase(CRAMSApiTstCase):
@@ -18,7 +15,8 @@ class Bug_740_TestCase(CRAMSApiTstCase):
         view = CurrentUserApproverRoleList.as_view({'get': 'list'})
         request = self.factory.get('api/user_funding_body')
         request.user = self.user
-        return view(request)
+        response = view(request)
+        return response
 
     def test_powerSet_generator_util_method(self):
         testList = set(['NecTAR', 'Vicnode', 'NCI'])
@@ -53,29 +51,24 @@ class Bug_740_TestCase(CRAMSApiTstCase):
                          format(repr(response.data)))
 
     def test_funding_body_user_list_for_all_combinations_except_none(self):
-        def appendApproverStr(fbList):
-            ret_list = []
-            for fb in fbList:
-                ret_list.append(fb.lower() + APPROVER_APPEND_STR)
-            return ret_list
-
-        fbNameList = FundingBody.objects.all().values_list('name', flat=True)
-
-        for sampleSet in power_set_generator(fbNameList):
+        fb_name_list = FB_ROLE_MAP_REVERSE.keys()
+        for sampleSet in power_set_generator(fb_name_list):
             if len(sampleSet) > 0:
-                userRoles = appendApproverStr(sampleSet)
-                self._setUserRoles(userRoles)
+                user_roles = [FB_ROLE_MAP_REVERSE[x] for x in sampleSet]
+                self._setUserRoles(user_roles)
 
                 response = self.getUserRolesAPIResponse()
                 self.assertEqual(response.status_code,
                                  status.HTTP_200_OK, response.data)
 
-                responseFbNames = set()
+                response_fb_names = set()
                 for fbDict in response.data:
-                    responseFbNames.add(fbDict.get('name', None))
+                    response_fb_names.add(fbDict.get('name', None))
                 self.assertTrue(
-                    responseFbNames == sampleSet,
-                    'Did not return expected funding body list for user')
+                    response_fb_names == sampleSet,
+                    'Did not return expected funding body list for user, '
+                    'Expected: {}/Got: {}'.format(sampleSet, response_fb_names)
+                )
 
         # sampleResponse = [   {'approver': True, 'id': 3,
         #                       'name': 'Intersect'},

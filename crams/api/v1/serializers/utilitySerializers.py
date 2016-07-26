@@ -14,8 +14,6 @@ from crams.models import Question, ProvisionDetails
 from crams.api.v1.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 
-__author__ = 'rafi m feroze'
-
 
 class ActionStateModelSerializer(serializers.ModelSerializer):
     """class ActionStateModelSerializer."""

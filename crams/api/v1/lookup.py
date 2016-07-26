@@ -15,8 +15,6 @@ from crams.models import AllocationHome, Duration, GrantType, \
     FORCode, StorageProduct, Contact
 from crams.api.v1.serializers.lookupSerializers import StorageProductSerializer
 
-__author__ = 'simonyu, rafi m feroze'
-
 
 # noinspection PyUnusedLocal
 @api_view(http_method_names=['GET'])

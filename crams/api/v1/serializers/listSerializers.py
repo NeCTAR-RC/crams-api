@@ -26,8 +26,6 @@ from crams.api.v1.serializers.requestSerializers import \
 from crams.api.v1.serializers.utilitySerializers import \
     DynamicFieldsBaseSerializer
 
-__author__ = 'rafi m feroze'
-
 
 # noinspection PyUnusedLocal
 class ListAPIMixin(object):

@@ -2,20 +2,16 @@
 """
     DB Constants
 """
-__author__ = 'mmohamed'
 
-# Approver Roles
-APPROVER_APPEND_STR = '_approver'
-CRAMS_NECTAR_APPROVER_ROLE = ('NeCTAR' + APPROVER_APPEND_STR).strip().lower()
-NECTARDB_APPROVER = 'AllocationAdmin'.strip().lower()
-MEMBER = 'Member'.strip().lower()
-
-# Provisioner Role
-CRAMS_PROVISIONER_ROLE = 'crams_provisioner'
+JSON_APPROVER_STR = 'approver'
 
 # SystemIds
 NeCTAR_UUID = 'NeCTAR_UUID'
 NeCTAR = 'NeCTAR'
+
+# funding Body
+FUNDING_BODY_NECTAR = 'NeCTAR'
+FUNDING_BODY_VICNODE = 'VicNode'
 
 # Contact Role
 APPLICANT = 'Applicant'
@@ -43,6 +39,3 @@ DECLINED_STATES = [
     REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED,
     REQUEST_STATUS_LEGACY_DECLINED]
 ADMIN_STATES = APPROVAL_STATES + DECLINED_STATES + [REQUEST_STATUS_PROVISIONED]
-
-# funding Body
-FUNDING_BODY_NECTAR = 'NeCTAR'

@@ -15,8 +15,6 @@ from rest_framework.authtoken.models import Token
 from crams.settings import CRAMS_RC_SHIB_URL_PART
 from crams.settings import CRAMS_CLIENT_COOKIE_KEY
 
-__author__ = 'rafi m feroze'   # 'mmohamed'
-
 
 # noinspection PyUnusedLocal
 @api_view(['GET', ])

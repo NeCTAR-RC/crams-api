@@ -9,8 +9,6 @@ from crams.django_utils import get_model_field_value
 from crams.api.v1.APIConstants import CLONE
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 
-__author__ = 'rafi m feroze'
-
 
 class FieldsRequiredValidator(metaclass=ABCMeta):
     """class FieldsRequiredValidator."""
