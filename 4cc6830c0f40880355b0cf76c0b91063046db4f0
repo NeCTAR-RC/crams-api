@@ -22,6 +22,30 @@
       "revId": "4cc6830c0f40880355b0cf76c0b91063046db4f0",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_270578c2",
+        "filename": "crams/api/v1/utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-07-26T05:09:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_e761d0d4",
+      "range": {
+        "startLine": 32,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 33
+      },
+      "revId": "4cc6830c0f40880355b0cf76c0b91063046db4f0",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
