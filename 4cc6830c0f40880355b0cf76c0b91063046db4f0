@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_e761d0d4",
+        "filename": "crams/api/v1/utils.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 32,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-07-26T02:54:46Z",
+      "side": 1,
+      "message": "This method name is confusing, it also returns a list of funding bodies (I think) so maybe it should be called: (also pass in the user as opposed to the request)\n\ndef get_funding_bodies_for_user(user):\n\nor is it authorised funding bodies for a user? eg:\n\ndef get_authorised_funding_bodies(user):",
+      "range": {
+        "startLine": 32,
+        "startChar": 4,
+        "endLine": 32,
+        "endChar": 33
+      },
+      "revId": "4cc6830c0f40880355b0cf76c0b91063046db4f0",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
