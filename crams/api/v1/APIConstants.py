@@ -3,8 +3,6 @@
 API Constants
 """
 
-__author__ = 'mmohamed'
-
 CLONE = 'clone'
 REQ_NEW = 'new'
 REQ_APPROVED = 'approved'

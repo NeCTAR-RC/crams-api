@@ -4,8 +4,6 @@
 """
 from django.core import serializers
 
-__author__ = 'mmohamed'
-
 
 # noinspection PyProtectedMember
 def list_model_fields(model_instance):

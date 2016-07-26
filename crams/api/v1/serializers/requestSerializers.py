@@ -13,7 +13,7 @@ from rest_framework.serializers import PrimaryKeyRelatedField
 from crams.DBConstants import ADMIN_STATES
 from crams.DBConstants import APPROVAL_STATES
 from crams.DBConstants import DECLINED_STATES
-from crams.DBConstants import FUNDING_BODY_NECTAR
+from crams.roleUtils import FUNDING_BODY_NECTAR
 from crams.DBConstants import LEGACY_STATES
 from crams.DBConstants import NON_ADMIN_STATES
 from crams.DBConstants import REQUEST_STATUS_DECLINED
@@ -43,8 +43,6 @@ from crams.api.v1.serializers.utilitySerializers import \
 from crams.api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
 from crams.api.v1.dataUtils.lookupData import get_compute_product_obj
 from crams.api.v1.dataUtils.lookupData import get_storage_product_obj
-
-__author__ = 'simonyu, rafi m feroze'
 
 
 User = get_user_model()

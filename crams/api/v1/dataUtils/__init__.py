@@ -1,1 +1,4 @@
-__author__ = 'rafi m feroze'  # 'mmohamed'
+# coding=utf-8
+"""
+Empty __init__.py
+"""

@@ -36,7 +36,6 @@ from crams.models import StorageRequest
 from crams.api.v1.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 
-__author__ = 'rafi m feroze'
 
 PROVISION_ENABLE_REQUEST_STATUS = [
     REQUEST_STATUS_APPROVED, REQUEST_STATUS_LEGACY_APPROVED]

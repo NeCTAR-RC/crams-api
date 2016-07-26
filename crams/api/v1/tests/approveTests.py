@@ -12,8 +12,6 @@ from crams.models import Project, RequestStatus, Request, FundingBody
 from crams.api.v1.tests.baseTest import AdminBaseTstCase
 from crams.api.v1.views import ApproveRequestViewSet
 
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
-
 
 class ApproverReviewerRequestListTest(AdminBaseTstCase):
 

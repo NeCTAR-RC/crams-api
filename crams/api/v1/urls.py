@@ -25,9 +25,6 @@ from crams.api.v1.projectRequestListAPI import \
      FundingBodyAllocationsCounter
 
 
-__author__ = 'simonyu, rafi m feroze'
-
-
 router = routers.SimpleRouter()
 router.register(r'project', ProjectViewSet)
 router.register(r'request_history', RequestHistoryViewSet, base_name='history')
