@@ -2,7 +2,7 @@
 """
   Sample Data
 """
-__author__ = 'rafi m feroze'  # 'mmohamed'
+__author__ = 'rafi m feroze'
 
 
 def get_base_nectar_project_data(user_id, contact_obj):

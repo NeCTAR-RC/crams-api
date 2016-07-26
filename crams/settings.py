@@ -133,6 +133,13 @@ KS_PROJECT = ''
 # NeCTAR Keystone auth url
 KS_URL = ""
 
+# APPROVER ROLES
+NECTAR_APPROVER_ROLE = 'AllocationAdmin'
+VICNODE_APPROVER_ROLE = 'vicnode_approver'
+
+# PROVISONER ROLES
+CRAMS_PROVISIONER_ROLE = 'crams_provisioner'
+
 # CRAMS Frontend Keystone login page
 CRAMS_CLIENT_COOKIE_KEY = 'client_url'
 # Do not remove trailing slash

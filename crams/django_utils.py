@@ -4,7 +4,7 @@
 """
 from django.core import serializers
 
-__author__ = 'mmohamed'
+__author__ = 'rafi m feroze'
 
 
 # noinspection PyProtectedMember

@@ -7,10 +7,11 @@ from json import loads as json_loads
 
 from rest_framework import permissions
 
+from crams.settings import CRAMS_PROVISIONER_ROLE
+from crams.DBConstants import FB_ROLE_MAP_REVERSE
 from crams.models import Request, Project
-from crams.DBConstants import APPROVER_APPEND_STR, CRAMS_PROVISIONER_ROLE
 
-__author__ = 'rafi m feroze'  # 'mmohamed'
+__author__ = 'rafi m feroze'
 
 
 def user_has_roles(userobj, role_list):
@@ -46,9 +47,10 @@ class IsRequestApprover(permissions.BasePermission):
         :return:
         """
         if request.user and isinstance(obj, Request):
-            required_role = obj.funding_scheme.funding_body.name.strip() + \
-                            APPROVER_APPEND_STR
-            return user_has_roles(request.user, [required_role.lower()])
+            required_role = FB_ROLE_MAP_REVERSE.get(
+                obj.funding_scheme.funding_body.name)
+            if required_role:
+                return user_has_roles(request.user, [required_role])
         return False
 
 

@@ -5,7 +5,7 @@ from tests.sampleData import get_vicnode_test_data
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.views import ProjectViewSet
 
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
+__author__ = 'melvin luong, rafi m feroze'
 
 
 class VicNodeProjectViewSetTest(CRAMSApiTstCase):
@@ -124,10 +124,9 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
         self._create_project_common(self.test_data)
         atleastOneProjectRequestExists = False
         view = ProjectViewSet.as_view({'get': 'retrieve'})
-        request = self.factory.get(
-            'api/project',
-            HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+        request = self.factory.get('api/project')
+        request.user = self.user
+
         for p in Project.objects.filter(project_ids__system__system='VicNode',
                                         requests__isnull=False,
                                         parent_project__isnull=True):
@@ -170,8 +169,9 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
                                         parent_project__isnull=True):
             for r in p.requests.filter(parent_request__isnull=True):
                 request = self.factory.get(
-                    'api/project/' + str(p.id) + '/?request_id=' + str(r.id),
-                    HTTP_AUTHORIZATION='Token {}'.format(self.token.key))
+                    'api/project/' + str(p.id) + '/?request_id=' + str(r.id))
+                request.user = self.user
+
                 response = view(request)
                 if response.status_code == status.HTTP_403_FORBIDDEN:
                     continue  # Ignore rows for which user is not authorized
@@ -232,9 +232,7 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
             return response
 
         view = ProjectViewSet.as_view({'get': 'retrieve', 'put': 'update'})
-        request = self.factory.put(
-            '', test_data, HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+        request = self.factory.put('', test_data)
         request.user = self.user
         response = view(request, pk=test_data['id'])
 

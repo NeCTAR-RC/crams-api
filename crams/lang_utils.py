@@ -7,6 +7,15 @@ __author__ = 'Rafi M Feroze'
 # http://code.activestate.com/recipes/52308-the-simple-but-handy-collector-of-a-bunch-of-named/
 
 
+def reverse_dict(d):
+    return {v: k for k, v in d.items()}
+
+
+def update_return_dict(map, key, value):
+    map.update({key: value})
+    return map
+
+
 class Bunch(list):
 
     """
@@ -76,3 +85,11 @@ class SortableObject(CommonEqualityMixin):
                 (isinstance(self.obj, type(other))):
             return other.obj == self.obj
         return False
+
+
+def _strip_lower(str):
+    return str.strip().lower()
+
+
+def generate_project_role(project_name, role_name):
+    return _strip_lower(project_name) + '_' + _strip_lower(role_name)

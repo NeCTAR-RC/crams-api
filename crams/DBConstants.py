@@ -2,23 +2,22 @@
 """
     DB Constants
 """
-__author__ = 'mmohamed'
+from crams.lang_utils import reverse_dict
+from crams.settings import VICNODE_APPROVER_ROLE, NECTAR_APPROVER_ROLE
 
-# Approver Roles
-APPROVER_APPEND_STR = '_approver'
-CRAMS_NECTAR_APPROVER_ROLE = ('NeCTAR' + APPROVER_APPEND_STR).strip().lower()
-NECTARDB_APPROVER = 'AllocationAdmin'.strip().lower()
-MEMBER = 'Member'.strip().lower()
+__author__ = 'rafi m feroze'
 
-# Provisioner Role
-CRAMS_PROVISIONER_ROLE = 'crams_provisioner'
+JSON_APPROVER_STR = 'approver'
+
 
 # SystemIds
 NeCTAR_UUID = 'NeCTAR_UUID'
 NeCTAR = 'NeCTAR'
 
+
 # Contact Role
 APPLICANT = 'Applicant'
+
 
 # Request Status Codes
 REQUEST_STATUS_NEW = 'N'
@@ -44,5 +43,13 @@ DECLINED_STATES = [
     REQUEST_STATUS_LEGACY_DECLINED]
 ADMIN_STATES = APPROVAL_STATES + DECLINED_STATES + [REQUEST_STATUS_PROVISIONED]
 
+
 # funding Body
 FUNDING_BODY_NECTAR = 'NeCTAR'
+FUNDING_BODY_VICNODE = 'VicNode'
+# Funding Body Role Map
+ROLE_FB_MAP = {
+    NECTAR_APPROVER_ROLE: FUNDING_BODY_NECTAR,
+    VICNODE_APPROVER_ROLE: FUNDING_BODY_VICNODE
+}
+FB_ROLE_MAP_REVERSE = reverse_dict(ROLE_FB_MAP)

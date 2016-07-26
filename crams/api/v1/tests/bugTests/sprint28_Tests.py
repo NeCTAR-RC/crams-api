@@ -3,7 +3,7 @@ from tests.sampleData import get_base_nectar_project_data
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.utils import get_random_string
 
-__author__ = 'rafi m feroze'  # 'mmohamed'
+__author__ = 'rafi m feroze'
 
 
 class Bug_719_TestCase(CRAMSApiTstCase):

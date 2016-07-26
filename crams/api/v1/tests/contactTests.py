@@ -5,7 +5,7 @@ from crams.models import Contact
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.views import ContactViewSet, SearchContact
 
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
+__author__ = 'melvin luong, rafi m feroze'
 
 
 class ContactTest(CRAMSApiTstCase):
