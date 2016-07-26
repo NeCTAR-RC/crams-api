@@ -1,4 +1,3 @@
-__author__ = 'rafi m feroze'  #'mmohamed'
 
 1.  Install ubuntu and update
     sudo apt update

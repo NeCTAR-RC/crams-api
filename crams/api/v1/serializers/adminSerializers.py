@@ -26,8 +26,6 @@ from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED
 from crams.models import Request
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 
-__author__ = 'rafi m feroze'
-
 
 ADMIN_ENABLE_REQUEST_STATUS = [
     REQUEST_STATUS_SUBMITTED, REQUEST_STATUS_UPDATE_OR_EXTEND]

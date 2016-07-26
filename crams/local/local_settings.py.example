@@ -1,5 +1,3 @@
-__author__ = 'simonyu, rafi Feroze'
-
 # override the database settings
 
 # Use `django-admin generate_secret_key` to set a secret key

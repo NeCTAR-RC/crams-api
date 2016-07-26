@@ -4,8 +4,6 @@
 """
 from django.forms.models import model_to_dict
 
-__author__ = 'rafi m feroze'
-
 
 def get_compute_requests_for_request(request_instance):
     """

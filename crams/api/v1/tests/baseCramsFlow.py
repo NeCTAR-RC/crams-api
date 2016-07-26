@@ -14,8 +14,6 @@ from crams.api.v1.tests.baseTest import CRAMSApiTstCase, AdminBaseTstCase
 from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
 from crams.api.v1.utils import get_random_string
 
-__author__ = 'rafi m feroze'  # 'mmohamed'
-
 
 class AdminActionData:
 

@@ -38,8 +38,6 @@ from crams.models import SupportedInstitution
 from crams.api.v1.APIConstants import CLONE
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 
-__author__ = 'rafi m feroze, simonyu'
-
 
 class ContactSerializer(serializers.ModelSerializer, UpdatableSerializer):
     """class ContactSerializer."""

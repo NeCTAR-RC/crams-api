@@ -18,7 +18,6 @@ from crams.models import StorageProduct
 from crams.models import StorageType
 from crams.models import Zone
 
-__author__ = 'simonyu, rafi m feroze'
 
 User = get_user_model()
 
