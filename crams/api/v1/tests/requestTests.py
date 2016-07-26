@@ -5,7 +5,7 @@ from tests.sampleData import get_base_nectar_project_data
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.views import ProjectViewSet, RequestViewSet
 
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
+__author__ = 'melvin luong, rafi m feroze'
 
 
 class CramsProjectViewSetTest(CRAMSApiTstCase):
@@ -114,10 +114,9 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
 
         atleastOneProjectRequestExists = False
         view = ProjectViewSet.as_view({'get': 'retrieve'})
-        request = self.factory.get(
-            'api/project',
-            HTTP_AUTHORIZATION='Token {}'.format(
-                self.token.key))
+        request = self.factory.get('api/project')
+        request.user = self.user
+
         for p in Project.objects.filter(
                 requests__isnull=False,
                 parent_project__isnull=True):
@@ -160,8 +159,9 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
                 parent_project__isnull=True):
             for r in p.requests.filter(parent_request__isnull=True):
                 request = self.factory.get(
-                    'api/project/' + str(p.id) + '/?request_id=' + str(r.id),
-                    HTTP_AUTHORIZATION='Token {}'.format(self.token.key))
+                    'api/project/' + str(p.id) + '/?request_id=' + str(r.id))
+                request.user = self.user
+
                 response = view(request)
                 if response.status_code == status.HTTP_403_FORBIDDEN:
                     continue  # Ignore rows for which user is not authorized

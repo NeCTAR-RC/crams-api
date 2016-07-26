@@ -2,4 +2,4 @@
 """
 Empty __init__.py
 """
-__author__ = 'rafi m feroze'  # 'mmohamed'
+__author__ = 'rafi m feroze'

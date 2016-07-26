@@ -8,7 +8,7 @@ from crams.models import Request
 from crams.api.v1.tests.baseTest import AdminBaseTstCase
 from crams.api.v1.views import DeclineRequestViewSet
 
-__author__ = 'melvin luong, rafi m feroze'  # 'mmohamed'
+__author__ = 'melvin luong, rafi m feroze'
 
 
 class DeclineRequestViewSetTest(AdminBaseTstCase):
