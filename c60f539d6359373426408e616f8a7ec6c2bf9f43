@@ -2,6 +2,29 @@
   "comments": [
     {
       "key": {
+        "uuid": "7adec928_c71cd416",
+        "filename": "/COMMIT_MSG",
+        "patchSetId": 3
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-07-26T05:50:41Z",
+      "side": 1,
+      "message": "Also you don\u0027t need to add this to the commit message. \n\nThe commit message should outline what the commit does. \nImagine this is being read in a years time, \"response to comments\" doesn\u0027t make a lot of sense to the person reading it",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 20
+      },
+      "revId": "c60f539d6359373426408e616f8a7ec6c2bf9f43",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_670f80e2",
         "filename": "crams/api/v1/projectRequestListAPI.py",
         "patchSetId": 3
