@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_6d26816a",
+        "filename": "crams/api/v1/projectRequestListAPI.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 54,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-08-02T03:03:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_670f80e2",
+      "range": {
+        "startLine": 53,
+        "startChar": 8,
+        "endLine": 54,
+        "endChar": 49
+      },
+      "revId": "c60f539d6359373426408e616f8a7ec6c2bf9f43",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_c7f5b4cc",
         "filename": "crams/api/v1/views_list.py",
         "patchSetId": 3
@@ -71,6 +95,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_2d4ab983",
+        "filename": "crams/api/v1/views_list.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 62,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-08-02T03:03:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_c7f5b4cc",
+      "range": {
+        "startLine": 62,
+        "startChar": 20,
+        "endLine": 62,
+        "endChar": 70
+      },
+      "revId": "c60f539d6359373426408e616f8a7ec6c2bf9f43",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_872bac2f",
         "filename": "crams/views.py",
         "patchSetId": 3
@@ -82,6 +130,30 @@
       "writtenOn": "2016-07-26T05:47:08Z",
       "side": 1,
       "message": "You\u0027re importing a private method here, I think you should rename this method to strip_lower, no need for the underscore at the start",
+      "range": {
+        "startLine": 11,
+        "startChar": 29,
+        "endLine": 11,
+        "endChar": 41
+      },
+      "revId": "c60f539d6359373426408e616f8a7ec6c2bf9f43",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_4d31c5a1",
+        "filename": "crams/views.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-08-02T03:03:31Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_872bac2f",
       "range": {
         "startLine": 11,
         "startChar": 29,
