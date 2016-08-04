@@ -3,6 +3,7 @@
     URL definitions
 """
 
+from django.conf import settings
 from django.conf.urls import url, include
 from rest_framework import routers
 # from rest_framework.authtoken import views
@@ -40,9 +41,6 @@ router.register(r'contact', ContactViewSet)
 
 
 urlpatterns = [
-    url(r'debug_add_approver_role/(?P<fb_name>[\w]+)',
-        debug_add_approver_role),
-    url(r'debug_add_provisioner_role', debug_add_provisioner_role),
     url(r'^accounts/auth/$', CramsLoginAuthToken.as_view()),
     url(r'^', include(router.urls, namespace='crams')),
     url(r'set_tokens', auth.set_tokens),
@@ -65,3 +63,9 @@ urlpatterns = [
     url(r'approve_list', ApproverReviewerRequestListView.as_view()),
     url(r'alloc_counter', FundingBodyAllocationsCounter.as_view()),
 ]
+
+if settings.DEBUG:
+    urlpatterns += url(r'debug_add_approver_role/(?P<fb_name>[\w]+)',
+                       debug_add_approver_role),
+    urlpatterns += url(r'debug_add_provisioner_role',
+                       debug_add_provisioner_role),

@@ -57,6 +57,12 @@ class PermissionsTest(CRAMSApiTstCase):
                     self.http_request, view, req)
                 self.assertTrue(bool, '{}: not an approver for request {}'
                                 .format(fb, req))
+                # Test Case insensitive role
+                self._set_roles([role.upper()])
+                bool = IsRequestApprover().has_object_permission(
+                    self.http_request, view, req)
+                self.assertTrue(bool, '{}: not an approver for request {}'
+                                .format(fb, req))
                 # Test invalid Role
                 new_roles = set(FB_ROLE_MAP_REVERSE.values())
                 new_roles.remove(role)
@@ -80,3 +86,9 @@ class PermissionsTest(CRAMSApiTstCase):
         self.http_request.user = self.user
         bool = IsActiveProvider().has_permission(self.http_request, None)
         self.assertFalse(bool, 'Expected not isActiveProvider, got yes')
+
+        # Setup case senstive Provisioner Role
+        self._set_roles([CRAMS_PROVISIONER_ROLE.upper()])
+        self.http_request.user = self.user
+        bool = IsActiveProvider().has_permission(self.http_request, None)
+        self.assertTrue(bool, 'Expected isActiveProvider, got false')

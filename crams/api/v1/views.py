@@ -3,7 +3,7 @@
     views
 """
 # import pprint
-from json import dumps as json_dumps, loads as json_loads
+from json import loads as json_loads
 
 from crams.api.v1.serializers.adminSerializers import \
     ApproveRequestModelSerializer, DeclineRequestModelSerializer, \
@@ -27,7 +27,6 @@ from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.response import Response
 
 from crams.account.models import User
-from crams.roleUtils import ROLE_FB_MAP
 from crams.lang_utils import generate_project_role
 from crams.dbUtils import fetch_active_provider_object_for_user
 from crams.models import Project, Request, Contact, Provider, CramsToken
@@ -35,8 +34,9 @@ from crams.models import UserEvents, ProvisionDetails
 from crams.permissions import IsRequestApprover, IsProjectContact
 from crams.permissions import IsActiveProvider
 from crams.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
-from crams.settings import CRAMS_PROVISIONER_ROLE
 from crams.api.v1.utils import get_keystone_admin_client
+from crams.roleUtils import get_configurable_roles
+from crams.roleUtils import setup_case_insensitive_roles
 
 
 @csrf_exempt
@@ -192,33 +192,18 @@ def _get_crams_token_for_keystone_user(request, ks_user):
             return HttpResponse('Error creating user with email ' + username +
                                 '  ' + str(e))
 
-    # get rest token to log user in frontend
-    crams_token, created = CramsToken.objects.get_or_create(user=user)
-
-    configurable_roles = list(ROLE_FB_MAP.values())
-    configurable_roles.append(CRAMS_PROVISIONER_ROLE)
-
+    configurable_roles = get_configurable_roles()
     user_roles = []
     for (project, roles) in ks_user.get("roles", {}).items():
-        for r in roles:
-            role = r.name.strip().lower()
+        for role in roles:
             if role in configurable_roles:
                 user_roles.append(role)
             else:
-                p_role = generate_project_role(project.strip().lower(), role)
+                p_role = generate_project_role(project, role)
                 if p_role not in configurable_roles:  # additional security
                     user_roles.append(p_role)
 
-    # store User Roles provided by Keystone host in Crams DB,
-    #      Note: session variables will not work - reDirection to external host
-    crams_token.ks_roles = json_dumps(user_roles)
-
-    try:
-        crams_token.save()
-    except Exception as e:
-        return HttpResponse('<H3>Access Denied<H3><BR>' + str(e))
-
-    return crams_token
+    return setup_case_insensitive_roles(request.user, user_roles)
 
 
 class RequestViewSet(viewsets.ModelViewSet):
