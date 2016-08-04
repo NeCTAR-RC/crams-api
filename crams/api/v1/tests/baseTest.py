@@ -1,4 +1,3 @@
-import json
 import pprint
 
 from rest_framework import status
@@ -8,7 +7,7 @@ from crams.account.models import User
 from crams.models import Contact, CramsToken, Provider, ComputeProduct
 from crams.models import Request
 from crams.models import StorageProduct
-from crams.roleUtils import ROLE_FB_MAP
+from crams.roleUtils import ROLE_FB_MAP, setup_case_insensitive_roles
 
 from tests.testUtils import get_compute_requests_for_request
 from tests.testUtils import get_storage_requests_for_request
@@ -40,8 +39,7 @@ class CRAMSApiTstCase(APITestCase):
         return user
 
     def _setUserRoles(self, roleList):
-        self.token.ks_roles = json.dumps(roleList)
-        self.token.save()
+        setup_case_insensitive_roles(self.user, roleList)
         # reload User to ensure latest permissions are available
         self.user = User.objects.get(pk=self.user.id)
 
