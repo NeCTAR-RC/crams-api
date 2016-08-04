@@ -9,7 +9,7 @@ def strip_lower(str):
 
 
 def generate_project_role(project_name, role_name):
-    return strip_lower(project_name) + '_' + strip_lower(role_name)
+    return project_name + '_' + role_name
 
 
 # http://code.activestate.com/recipes/52308-the-simple-but-handy-collector-of-a-bunch-of-named/

@@ -38,7 +38,7 @@ def get_funding_schemes_for_request_user(request):
     if requested_funding_id:
         try:
             requested_fb = FundingBody.objects.get(pk=requested_funding_id)
-            if requested_fb.name.strip().lower() in funding_body_name_list:
+            if requested_fb.name in funding_body_name_list:
                 funding_schemes.update(requested_fb.funding_schemes.all())
             else:
                 raise ParseError('User does not have {} access to {}'.format(

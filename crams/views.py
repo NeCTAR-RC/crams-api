@@ -7,8 +7,7 @@ from json import loads as json_loads, dumps as json_dumps
 from django.http import HttpResponse
 
 from crams.models import Provider
-from crams.roleUtils import ROLE_FB_MAP
-from crams.lang_utils import strip_lower
+from crams.roleUtils import FB_ROLE_MAP_REVERSE
 from crams.settings import DEBUG_APPROVERS, APP_ENV, CRAMS_PROVISIONER_ROLE
 # Create your views here.
 
@@ -40,7 +39,7 @@ def debug_add_approver_role(request, fb_name):
     :return:
     """
     if fb_name:
-        new_role = ROLE_FB_MAP.get(strip_lower(fb_name))
+        new_role = FB_ROLE_MAP_REVERSE.get(fb_name)
         if not new_role:
             return HttpResponse('<H3>Role Not defined for {}<H3><BR>'.
                                 format(repr(fb_name)))
