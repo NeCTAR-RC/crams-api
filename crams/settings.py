@@ -64,7 +64,7 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [os.path.join(BASE_DIR, 'templates'),
-                 os.path.join(BASE_DIR, 'crams_app/templates'),
+                 os.path.join(BASE_DIR, 'crams/templates'),
                  ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -181,11 +181,11 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-APPEND_SLASH = False
+APPEND_SLASH = True
 
 # DEBUG_RELATED
 APP_ENV = None
-DEBUG_APPROVERS = None
+DEBUG_APPROVERS = []
 
 # Import the local_settings.py to override some of the default settings,
 # like database settings

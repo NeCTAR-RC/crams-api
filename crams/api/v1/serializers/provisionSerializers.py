@@ -324,12 +324,14 @@ class BaseProvisionMessageSerializer(BaseProvisionSerializer):
     message = serializers.CharField(
         max_length=999, allow_null=True, allow_blank=True, required=False)
     success = serializers.BooleanField()
+    resend = serializers.BooleanField(required=False)
 
     def _init_empty(self, str, num):
         ret_dict = super(BaseProvisionMessageSerializer,
                          self)._init_empty(str, num)
         ret_dict['message'] = str + 'message '
         ret_dict['success'] = True
+        ret_dict['resend'] = False
         return ret_dict
 
     def _initFromBaseIdData(self, id):
@@ -337,6 +339,7 @@ class BaseProvisionMessageSerializer(BaseProvisionSerializer):
                          self)._init_from_id_data(id)
         ret_dict['message'] = None
         ret_dict['success'] = True
+        ret_dict['resend'] = False
         return ret_dict
 
     def validate(self, data):
