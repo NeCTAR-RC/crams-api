@@ -10,6 +10,7 @@ from rest_framework import permissions
 from crams.settings import CRAMS_PROVISIONER_ROLE
 from crams.roleUtils import FB_ROLE_MAP_REVERSE
 from crams.models import Request, Project
+from crams.lang_utils import strip_lower
 
 
 def user_has_roles(userobj, role_list):
@@ -19,7 +20,7 @@ def user_has_roles(userobj, role_list):
     :param role_list:
     :return:
     """
-    role_set = set(role_list)
+    role_set = set([strip_lower(role) for role in role_list])
     if userobj and hasattr(userobj, 'auth_token'):
         auth_token = userobj.auth_token
         if hasattr(auth_token, 'cramstoken') and \

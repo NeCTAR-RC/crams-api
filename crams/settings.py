@@ -185,7 +185,7 @@ APPEND_SLASH = False
 
 # DEBUG_RELATED
 APP_ENV = None
-DEBUG_APPROVERS = None
+DEBUG_APPROVERS = []
 
 # Import the local_settings.py to override some of the default settings,
 # like database settings
