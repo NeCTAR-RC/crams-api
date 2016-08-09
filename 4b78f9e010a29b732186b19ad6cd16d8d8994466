@@ -22,6 +22,30 @@
       "revId": "4b78f9e010a29b732186b19ad6cd16d8d8994466",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_4574399c",
+        "filename": "templates/500.html",
+        "patchSetId": 5
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-08-09T02:42:41Z",
+      "side": 1,
+      "message": "These are standard error templates, rarely used but required to display a message if the server throws a HTTP 500 error. The debian package must be updated to include Template folders.\nWe will have to setup a service to monitor errors like 500 to send a report to Admin.",
+      "parentUuid": "7adec928_539a4615",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 1
+      },
+      "revId": "4b78f9e010a29b732186b19ad6cd16d8d8994466",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
