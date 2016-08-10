@@ -1,2 +1,3 @@
 recursive-include crams/sql *.sql
+recursive-include crams/templates *.html
 global-exclude *.pyc
