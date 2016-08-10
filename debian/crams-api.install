@@ -1,4 +1,3 @@
 static/* /usr/share/crams/static
 templates/* /usr/share/crams/templates
-crams/templates/* /usr/share/crams/crams/templates
 wsgi/* /usr/share/crams/wsgi
