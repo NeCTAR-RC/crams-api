@@ -195,7 +195,8 @@ def _get_crams_token_for_keystone_user(request, ks_user):
     configurable_roles = get_configurable_roles()
     user_roles = []
     for (project, roles) in ks_user.get("roles", {}).items():
-        for role in roles:
+        for role_obj in roles:
+            role = role_obj.name
             if role in configurable_roles:
                 user_roles.append(role)
             else:
