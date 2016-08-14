@@ -204,7 +204,7 @@ def _get_crams_token_for_keystone_user(request, ks_user):
                 if p_role not in configurable_roles:  # additional security
                     user_roles.append(p_role)
 
-    return setup_case_insensitive_roles(request.user, user_roles)
+    return setup_case_insensitive_roles(user, user_roles)
 
 
 class RequestViewSet(viewsets.ModelViewSet):
