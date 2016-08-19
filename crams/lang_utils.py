@@ -8,10 +8,6 @@ def strip_lower(str):
     return str.strip().lower()
 
 
-def generate_project_role(project_name, role_name):
-    return project_name + '_' + role_name
-
-
 # http://code.activestate.com/recipes/52308-the-simple-but-handy-collector-of-a-bunch-of-named/
 def reverse_dict(d):
     return {v: k for k, v in d.items()}

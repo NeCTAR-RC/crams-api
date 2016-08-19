@@ -48,3 +48,7 @@ def setup_case_insensitive_roles(user, user_roles_list):
     crams_token.ks_roles = json_dumps(user_roles_icase)
     crams_token.save()
     return crams_token
+
+
+def generate_project_role(project_name, role_name):
+    return project_name + '_' + role_name
