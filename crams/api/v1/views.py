@@ -27,7 +27,7 @@ from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.response import Response
 
 from crams.account.models import User
-from crams.lang_utils import generate_project_role
+from crams.lang_utils import strip_lower
 from crams.dbUtils import fetch_active_provider_object_for_user
 from crams.models import Project, Request, Contact, Provider, CramsToken
 from crams.models import UserEvents, ProvisionDetails
@@ -35,7 +35,7 @@ from crams.permissions import IsRequestApprover, IsProjectContact
 from crams.permissions import IsActiveProvider
 from crams.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
 from crams.api.v1.utils import get_keystone_admin_client
-from crams.roleUtils import get_configurable_roles
+from crams.roleUtils import get_configurable_roles, generate_project_role
 from crams.roleUtils import setup_case_insensitive_roles
 
 
@@ -196,7 +196,7 @@ def _get_crams_token_for_keystone_user(request, ks_user):
     user_roles = []
     for (project, roles) in ks_user.get("roles", {}).items():
         for role_obj in roles:
-            role = role_obj.name
+            role = strip_lower(role_obj.name)
             if role in configurable_roles:
                 user_roles.append(role)
             else:
