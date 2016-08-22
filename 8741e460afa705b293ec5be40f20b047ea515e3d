@@ -1,0 +1,90 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_f4ca556d",
+        "filename": "crams/api/v1/tests/keystoneTokenTests.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 1,
+      "author": {
+        "id": 1000104
+      },
+      "writtenOn": "2016-08-22T05:40:20Z",
+      "side": 1,
+      "message": "Is there a schema to how these tests are named?",
+      "revId": "8741e460afa705b293ec5be40f20b047ea515e3d",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_74d80554",
+        "filename": "crams/api/v1/tests/keystoneTokenTests.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 27,
+      "author": {
+        "id": 1000104
+      },
+      "writtenOn": "2016-08-22T05:40:20Z",
+      "side": 1,
+      "message": "don\u0027t think this is needed? because role_list is generated in fb_roles_common() and almost sure to be a list of DummyKeystoneRole objects",
+      "range": {
+        "startLine": 25,
+        "startChar": 0,
+        "endLine": 27,
+        "endChar": 64
+      },
+      "revId": "8741e460afa705b293ec5be40f20b047ea515e3d",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_54ba29e2",
+        "filename": "crams/api/v1/tests/keystoneTokenTests.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 41,
+      "author": {
+        "id": 1000104
+      },
+      "writtenOn": "2016-08-22T05:40:20Z",
+      "side": 1,
+      "message": "It would be much easier to read, if each test_xxx has it\u0027s own assert.",
+      "range": {
+        "startLine": 39,
+        "startChar": 0,
+        "endLine": 41,
+        "endChar": 40
+      },
+      "revId": "8741e460afa705b293ec5be40f20b047ea515e3d",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_94dd9145",
+        "filename": "crams/api/v1/tests/keystoneTokenTests.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 73,
+      "author": {
+        "id": 1000104
+      },
+      "writtenOn": "2016-08-22T05:40:20Z",
+      "side": 1,
+      "message": "Please test public functions instead of private? Ideally we want tests to verify that the public interfaces are stable.",
+      "range": {
+        "startLine": 73,
+        "startChar": 22,
+        "endLine": 73,
+        "endChar": 56
+      },
+      "revId": "8741e460afa705b293ec5be40f20b047ea515e3d",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
