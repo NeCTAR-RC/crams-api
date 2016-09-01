@@ -816,10 +816,21 @@ class AllocationHome(models.Model):
         return '{} {} {}'.format(self.id, self.code, self.description)
 
 
+class NotificationTemplate(models.Model):
+    funding_body = models.ForeignKey(FundingBody,
+                                     related_name='notification_templates')
+    request_status = models.ForeignKey(RequestStatus)
+    template_file_path = models.CharField(max_length=99)
+
+    class Meta:
+        app_label = 'crams'
+        unique_together = ("funding_body", "request_status")
+
+
 class InternalMigrationData(models.Model):
     data = models.TextField()
-    project = models.ForeignKey(Project)
     system = models.ForeignKey(ProjectIDSystem)
+    project = models.ForeignKey(Project, null=True, blank=True)
     request = models.ForeignKey(Request, null=True, blank=True)
     contact = models.ForeignKey(Contact, null=True, blank=True)
 
