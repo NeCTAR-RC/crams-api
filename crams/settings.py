@@ -148,7 +148,7 @@ CRAMS_RC_SHIB_URL_PART = 'https://example.org/rcshibboleth/?return-path='
 
 # Default Email setup to console
 # Email notification configuration
-EMAIL_SENDER = 'admin@example.org'
+EMAIL_SENDER = 'admin@crams.dev'
 
 # Send email to the console by default
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
