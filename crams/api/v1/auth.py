@@ -13,7 +13,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from crams.settings import CRAMS_RC_SHIB_URL_PART
-from crams.settings import CRAMS_CLIENT_COOKIE_KEY
+from crams.settings import CRAMS_CLIENT_COOKIE_KEY, CLIENT_KS_LOGIN_PATH
 
 
 # noinspection PyUnusedLocal
@@ -55,9 +55,10 @@ def redirect_to_rc_shib(request):
         try:
             ks_login_url = request.query_params.get('ks_login_url', None)
             # Temp Fix, until we figure out why #/ks_login is not returned
-            ks_login_url = ks_login_url + '#/ks-login/'
+            ks_login_url = ks_login_url + CLIENT_KS_LOGIN_PATH
         except Exception:
-            ks_login_url = request.META.get('HTTP_REFERER') + '#/ks-login/'
+            ks_login_url = request.META.get('HTTP_REFERER') + \
+                           CLIENT_KS_LOGIN_PATH
 
         response = HttpResponseRedirect(ret_path)
         response.set_cookie(CRAMS_CLIENT_COOKIE_KEY, ks_login_url)

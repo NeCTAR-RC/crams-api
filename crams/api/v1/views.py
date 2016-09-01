@@ -33,7 +33,7 @@ from crams.models import Project, Request, Contact, Provider, CramsToken
 from crams.models import UserEvents, ProvisionDetails
 from crams.permissions import IsRequestApprover, IsProjectContact
 from crams.permissions import IsActiveProvider
-from crams.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
+from crams import settings
 from crams.api.v1.utils import get_keystone_admin_client
 from crams.roleUtils import get_configurable_roles, generate_project_role
 from crams.roleUtils import setup_case_insensitive_roles
@@ -116,10 +116,11 @@ def nectar_token_auth_view(request):
     def rawTokenExtractFn():
         return request.POST.get("token", None)
 
-    client_url = request.COOKIES.get(CRAMS_CLIENT_COOKIE_KEY, None)
-    if not client_url:
+    client_login_url = request.COOKIES.get(settings.CRAMS_CLIENT_COOKIE_KEY)
+    if not client_login_url:
         print('No Client URL cookie, set default')
-        client_url = NECTAR_CLIENT_URL
+        client_login_url = \
+            settings.NECTAR_CLIENT_BASE_URL + settings.CLIENT_KS_LOGIN_PATH
 
     crams_token = auth_token_common(rawTokenExtractFn, request)
     if not isinstance(crams_token, CramsToken):
@@ -131,11 +132,11 @@ def nectar_token_auth_view(request):
 
     username = crams_token.user.username
     query_string = "?username=%s&rest_token=%s" % (username, crams_token.key)
-    if client_url:
+    if client_login_url:
         # redirect and authenticate user into crams
-        print('redirecting...', client_url + query_string)
-        print(' ---- client URL', client_url)
-        response = HttpResponseRedirect(client_url + query_string)
+        print('redirecting...', client_login_url + query_string)
+        print(' ---- client URL', client_login_url)
+        response = HttpResponseRedirect(client_login_url + query_string)
         response['token'] = crams_token.key
         response['roles'] = crams_token.ks_roles
     else:
