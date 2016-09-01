@@ -1,10 +1,10 @@
 # coding=utf-8
 """RequestSerializers."""
 import logging
-
-from django.conf import settings
+from crams import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
+
 from rest_framework.exceptions import ParseError
 from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
@@ -33,6 +33,7 @@ from crams.models import RequestQuestionResponse
 from crams.models import RequestStatus
 from crams.models import StorageRequest
 from crams.models import StorageRequestQuestionResponse
+from crams.models import NotificationTemplate
 from crams.api.v1.dataUtils.lookupData import get_funding_scheme_obj
 from crams.api.v1.serializers.lookupSerializers import \
     StorageProductZoneOnlySerializer
@@ -40,10 +41,11 @@ from crams.api.v1.serializers.utilitySerializers import \
     AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
 from crams.api.v1.serializers.utilitySerializers import \
      ActionStateModelSerializer
+from crams.api.v1.serializers import projectSerializers
 from crams.api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
 from crams.api.v1.dataUtils.lookupData import get_compute_product_obj
 from crams.api.v1.dataUtils.lookupData import get_storage_product_obj
-
+from crams.api.v1.APIConstants import DO_NOT_SERIALIZE_REQUESTS_FOR_PROJECT
 
 User = get_user_model()
 LOG = logging.getLogger(__name__)
@@ -389,11 +391,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         :param validated_data:
         :return new_request:
         """
-        newRequest = self._saveRequest(validated_data, None)
-
-        # send email notification
-        # self.send_notification(newRequest)
-        return newRequest
+        return self._saveRequest(validated_data, None)
 
     def _saveRequest(self, validated_data, existingRequestInstance):
 
@@ -528,6 +526,10 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                 req_question_resp_serializer.is_valid(raise_exception=True)
                 req_question_resp_serializer.save(request=request)
 
+        # send email notification
+        if not cramsActionState.is_clone_action:
+            self.send_notification(request)
+
         return request
 
     @classmethod
@@ -573,32 +575,60 @@ class CramsRequestSerializer(ActionStateModelSerializer):
 
         return RequestStatus.objects.get(code=status_code)
 
+    def populate_email_dict_for_request(self, alloc_request):
+        serializer = CramsRequestSerializer(alloc_request)
+        ret_dict = serializer.data
+
+        project_context = {'request': self.context['request'],
+                           DO_NOT_SERIALIZE_REQUESTS_FOR_PROJECT: True}
+        project_serializer = projectSerializers.ProjectSerializer(
+            alloc_request.project, many=False, context=project_context)
+        ret_dict['project'] = project_serializer.data
+
+        fb_lower = alloc_request.funding_scheme.funding_body.name.lower()
+        base_url = settings.FUNDING_BODY_CLIENT_REQUEST_PATH.get(fb_lower)
+        ret_dict['client_request_url'] = base_url + str(alloc_request.id)
+
+        return ret_dict
+
     def send_notification(self, alloc_req):
         """send notification.
 
         :param alloc_req:
         """
         try:
-            sender = settings.EMAIL_SENDER
+            template_obj = NotificationTemplate.objects.get(
+                request_status=alloc_req.request_status,
+                funding_body=alloc_req.funding_scheme.funding_body
+            )
+        except NotificationTemplate.DoesNotExist:
+            return
+
+        template = template_obj.template_file_path
+
+        mail_content = self.populate_email_dict_for_request(alloc_req)
+        try:
             desc = alloc_req.project.description
             subject = 'Allocation request - ' + desc
-            tpl_name = 'mail_tpl/notification.html'
+
+            sender = settings.EMAIL_SENDER
             funding_body_email = alloc_req.funding_scheme.funding_body.email
-            recipient_list = [funding_body_email]
+            recipient_list = get_request_contact_email_ids(alloc_req)
+            cc_list = [funding_body_email]
             mail_sender.send_notification(
                 sender=sender,
                 subject=subject,
-                mail_content=alloc_req,
-                template_name=tpl_name,
+                mail_content=mail_content,
+                template_name=template,
                 recipient_list=recipient_list,
-                cc_list=None,
+                cc_list=cc_list,
                 bcc_list=None,
                 reply_to=None)
-        except Exception:
-            LOG.error('Could not send notification email for allocation {}.'
-                      .format(desc))
+        except Exception as e:
+            error_message = '{} : Project - {}'.format(repr(e), desc)
+            LOG.error(error_message)
             if settings.DEBUG:
-                raise
+                raise Exception(error_message)
 
 
 class ReadOnlyCramsRequestSerializer(CramsRequestSerializer):
@@ -618,3 +648,11 @@ class ReadOnlyCramsRequestSerializer(CramsRequestSerializer):
         :param validated_data:
         """
         raise ParseError('Update not allowed ')
+
+
+def get_request_contact_email_ids(allocation_request):
+    ret_set = set()
+    for project_contact in allocation_request.project.project_contacts.all():
+        ret_set.add(project_contact.contact.email)
+
+    return list(ret_set)

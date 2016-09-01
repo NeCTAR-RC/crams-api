@@ -2,7 +2,7 @@
 """Project Serailizers."""
 from crams.api.v1.dataUtils.lookupData import LookupDataModel
 from crams.api.v1.dataUtils.lookupData import get_system_obj
-from crams.api.v1.serializers.requestSerializers import CramsRequestSerializer
+from crams.api.v1.serializers import requestSerializers
 from crams.api.v1.serializers.utilitySerializers import \
     AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
 from crams.api.v1.serializers.utilitySerializers import \
@@ -37,6 +37,7 @@ from crams.models import Request
 from crams.models import SupportedInstitution
 from crams.api.v1.APIConstants import CLONE
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
+from crams.api.v1.APIConstants import DO_NOT_SERIALIZE_REQUESTS_FOR_PROJECT
 
 
 class ContactSerializer(serializers.ModelSerializer, UpdatableSerializer):
@@ -418,8 +419,16 @@ class ProjectSerializer(ActionStateModelSerializer):
             requests = project_obj.requests.filter(parent_request__isnull=True)
 
         ret_list = []
-        for req in requests:
-            ret_list.append(CramsRequestSerializer(req).data)
+        override_data = self.context.get(OVERRIDE_READONLY_DATA, None)
+        serialize_requests = not (override_data and
+                                  DO_NOT_SERIALIZE_REQUESTS_FOR_PROJECT in
+                                  override_data)
+
+        if serialize_requests:
+            for req in requests:
+                req_serializer = requestSerializers.CramsRequestSerializer(req)
+                ret_list.append(req_serializer.data)
+
         return ret_list
 
     def _add_applicant_contact(self, new_project):
@@ -673,17 +682,19 @@ class ProjectSerializer(ActionStateModelSerializer):
                     existing_request_instance = existing_request_instances.pop(
                         request_id, None)
                     if existing_request_instance:
-                        request_serializer = CramsRequestSerializer(
-                            existing_request_instance,
-                            data=requestData,
-                            context=context)
+                        request_serializer = \
+                            requestSerializers.CramsRequestSerializer(
+                                existing_request_instance,
+                                data=requestData,
+                                context=context)
                     else:
                         raise ParseError(
                             'Project/Request mismatch, cannot find request' +
                             ' with id {}'.format(repr(request_id)))
                 else:
-                    request_serializer = CramsRequestSerializer(
-                        data=requestData, context=context)
+                    request_serializer = \
+                        requestSerializers.CramsRequestSerializer(
+                            data=requestData, context=context)
 
                 request_serializer.is_valid(raise_exception=True)
 
@@ -695,9 +706,10 @@ class ProjectSerializer(ActionStateModelSerializer):
             for idKey in existing_request_instances:
                 remaining_instance = existing_request_instances[idKey]
                 if not remaining_instance.parent_request:
-                    request_serializer = CramsRequestSerializer(
-                        remaining_instance, data={},
-                        partial=True, context=context)
+                    request_serializer = \
+                        requestSerializers.CramsRequestSerializer(
+                            remaining_instance, data={},
+                            partial=True, context=context)
                     request_serializer.is_valid(raise_exception=True)
                     request_serializer.save(project=project)
 
