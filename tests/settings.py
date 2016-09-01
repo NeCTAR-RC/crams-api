@@ -26,6 +26,7 @@ REST_FRAMEWORK.update({
     )
 })
 
+
 # Installed the Django tests runnere
 # INSTALLED_APPS += ('django_nose','django_jenkins',)
 
