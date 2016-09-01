@@ -1,0 +1,42 @@
+{% load url from future %}
+{% load crams_tags %}
+{% with project=request.project project_ids=request.project_ids project_contacts=request.project.project_contacts %}
+{% with UUID=project_ids|filter_project_id:"NeCTAR_UUID" contact_email=project_contacts|filter_project_contact:"Applicant" %}
+
+{% if UUID %}
+Please amend the allocation for {{ project_name }}
+{% else %}
+Please set up an allocation for {{ project_name }}
+{% endif %}
+
+Hello Research Cloud Admins,
+{% if UUID %}
+An amendment for the {{ project_name }} project has been approved. Please amend the quotas for the following allocation:
+{% else %}
+An allocation request for the {{ project_name }} project has been approved. Please set up the following allocation:
+{% endif %}
+{% if UUID %}Project UUID: {{ UUID }}{% endif %}
+{{ project_name }}, {{ contact_email }}
+
+Quota
+-----
+{% for compute_request in request.compute_requests %}
+Instances:      {{ compute_request.instances }}
+Cores:          {{ compute_request.cores }}
+{% endfor %}
+{% spaceless %}
+{% for storage_request in request.storage_requests %}
+{{ storage_request.storage_product.name }} ({{ storage_request.storage_product.zone.name }}): {{ storage_request.quota }} GB
+{% endfor %}
+{% endspaceless %}
+
+You can view the request at:
+    https://crams.rc.nectar.org.au/#/allocations/view_request/{{ request.id }}
+
+NOTE {{ contact_email }}: you will receive another email once this has been provisioned.
+
+Kind Regards,
+The NeCTAR Research Cloud Team.
+
+{% endwith %}
+{% endwith %}

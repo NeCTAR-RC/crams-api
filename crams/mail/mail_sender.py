@@ -35,7 +35,6 @@ def send_notification(
     message = template.render(ctx)
     email = EmailMessage(subject=subject, body=message,
                          from_email=sender, to=recipient_list)
-    email.content_subtype = 'html'
     if cc_list:
         email.cc = cc_list
     if bcc_list:
