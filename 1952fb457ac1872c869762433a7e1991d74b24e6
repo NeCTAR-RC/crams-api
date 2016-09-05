@@ -71,6 +71,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_2f20e3f6",
+        "filename": "crams/templates/notification/nectar/approve.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-05T09:15:15Z",
+      "side": 1,
+      "message": "API server can never be sure about front-end URL patterns. Hence the best option is to remove URL and instead use a generic text like, \u0027Please login to Nectar Crams Portal to view your Request\u0027",
+      "parentUuid": "7adec928_4c2c5dac",
+      "range": {
+        "startLine": 34,
+        "startChar": 4,
+        "endLine": 34,
+        "endChar": 78
+      },
+      "revId": "1952fb457ac1872c869762433a7e1991d74b24e6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_8c1d8576",
         "filename": "crams/templates/notification/nectar/provision.html",
         "patchSetId": 2
@@ -118,6 +142,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_8f7e57e3",
+        "filename": "crams/templates/notification/nectar/provision.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-05T09:15:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_2fc4633f",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 52
+      },
+      "revId": "1952fb457ac1872c869762433a7e1991d74b24e6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_6c4af984",
         "filename": "crams/templates/notification/nectar/reject.html",
         "patchSetId": 2
@@ -129,6 +177,30 @@
       "writtenOn": "2016-09-01T03:55:37Z",
       "side": 1,
       "message": "hard coded link",
+      "range": {
+        "startLine": 11,
+        "startChar": 4,
+        "endLine": 11,
+        "endChar": 35
+      },
+      "revId": "1952fb457ac1872c869762433a7e1991d74b24e6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_4f1d2fbd",
+        "filename": "crams/templates/notification/nectar/reject.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-05T09:15:15Z",
+      "side": 1,
+      "message": "API server can never be sure about front-end URL patterns. Hence the best option is to remove URL and instead use a generic text like, \u0027Please login to Nectar Crams Portal to view your Request\u0027",
+      "parentUuid": "7adec928_6c4af984",
       "range": {
         "startLine": 11,
         "startChar": 4,
@@ -175,6 +247,30 @@
       "writtenOn": "2016-09-05T05:58:13Z",
       "side": 1,
       "message": "Just get rid of this bit completely",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 48
+      },
+      "revId": "1952fb457ac1872c869762433a7e1991d74b24e6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_6f790bfc",
+        "filename": "crams/templates/notification/nectar/reject.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-05T09:15:15Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_4fc1af2d",
       "range": {
         "startLine": 15,
         "startChar": 0,
