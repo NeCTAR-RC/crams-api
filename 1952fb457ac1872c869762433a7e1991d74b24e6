@@ -94,6 +94,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_2fc4633f",
+        "filename": "crams/templates/notification/nectar/provision.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 29,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-05T05:58:13Z",
+      "side": 1,
+      "message": "https://support.ehelp.edu.au/support/solutions/articles/6000055378-welcome",
+      "parentUuid": "7adec928_8c1d8576",
+      "range": {
+        "startLine": 29,
+        "startChar": 0,
+        "endLine": 29,
+        "endChar": 52
+      },
+      "revId": "1952fb457ac1872c869762433a7e1991d74b24e6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_6c4af984",
         "filename": "crams/templates/notification/nectar/reject.html",
         "patchSetId": 2
@@ -130,6 +154,29 @@
       "message": "this is wrong, not sure what the correct url should be",
       "range": {
         "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 48
+      },
+      "revId": "1952fb457ac1872c869762433a7e1991d74b24e6",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_4fc1af2d",
+        "filename": "crams/templates/notification/nectar/reject.html",
+        "patchSetId": 2
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-05T05:58:13Z",
+      "side": 1,
+      "message": "Just get rid of this bit completely",
+      "range": {
+        "startLine": 15,
         "startChar": 0,
         "endLine": 16,
         "endChar": 48
