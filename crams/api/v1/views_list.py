@@ -7,12 +7,13 @@ from json import loads as json_loads
 from crams.api.v1.serializers.requestSerializers import \
      RequestHistorySerializer
 from rest_condition import And, Or
-from rest_framework import viewsets, permissions, generics
+from rest_framework import viewsets, generics
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 
 from crams.models import Request, FundingBody
 from crams.permissions import IsRequestApprover, IsProjectContact
+from crams.permissions import IsCramsAuthenticated
 from crams.roleUtils import get_authorised_funding_bodies
 from crams.DBConstants import JSON_APPROVER_STR
 
@@ -21,7 +22,7 @@ class CurrentUserRolesView(generics.RetrieveAPIView):
     """
         current user roles view
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
 
     def get(self, request, *args, **kwargs):
         """
@@ -44,7 +45,7 @@ class CurrentUserApproverRoleList(viewsets.ViewSet):
     """
      current user approver role list
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
 
     # noinspection PyMethodMayBeStatic
     def list(self, request):
@@ -69,7 +70,7 @@ class RequestHistoryViewSet(viewsets.ReadOnlyModelViewSet):
     """
     serializer_class = RequestHistorySerializer
     permission_classes = [
-        And(permissions.IsAuthenticated,
+        And(IsCramsAuthenticated,
             Or(IsProjectContact, IsRequestApprover))]
 
     def get_queryset(self):

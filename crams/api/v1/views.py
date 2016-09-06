@@ -20,8 +20,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from keystoneclient.exceptions import ClientException
-from rest_condition import And, Or  # ,ConditionalPermission, C, Not
-from rest_framework import permissions, filters
+from rest_condition import And, Or
+from rest_framework import filters
 from rest_framework import viewsets, generics, mixins
 from rest_framework.exceptions import NotFound, AuthenticationFailed
 from rest_framework.response import Response
@@ -32,7 +32,7 @@ from crams.dbUtils import fetch_active_provider_object_for_user
 from crams.models import Project, Request, Contact, Provider, CramsToken
 from crams.models import UserEvents, ProvisionDetails
 from crams.permissions import IsRequestApprover, IsProjectContact
-from crams.permissions import IsActiveProvider
+from crams.permissions import IsActiveProvider, IsCramsAuthenticated
 from crams.settings import CRAMS_CLIENT_COOKIE_KEY, NECTAR_CLIENT_URL
 from crams.api.v1.utils import get_keystone_admin_client
 from crams.roleUtils import get_configurable_roles, generate_project_role
@@ -151,9 +151,10 @@ def _get_crams_token_for_keystone_user(request, ks_user):
 
     # look up user
     username = ks_user["name"]
-    keystone_uuid = ks_user['id']
+    keystone_id = ks_user['id']
     try:
-        user = User.objects.get(keystone_uuid=keystone_uuid)
+        user = User.objects.get(keystone_uuid=keystone_id)
+
         if user.email != username:
             prev_email = user.email
             user.email = username
@@ -166,6 +167,7 @@ def _get_crams_token_for_keystone_user(request, ks_user):
                                                 repr(user))
             )
             events.save()
+
     except User.MultipleObjectsReturned:
         raise AuthenticationFailed(
             'Multiple UserIds exist for User, contact Support')
@@ -174,23 +176,32 @@ def _get_crams_token_for_keystone_user(request, ks_user):
             user, created = User.objects.get_or_create(email=username,
                                                        username=username)
             if not user.keystone_uuid:
-                user.keystone_uuid = keystone_uuid
+                user.keystone_uuid = keystone_id
                 user.save()
             # else:
             #   error_msg = 'Invalid Keystone id in DB for User {}, \
             #                   contact Support'.format(repr(username))
             #   raise AuthenticationFailed(error_msg)
 
-            events = UserEvents(
-                created_by=user,
-                event_message='User uuid set to  {} for User {}'.format(
-                    repr(
-                        user.keystone_uuid),
-                    repr(user)))
-            events.save()
+                events = UserEvents(
+                    created_by=user,
+                    event_message='User uuid set to  {} for User {}'.format(
+                        repr(
+                            user.keystone_uuid),
+                        repr(user)))
+                events.save()
         except Exception as e:
             return HttpResponse('Error creating user with email ' + username +
                                 '  ' + str(e))
+
+    # Expire existing Token and log Login
+    user.auth_token.delete()
+    msg = 'User logged in with valid Keystone token'
+    events = UserEvents(
+        created_by=user,
+        event_message=msg
+    )
+    events.save()
 
     configurable_roles = get_configurable_roles()
     user_roles = []
@@ -212,7 +223,7 @@ class RequestViewSet(viewsets.ModelViewSet):
     class RequestViewSet
     """
     permission_classes = [
-        And(permissions.IsAuthenticated,
+        And(IsCramsAuthenticated,
             Or(IsProjectContact, IsRequestApprover))]
     queryset = Request.objects.filter(parent_request__isnull=True)
     serializer_class = CramsRequestSerializer
@@ -242,15 +253,9 @@ class ProjectViewSet(viewsets.ModelViewSet):
     """
     class ProjectViewSet
     """
-    permission_classes = [
-        And(permissions.IsAuthenticated, Or(IsProjectContact))]
-    queryset = Project.objects.all()  # filter(parent_project__isnull=True)
+    permission_classes = (IsCramsAuthenticated, IsProjectContact)
+    queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-
-    #    def filter_queryset(self, queryset): #for List
-    # return
-    # queryset.filter(project_contacts__contact__email=self.request.user.email,
-    # parent_project__isnull=False).distinct()
 
     def list(self, request, **kwargs):
         """
@@ -276,7 +281,7 @@ class ContactViewSet(viewsets.ModelViewSet):
     """
     class ContactViewSet
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
 
@@ -285,7 +290,7 @@ class ContactDetail(mixins.RetrieveModelMixin, generics.GenericAPIView):
     """
     class ContactDetail
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
     lookup_field = 'email'
@@ -305,7 +310,7 @@ class SearchContact(generics.ListAPIView):
     """
     class SearchContact
     """
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
     queryset = Contact.objects.all()
     serializer_class = ContactRestrictedFieldSerializer
     filter_backends = (filters.SearchFilter,)
@@ -316,7 +321,7 @@ class ApproveRequestViewSet(viewsets.ModelViewSet):
     """
     class ApproveRequestViewSet
     """
-    permission_classes = (permissions.IsAuthenticated, IsRequestApprover)
+    permission_classes = (IsCramsAuthenticated, IsRequestApprover)
     serializer_class = ApproveRequestModelSerializer
     queryset = Request.objects.filter(
         parent_request__isnull=True,
@@ -327,7 +332,7 @@ class DeclineRequestViewSet(viewsets.ModelViewSet):
     """
     class DeclineRequestViewSet
     """
-    permission_classes = (permissions.IsAuthenticated, IsRequestApprover)
+    permission_classes = (IsCramsAuthenticated, IsRequestApprover)
     serializer_class = DeclineRequestModelSerializer
     queryset = Request.objects.filter(
         parent_request__isnull=True,
@@ -338,7 +343,7 @@ class UpdateProvisionProjectViewSet(viewsets.ModelViewSet):
     """
     class UpdateProvisionProjectViewSet
     """
-    permission_classes = (permissions.IsAuthenticated, IsActiveProvider)
+    permission_classes = (IsCramsAuthenticated, IsActiveProvider)
     serializer_class = UpdateProvisionProjectSerializer
     queryset = Project.objects.filter(
         parent_project__isnull=True,
@@ -362,7 +367,7 @@ class ProvisionProjectViewSet(viewsets.ReadOnlyModelViewSet):
     """
     class ProvisionProjectViewSet
     """
-    permission_classes = (permissions.IsAuthenticated, IsActiveProvider)
+    permission_classes = (IsCramsAuthenticated, IsActiveProvider)
     serializer_class = ProvisionProjectSerializer
     queryset = Project.objects.filter(
         parent_project__isnull=True, requests__parent_request__isnull=True,
@@ -397,7 +402,7 @@ class ProvisionRequestViewSet(viewsets.ReadOnlyModelViewSet):
     """
     class ProvisionRequestViewSet
     """
-    permission_classes = (permissions.IsAuthenticated, IsActiveProvider)
+    permission_classes = (IsCramsAuthenticated, IsActiveProvider)
     serializer_class = ProvisionRequestSerializer
     queryset = Request.objects.filter(
         request_status__code__in=PROVISION_ENABLE_REQUEST_STATUS,
