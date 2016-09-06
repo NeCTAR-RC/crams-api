@@ -16,3 +16,4 @@ crams.db
 crams/local/local_settings.py
 dist/*
 build/*
+crams_test.log
