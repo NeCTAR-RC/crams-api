@@ -5,12 +5,13 @@ Crams Permissions
 
 from json import loads as json_loads
 
-from rest_framework import permissions
+from rest_framework import permissions, exceptions
 
-from crams.settings import CRAMS_PROVISIONER_ROLE
+from crams.settings import CRAMS_PROVISIONER_ROLE, TOKEN_EXPIRY_TIME_SECONDS
 from crams.roleUtils import FB_ROLE_MAP_REVERSE
-from crams.models import Request, Project
+from crams.models import Request, Project, CramsToken
 from crams.lang_utils import strip_lower
+from crams.dateUtils import get_current_time_for_app_tz, get_seconds_elapsed
 
 
 def user_has_roles(userobj, role_list):
@@ -29,6 +30,30 @@ def user_has_roles(userobj, role_list):
             return role_set.issubset(user_roles)
 
     return False
+
+
+class IsCramsAuthenticated(permissions.IsAuthenticated):
+    """
+    Global permission, determine if Curent User has provider role
+    """
+    message = 'User does not hold valid CramsToken.'
+
+    def has_permission(self, request, view):
+        """
+        user has a valid cramstoken (not expired)
+        :param request:
+        :param view:
+        :return:
+        """
+        if super().has_permission(request, view):
+            crams_token = CramsToken.objects.get(user=request.user)
+            elapsed_seconds = get_seconds_elapsed(
+                get_current_time_for_app_tz(), crams_token.created)
+            if elapsed_seconds >= TOKEN_EXPIRY_TIME_SECONDS:
+                raise exceptions.NotAuthenticated(self.message)
+            return True
+
+        return False
 
 
 class IsRequestApprover(permissions.BasePermission):
