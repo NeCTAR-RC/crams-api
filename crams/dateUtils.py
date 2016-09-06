@@ -3,6 +3,9 @@
 Date Utility Functions
 """
 import calendar
+import pytz
+from crams.settings import TIME_ZONE
+from django.utils import timezone
 from datetime import datetime, date, timedelta, MINYEAR, MAXYEAR
 
 
@@ -41,7 +44,7 @@ def test_get_date_str():
 
     """
     assert get_date_str(date(2014, 10, 16)) == '2014-10-16'
-    assert get_date_str(get_current_time()) == get_current_date()
+    assert get_date_str(get_current_time_for_app_tz()) == get_current_date()
 
 
 def is_current_year(date_time_obj):
@@ -74,7 +77,7 @@ def get_current_year():
 
     :return:
     """
-    return get_current_time().year
+    return get_current_time_for_app_tz().year
 
 
 def test_get_current_year():
@@ -113,13 +116,14 @@ def get_max_date():
     return date(MAXYEAR, 12, 31)
 
 
-def get_current_time():
+def get_current_time_for_app_tz():
     """
         get current time
 
     :return:
     """
-    return datetime.now()
+    tz = pytz.timezone(TIME_ZONE)
+    return datetime.now(tz)
 
 
 def get_current_date():
@@ -257,3 +261,22 @@ def test_is_current_date_after_given_date():
             3)), "Current date must not be before past date " + str(
         reduce_date(
             get_current_date(), 3))
+
+
+def get_minutes_elapsed(end_ts, start_ts):
+    return int(get_seconds_elapsed(end_ts, start_ts) / 60)
+
+
+def get_seconds_elapsed(end_ts, start_ts):
+    start_ts_non_naive = convert_naive_to_utc(start_ts)
+    end_ts_non_naive = convert_naive_to_utc(end_ts)
+    elapsed_dt = end_ts_non_naive - start_ts_non_naive
+    return elapsed_dt.total_seconds()
+
+
+def convert_naive_to_utc(ts):
+    if timezone.is_naive(ts):
+        tz = pytz.timezone(TIME_ZONE)
+        zone_ts = ts.replace(tzinfo=tz)
+        return zone_ts
+    return ts

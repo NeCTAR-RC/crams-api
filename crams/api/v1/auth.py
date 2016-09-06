@@ -10,7 +10,7 @@ from rest_framework.authtoken.models import Token
 from rest_framework.decorators import api_view
 
 from crams import settings
-from crams.models import CramsToken
+from crams.models import CramsToken, UserEvents
 from crams.account.models import User
 
 
@@ -73,6 +73,12 @@ class CramsLoginAuthToken(views.ObtainAuthToken):
         password = serializer.validated_data['password']
         user = authenticate(username=username, password=password)
         if user is not None:
+            msg = 'User logged in with valid User/Password'
+            UserEvents.objects.create(
+                created_by=user,
+                event_message=msg
+            )
+
             crams_token, created = CramsToken.objects.get_or_create(user=user)
             response = Response({'token': crams_token.key})
             response['token'] = crams_token.key

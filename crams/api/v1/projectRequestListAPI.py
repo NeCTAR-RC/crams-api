@@ -14,7 +14,7 @@ from crams.api.v1.serializers.utilitySerializers import \
      ProvisionDetailsSerializer
 from django.db.models import Q
 from rest_framework.exceptions import ParseError
-from rest_framework.permissions import IsAuthenticated
+from crams.permissions import IsCramsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -58,7 +58,7 @@ class FundingBodyAllocationsCounter(APIView):
     """
         FundingBodyAllocationsCounter
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
 
     # noinspection PyUnusedLocal
     def get(self, request, format=None):
@@ -97,7 +97,7 @@ class ApproverReviewerRequestListView(APIView):
     """
         class ApproverReviewerRequestListView
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
 
     # noinspection PyUnusedLocal
     def get(self, request, format=None):
@@ -227,7 +227,7 @@ class UserProjectListView(APIView):
     """
         class UserProjectListView
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
 
     # noinspection PyUnusedLocal
     def get(self, request, format=None):
@@ -244,7 +244,7 @@ class UserProjectRequestListView(APIView):
     """
         UserProjectRequestListView
     """
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsCramsAuthenticated]
 
     # noinspection PyUnusedLocal
     def get(self, request, format=None):

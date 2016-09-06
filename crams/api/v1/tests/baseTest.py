@@ -28,7 +28,6 @@ class CRAMSApiTstCase(APITestCase):
             title='Mr', given_name='Test', surname='MeRC', email=testEmail,
             phone='99020780', organisation='Monash University')
         self.token, created = CramsToken.objects.get_or_create(user=self.user)
-
         self.factory = APIRequestFactory()
 
     def _getUser(self, userName, testEmail):
@@ -48,6 +47,13 @@ class CRAMSApiTstCase(APITestCase):
         request.user = self.user
         if idStr:
             return view(request, pk=idStr)
+        return view(request)
+
+    def base_put_api(self, view, url, put_data, id_str=None):
+        request = self.factory.put(url, put_data)
+        request.user = self.user
+        if id_str:
+            return view(request, pk=id_str)
         return view(request)
 
     def _create_project_common(self, test_data):

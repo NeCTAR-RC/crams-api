@@ -133,6 +133,9 @@ KS_PROJECT = ''
 # NeCTAR Keystone auth url
 KS_URL = ""
 
+# Crams Token Expiry Time
+TOKEN_EXPIRY_TIME_MINUTES = 4 * 60
+TOKEN_EXPIRY_TIME_SECONDS = 4 * 60 * 60
 # APPROVER ROLES
 NECTAR_APPROVER_ROLE = 'AllocationAdmin'
 VICNODE_APPROVER_ROLE = 'vicnode_approver'
