@@ -1,0 +1,280 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_729572e3",
+        "filename": "crams/api/v1/auth.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 93,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "you could use UserEvents.objects.create(...) here to make it shorted but not gonna -1 on that",
+      "range": {
+        "startLine": 88,
+        "startChar": 0,
+        "endLine": 93,
+        "endChar": 25
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_d2bba670",
+        "filename": "crams/api/v1/tests/authorisationTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "import the module as opposed to all the classes",
+      "range": {
+        "startLine": 4,
+        "startChar": 0,
+        "endLine": 5,
+        "endChar": 52
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_92c11ee7",
+        "filename": "crams/api/v1/tests/authorisationTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 9,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "import the module as opposed to all the classes",
+      "range": {
+        "startLine": 6,
+        "startChar": 0,
+        "endLine": 9,
+        "endChar": 48
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_72bc926d",
+        "filename": "crams/api/v1/tests/authorisationTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 11,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "import the module as opposed to all the classes",
+      "range": {
+        "startLine": 10,
+        "startChar": 0,
+        "endLine": 11,
+        "endChar": 47
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_b2b61a89",
+        "filename": "crams/api/v1/tests/authorisationTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "can go?",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 33
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_529076ec",
+        "filename": "crams/api/v1/tests/authorisationTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "import the module as opposed to all the classes",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 33
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_3293eafb",
+        "filename": "crams/api/v1/tests/baseTest.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 52,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "please try and at least be consistant with your method name formats, some are java style camelCase and some are traditional python style eg. _create_project_common below\n\nIdeally you shouldn\u0027t use camelCase in module and method names, only in class names",
+      "range": {
+        "startLine": 52,
+        "startChar": 8,
+        "endLine": 52,
+        "endChar": 18
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_b29ffa02",
+        "filename": "crams/api/v1/views.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "this comment doesn\u0027t look like it\u0027s needed? (not much of a comment)",
+      "range": {
+        "startLine": 23,
+        "startChar": 36,
+        "endLine": 23,
+        "endChar": 69
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_d2a48659",
+        "filename": "crams/api/v1/views.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 154,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "might be good to change this to keystone_id to avoid confusion, keystone user id is not a UUID",
+      "range": {
+        "startLine": 154,
+        "startChar": 4,
+        "endLine": 154,
+        "endChar": 17
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_1286eeb9",
+        "filename": "crams/api/v1/views.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 257,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "can go?",
+      "range": {
+        "startLine": 257,
+        "startChar": 38,
+        "endLine": 257,
+        "endChar": 75
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_f288a2c8",
+        "filename": "crams/api/v1/views.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 263,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "can go?",
+      "range": {
+        "startLine": 260,
+        "startChar": 3,
+        "endLine": 263,
+        "endChar": 46
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_929afe12",
+        "filename": "crams/permissions.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 51,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-07T22:48:47Z",
+      "side": 1,
+      "message": "not sure why we\u0027re using timezones here, just adds extra complexity?",
+      "range": {
+        "startLine": 51,
+        "startChar": 16,
+        "endLine": 51,
+        "endChar": 45
+      },
+      "revId": "ba66214c3851a17fefa6ee7c20cba6be6a284025",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
