@@ -197,10 +197,10 @@ class ProvisionRequestSerializer(ReadOnlyCramsRequestSerializer):
         for productRequest in query_set:
             ret_list.append(getRepresentationFn(productRequest))
             provision_details = productRequest.provision_details
-            update_status = ProvisionDetails.POST_PROVISION_UPDATE
+            update_status = ProvisionDetails.READY_TO_SEND_SET
             update_sent_status = ProvisionDetails.POST_PROVISION_UPDATE_SENT
             if provision_details:
-                if provision_details.status == update_status:
+                if provision_details.status in update_status:
                     provision_details.status = update_sent_status
                     provision_details.save()
             else:
