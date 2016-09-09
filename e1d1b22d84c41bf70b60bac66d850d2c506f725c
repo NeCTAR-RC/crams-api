@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_95c108e7",
+        "filename": "crams/templates/notification/nectar/reject.html",
+        "patchSetId": 7
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-09T03:15:56Z",
+      "side": 1,
+      "message": "https://support.ehelp.edu.au/support/solutions/articles/6000055380-resources-available-to-you",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 15,
+        "endChar": 48
+      },
+      "revId": "e1d1b22d84c41bf70b60bac66d850d2c506f725c",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_b5b60489",
+        "filename": "crams/templates/notification/nectar/submit.html",
+        "patchSetId": 7
+      },
+      "lineNbr": 12,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-09T03:15:56Z",
+      "side": 1,
+      "message": "https://support.ehelp.edu.au/support/solutions/articles/6000055380-resources-available-to-you",
+      "range": {
+        "startLine": 12,
+        "startChar": 0,
+        "endLine": 12,
+        "endChar": 48
+      },
+      "revId": "e1d1b22d84c41bf70b60bac66d850d2c506f725c",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
