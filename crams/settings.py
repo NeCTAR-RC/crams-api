@@ -143,12 +143,19 @@ CRAMS_PROVISIONER_ROLE = 'crams_provisioner'
 # CRAMS Frontend Keystone login page
 CRAMS_CLIENT_COOKIE_KEY = 'client_url'
 # Do not remove trailing slash
-NECTAR_CLIENT_URL = ''
+CLIENT_KS_LOGIN_PATH = '/#/ks-login/'
+NECTAR_CLIENT_BASE_URL = ''
+NECTAR_CLIENT_VIEW_REQUEST_PATH = '/#/allocations/view_request/'
+
+FUNDING_BODY_CLIENT_REQUEST_PATH = {
+    'nectar': NECTAR_CLIENT_BASE_URL + NECTAR_CLIENT_VIEW_REQUEST_PATH
+}
+
 CRAMS_RC_SHIB_URL_PART = 'https://example.org/rcshibboleth/?return-path='
 
 # Default Email setup to console
 # Email notification configuration
-EMAIL_SENDER = 'admin@example.org'
+EMAIL_SENDER = 'admin@crams.dev'
 
 # Send email to the console by default
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
