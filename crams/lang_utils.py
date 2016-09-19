@@ -27,7 +27,7 @@ class Bunch(list):
     """
 
     def __init__(self, *args, **kw):
-        super().__init__()
+        super(Bunch, self).__init__()
         self[:] = list(args)
         setattr(self, '__dict__', kw)
 

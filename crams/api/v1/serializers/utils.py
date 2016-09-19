@@ -45,9 +45,9 @@ class CramsActionState(object):
         self.is_clone_action = False
 
         if not parent_obj.context or 'request' not in parent_obj.context:
-            self.error_message = '"context" object not found, required to \
-                                 identify current user.'
-            return
+            self.error_message = '"context" object not found, required to ' \
+                                 + 'identify current user.'
+            raise Exception(self.error_message)
 
         self.rest_request = parent_obj.context.get('request', None)
 

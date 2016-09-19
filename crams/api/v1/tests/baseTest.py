@@ -5,7 +5,7 @@ from rest_framework.test import APITestCase, APIRequestFactory
 
 from crams.account.models import User
 from crams.models import Contact, CramsToken, Provider, ComputeProduct
-from crams.models import Request
+from crams.models import Request, Project, ProjectContact, ContactRole
 from crams.models import StorageProduct
 from crams.roleUtils import ROLE_FB_MAP, setup_case_insensitive_roles
 
@@ -19,7 +19,7 @@ from crams.api.v1.views import UpdateProvisionProjectViewSet
 class CRAMSApiTstCase(APITestCase):
 
     def setUp(self):
-        super().setUp()
+        super(CRAMSApiTstCase, self).setUp()
         self.pp = pprint.PrettyPrinter(indent=4)
         self.roleList = None
         testEmail = 'tests.merc@monash.edu'
@@ -79,6 +79,18 @@ class CRAMSApiTstCase(APITestCase):
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, response.data)
         return response
+
+    def add_project_contact_curr_user(self, project_id):
+        # setup user as a contact, so that read/update can be done on Project
+        # by current user
+        project = Project.objects.get(pk=project_id)
+        contact, created = Contact.objects.get_or_create(
+            title='title', given_name=self.user.first_name,
+            surname=self.user.last_name, email=self.user.email, phone='0',
+            organisation='org')
+        contact_role = ContactRole.objects.filter()[0]
+        ProjectContact.objects.create(
+            project=project, contact=contact, contact_role=contact_role)
 
     def debugResponse(self, response, actStr):
         project = response.data
@@ -166,6 +178,26 @@ class CRAMSApiTstCase(APITestCase):
             return updateValidateFn(response)
         else:
             return _updateSuccessFn(response)
+
+    def validate_user_provision_details(self, provision_details_json):
+        self.assertIsNotNone(provision_details_json,
+                             'Expected Provision details, got none')
+
+        message = provision_details_json.get('message')
+        self.assertIsNone(message, 'User provision message not null: ' +
+                          str(message))
+        self.assertEqual(provision_details_json["status"], 'S',
+                         'User provision status not sent')
+
+    def validate_admin_provision_details(self, provision_details_json):
+        self.assertIsNotNone(provision_details_json,
+                             'Expected Provision details, got none')
+
+        message = provision_details_json.get('message')
+        self.assertIsNotNone(message,
+                             'Admin provision message can not be null')
+        self.assertEqual(provision_details_json["status"], 'F',
+                         'Admin provision status must be Fail')
 
 
 class AdminBaseTstCase(CRAMSApiTstCase):

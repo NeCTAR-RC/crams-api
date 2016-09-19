@@ -180,7 +180,7 @@ class _AbstractCramsBase(CRAMSApiTstCase):
         class ApproveActionData(AdminActionData):
 
             def __init__(self):
-                super().__init__()
+                super(ApproveActionData, self).__init__()
                 self.actionMsg = 'Approve Request'
                 self.expected_req_status = {
                     'code': REQUEST_STATUS_APPROVED, 'status': 'Approved'}
@@ -197,7 +197,7 @@ class _AbstractCramsBase(CRAMSApiTstCase):
         class DeclineActionData(AdminActionData):
 
             def __init__(self):
-                super().__init__()
+                super(DeclineActionData, self).__init__()
                 self.actionMsg = 'Decline Request'
                 self.expected_req_status = {
                     'code': REQUEST_STATUS_DECLINED, 'status': 'Declined'}
@@ -214,7 +214,7 @@ class _AbstractCramsBase(CRAMSApiTstCase):
         class ExtendDeclineActionData(AdminActionData):
 
             def __init__(self):
-                super().__init__()
+                super(ExtendDeclineActionData, self).__init__()
                 self.actionMsg = 'Extend/Decline Request'
                 self.expected_req_status = {
                     'code': REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED,
@@ -324,7 +324,7 @@ class BaseCramsFlow(_AbstractCramsBase):
             self.provisionGivenProjectResponse(
                 self.provisioner_name, response3,
                 getProjectDataFlag=True, debug=debug)
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             proj_data_response,
             expected_provision_status=ProvisionDetails.PROVISIONED)
 
@@ -340,7 +340,7 @@ class BaseCramsFlow(_AbstractCramsBase):
         self._checkProjectRequestStatusCode(
             edit_response, REQUEST_STATUS_UPDATE_OR_EXTEND)
 
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             edit_response,
             expected_provision_status=ProvisionDetails.POST_PROVISION_UPDATE
         )
@@ -354,7 +354,7 @@ class BaseCramsFlow(_AbstractCramsBase):
         approveResponse, response4 = self.approveRequest(
             edit_response, getProjectDataFlag=True)
 
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             self._get_project_data_by_id(response4.data.get('id')),
             expected_provision_status=ProvisionDetails.POST_PROVISION_UPDATE
         )
@@ -370,7 +370,7 @@ class BaseCramsFlow(_AbstractCramsBase):
             self.provisioner_name, make_ready_for_provisioning_flag=True)
 
         update_sent = ProvisionDetails.POST_PROVISION_UPDATE_SENT
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             self._get_project_data_by_id(response4.data.get('id')),
             expected_provision_status=update_sent
         )
@@ -386,7 +386,7 @@ class BaseCramsFlow(_AbstractCramsBase):
                 self.provisioner_name, response4,
                 getProjectDataFlag=True, debug=debug)
 
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             proj_data_response,
             expected_provision_status=ProvisionDetails.PROVISIONED)
         if flowCount <= self.PROVISION_APPROVED_UPDATED_PROVISIONED_PROJECT:
@@ -394,7 +394,7 @@ class BaseCramsFlow(_AbstractCramsBase):
 
         return proj_data_response
 
-    def _verify_project_provisioning_details(
+    def _verify_db_project_provisioning_details(
             self,
             proj_data_response,
             expected_provision_status=None,
@@ -430,21 +430,6 @@ class BaseCramsFlow(_AbstractCramsBase):
                 provision_details_qs.exists(),
                 'Project Provision details should not exist until project is '
                 'sent for provisioning or update')
-
-        # for request in proj_data_response.data.get('requests', []):
-        #     for s in request.get('compute_requests', []):
-        #         provision_details = s.get('provision_details', None)
-        #         self.assertEqual(provision_details.get('status'),
-        #                          expected_provision_status,
-        #                          'comp_req {}: provision status error'.
-        #                          format(repr(s.get('id'))))
-        #
-        #     for s in request.get('storage_requests', []):
-        #         provision_details = s.get('provision_details', None)
-        #         self.assertEqual(provision_details.get('status'),
-        #                          expected_provision_status,
-        #                          'storage_req {}: provision status error'.
-        #                          format(repr(s.get('id'))))
 
     def _get_provisioner(
             self,

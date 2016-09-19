@@ -130,9 +130,11 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
     request_status = SlugRelatedField(
         many=False, read_only=True, slug_field='status')
     compute_requests = ComputeRequestSerializer(
+        context=ComputeRequestSerializer.show_error_msg_context(),
         many=True, read_only=False, validators=[
             ApproveCompReqValid()])
     storage_requests = StorageRequestSerializer(
+        context=StorageRequestSerializer.show_error_msg_context(),
         many=True, read_only=False, validators=[
             ApproveStorReqValid()])
     funding_body = serializers.SerializerMethodField(method_name='get_fbody')

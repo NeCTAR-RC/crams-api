@@ -13,6 +13,7 @@ from rest_framework.relations import RelatedField
 from crams.models import Question, ProvisionDetails
 from crams.api.v1.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
+from crams import roleUtils
 
 
 class ActionStateModelSerializer(serializers.ModelSerializer):
@@ -35,16 +36,52 @@ class ActionStateModelSerializer(serializers.ModelSerializer):
                     'ActionStateModelSerializer: ' +
                     self.cramsActionState.error_message)
 
+    def to_representation(self, instance):
+        # make available CramsActionState object for 'get' operation
+        self._setActionState()
 
-class ProvisionDetailsSerializer(ActionStateModelSerializer):
+        return super(ActionStateModelSerializer,
+                     self).to_representation(instance)
+
+
+class ProvisionDetailsSerializer(serializers.ModelSerializer):
     """class ProvisionDetailsSerializer."""
 
     provider = ProviderSerializer(many=False)
+    SHOW_FAIL_MESSAGE = 'show_fail_message'
 
     class Meta(object):
         model = ProvisionDetails
         fields = ('id', 'status', 'message', 'provider')
         read_only_fields = ('provider')
+
+    @classmethod
+    def hide_error_msg_context(cls):
+        return {cls.SHOW_FAIL_MESSAGE: False}
+
+    @classmethod
+    def show_error_msg_context(cls):
+        return {cls.SHOW_FAIL_MESSAGE: True}
+
+    @classmethod
+    def build_context_obj(cls, user_obj, funding_body_obj=None):
+        if roleUtils.has_role_fb(user_obj, funding_body_obj):
+            return cls.show_error_msg_context()
+        return cls.hide_error_msg_context()
+
+    @classmethod
+    def sanitize_provision_details_for_user(cls, provision_details_dict):
+        if provision_details_dict.get('status') == ProvisionDetails.FAILED:
+            provision_details_dict['status'] = ProvisionDetails.SENT
+            provision_details_dict['message'] = None
+
+    def to_representation(self, instance):
+        data = super(ProvisionDetailsSerializer,
+                     self).to_representation(instance)
+        if self.context:
+            if not self.context.get(self.SHOW_FAIL_MESSAGE, False):
+                self.sanitize_provision_details_for_user(data)
+        return data
 
     def validate(self, data):
         """validate.

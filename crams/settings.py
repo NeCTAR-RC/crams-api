@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 import logging
+from crams import DBConstants
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -150,7 +151,8 @@ NECTAR_CLIENT_BASE_URL = ''
 NECTAR_CLIENT_VIEW_REQUEST_PATH = '/#/allocations/view_request/'
 
 FUNDING_BODY_CLIENT_REQUEST_PATH = {
-    'nectar': NECTAR_CLIENT_BASE_URL + NECTAR_CLIENT_VIEW_REQUEST_PATH
+    DBConstants.FUNDING_BODY_NECTAR.lower():
+        NECTAR_CLIENT_BASE_URL + NECTAR_CLIENT_VIEW_REQUEST_PATH
 }
 
 CRAMS_RC_SHIB_URL_PART = 'https://example.org/rcshibboleth/?return-path='

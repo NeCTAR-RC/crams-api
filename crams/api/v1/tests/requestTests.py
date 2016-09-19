@@ -25,10 +25,14 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
                 cores,
                 quota):
             # update compute
-            requestDict["compute_requests"][0]["instances"] = instances
-            requestDict["compute_requests"][0]["cores"] = cores
+            compute_requests = requestDict.get('compute_requests', [])
+            if compute_requests:
+                requestDict["compute_requests"][0]["instances"] = instances
+                requestDict["compute_requests"][0]["cores"] = cores
             # update storage
-            requestDict["storage_requests"][0]["quota"] = quota
+            storage_requests = requestDict.get('storage_requests', [])
+            if storage_requests:
+                requestDict["storage_requests"][0]["quota"] = quota
 
             # update request
             response = self._update_project_common(
@@ -94,10 +98,14 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
         instances = 4
         cores = 4
         quota = 4000
-        requestData["compute_requests"][0]["instances"] = instances
-        requestData["compute_requests"][0]["cores"] = cores
+        compute_requests = requestData.get('compute_requests', [])
+        if compute_requests:
+            requestData["compute_requests"][0]["instances"] = instances
+            requestData["compute_requests"][0]["cores"] = cores
         # update storage
-        requestData["storage_requests"][0]["quota"] = quota
+        storage_requests = requestData.get('storage_requests', [])
+        if storage_requests:
+            requestData["storage_requests"][0]["quota"] = quota
 
         # update project/request first time
         self._update_project_common(

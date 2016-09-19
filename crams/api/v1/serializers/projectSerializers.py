@@ -3,14 +3,7 @@
 from crams.api.v1.dataUtils.lookupData import LookupDataModel
 from crams.api.v1.dataUtils.lookupData import get_system_obj
 from crams.api.v1.serializers import requestSerializers
-from crams.api.v1.serializers.utilitySerializers import \
-    AbstractQuestionResponseSerializer, ProvisionDetailsSerializer
-from crams.api.v1.serializers.utilitySerializers import \
-     ActionStateModelSerializer
-from crams.api.v1.serializers.utilitySerializers import \
-    DynamicFieldsModelSerializer
-from crams.api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
-from crams.api.v1.serializers.utilitySerializers import UpdatableSerializer
+from crams.api.v1.serializers import utilitySerializers
 from django.db import transaction
 from rest_framework import serializers
 from rest_framework.exceptions import ParseError
@@ -18,7 +11,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 
 from crams.DBConstants import APPLICANT
-from crams.DBConstants import NeCTAR
+from crams.DBConstants import SYSTEM_NECTAR
 from crams.DBConstants import REQUEST_STATUS_APPROVED
 from crams.models import Contact
 from crams.models import ContactRole
@@ -40,7 +33,8 @@ from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 from crams.api.v1.APIConstants import DO_NOT_SERIALIZE_REQUESTS_FOR_PROJECT
 
 
-class ContactSerializer(serializers.ModelSerializer, UpdatableSerializer):
+class ContactSerializer(serializers.ModelSerializer,
+                        utilitySerializers.UpdatableSerializer):
     """class ContactSerializer."""
 
     # check email is unique
@@ -74,9 +68,9 @@ def get_contact_lookup_data(search_key):
     return LookupDataModel(Contact).serialize(search_key, ContactSerializer)
 
 
-class ContactRestrictedFieldSerializer(
-        DynamicFieldsModelSerializer,
-        serializers.ModelSerializer):
+class ContactRestrictedFieldSerializer(utilitySerializers.
+                                       DynamicFieldsModelSerializer,
+                                       serializers.ModelSerializer):
     """class ContactRestrictedFieldSerializer."""
 
     class Meta(object):
@@ -97,7 +91,7 @@ class ContactRestrictedFieldSerializer(
 class GrantSerializer(serializers.ModelSerializer):
     """class GrantSerializer."""
 
-    grant_type = PrimaryKeyLookupField(
+    grant_type = utilitySerializers.PrimaryKeyLookupField(
         queryset=GrantType.objects.all(), many=False, required=True, fields=[
             'id', 'description'])  # Grant._meta.get_all_field_names())
 
@@ -169,7 +163,8 @@ class SupportedInstitutionSerializer(serializers.ModelSerializer):
         fields = ('id', 'institution')
 
 
-class ProjectQuestionResponseSerializer(AbstractQuestionResponseSerializer):
+class ProjectQuestionResponseSerializer(utilitySerializers.
+                                        AbstractQuestionResponseSerializer):
     """class ProjectQuestionResponseSerializer."""
 
     class Meta(object):
@@ -182,7 +177,7 @@ class ProjectQuestionResponseSerializer(AbstractQuestionResponseSerializer):
 class DomainSerializer(serializers.ModelSerializer):
     """class DomainSerializer."""
 
-    for_code = PrimaryKeyLookupField(
+    for_code = utilitySerializers.PrimaryKeyLookupField(
         many=False, queryset=FORCode.objects.all(), fields=[
             'id', 'code', 'description'])
 
@@ -217,7 +212,7 @@ class DomainSerializer(serializers.ModelSerializer):
 class ProjectIDSerializer(serializers.ModelSerializer):
     """class ProjectIDSerializer."""
 
-    system = PrimaryKeyLookupField(
+    system = utilitySerializers.PrimaryKeyLookupField(
         many=False,
         required=True,
         queryset=ProjectIDSystem.objects.all(),
@@ -274,14 +269,14 @@ class ProjectIDSerializer(serializers.ModelSerializer):
 class ProjectContactSerializer(serializers.ModelSerializer):
     """class ProjectContactSerializer."""
 
-    contact = PrimaryKeyLookupField(
+    contact = utilitySerializers.PrimaryKeyLookupField(
         many=False,
         required=True,
         queryset=Contact.objects.all(),
         fields=[
             'id',
             'email'])
-    contact_role = PrimaryKeyLookupField(
+    contact_role = utilitySerializers.PrimaryKeyLookupField(
         many=False,
         required=True,
         queryset=ContactRole.objects.all(),
@@ -331,7 +326,7 @@ class ProjectContactSerializer(serializers.ModelSerializer):
         raise ParseError('Contact Role is required')
 
 
-class ProjectSerializer(ActionStateModelSerializer):
+class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
     """class ProjectSerializer."""
 
     # project question response
@@ -395,10 +390,20 @@ class ProjectSerializer(ActionStateModelSerializer):
         :param project_obj:
         :return:
         """
+        if hasattr(self, 'cramsActionState'):
+            user_obj = self.cramsActionState.rest_request.user
+            context = utilitySerializers.\
+                ProvisionDetailsSerializer.build_context_obj(user_obj)
+        else:
+            context = utilitySerializers. \
+                ProvisionDetailsSerializer.hide_error_msg_context()
+
         ret_list = []
         for p in project_obj.linked_provisiondetails.all():
-            ret_list.append(
-                ProvisionDetailsSerializer(p.provision_details).data)
+            pd_serializer = utilitySerializers.\
+                ProvisionDetailsSerializer(p.provision_details,
+                                           context=context)
+            ret_list.append(pd_serializer.data)
 
         return ret_list
 
@@ -425,8 +430,10 @@ class ProjectSerializer(ActionStateModelSerializer):
                                   override_data)
 
         if serialize_requests:
+            req_context = {'request': context_request}
             for req in requests:
-                req_serializer = requestSerializers.CramsRequestSerializer(req)
+                req_serializer = requestSerializers.\
+                    CramsRequestSerializer(req, context=req_context)
                 ret_list.append(req_serializer.data)
 
         return ret_list
@@ -487,7 +494,7 @@ class ProjectSerializer(ActionStateModelSerializer):
                     parent_request__in=request_ids).exists():
 
                 if project.description != data['description']:
-                    nectar_system = get_system_obj({'system': NeCTAR})
+                    nectar_system = get_system_obj({'system': SYSTEM_NECTAR})
                     if project.project_ids.filter(
                             system=nectar_system).exists():
                         raise ValidationError(
@@ -606,13 +613,18 @@ class ProjectSerializer(ActionStateModelSerializer):
             validated_data['created_by'] = current_user
 
         project = Project.objects.create(**validated_data)
+        pd_context = utilitySerializers.\
+            ProvisionDetailsSerializer.show_error_msg_context()
         if provision_details_exists:
             # note: Provision details are updated at provision time
             # so we are re-using provision_details, instead of a deep copy
             for ppd in existing_project_instance.\
                     linked_provisiondetails.all():
-                temp = ProvisionDetailsSerializer(ppd.provision_details)
-                pd_s = ProvisionDetailsSerializer(data=temp.data)
+                temp = utilitySerializers.\
+                    ProvisionDetailsSerializer(ppd.provision_details,
+                                               context=pd_context)
+                pd_s = utilitySerializers.\
+                    ProvisionDetailsSerializer(data=temp.data)
                 pd_s.is_valid(True)
                 ProjectProvisionDetails.objects.create(
                     project=project,
