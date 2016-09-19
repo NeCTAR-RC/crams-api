@@ -52,3 +52,37 @@ def setup_case_insensitive_roles(user, user_roles_list):
 
 def generate_project_role(project_name, role_name):
     return project_name + '_' + role_name
+
+
+def fetch_cramstoken_roles(userobj):
+    """
+    Fetch roles stored in the DB for given user object
+    :param userobj:
+    :return:
+    """
+    if userobj and hasattr(userobj, 'auth_token'):
+        auth_token = userobj.auth_token
+        if hasattr(auth_token, 'cramstoken') and \
+                auth_token.cramstoken.ks_roles:
+            return set(json_loads(auth_token.cramstoken.ks_roles))
+    return set()
+
+
+def has_role_fb(user_obj, fb_obj):
+    """
+    if fb_obj is not None, verify user has admin role for given funding body
+    else verify user is admin for any funding body configured in ROLE_FB_MAP
+    :param user_obj:
+    :param fb_obj:
+    :return:
+    """
+    user_roles = fetch_cramstoken_roles(user_obj)
+
+    if not fb_obj:
+        return len(ROLE_FB_MAP.keys() & user_roles) > 0
+
+    if hasattr(fb_obj, 'name'):
+        req_role = FB_ROLE_MAP_REVERSE.get(fb_obj.name)
+        return req_role and req_role in user_roles
+
+    return False

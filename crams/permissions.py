@@ -3,12 +3,10 @@
 Crams Permissions
 """
 
-from json import loads as json_loads
-
 from rest_framework import permissions, exceptions
 
 from crams.settings import CRAMS_PROVISIONER_ROLE, TOKEN_EXPIRY_TIME_SECONDS
-from crams.roleUtils import FB_ROLE_MAP_REVERSE
+from crams.roleUtils import FB_ROLE_MAP_REVERSE, fetch_cramstoken_roles
 from crams.models import Request, Project, CramsToken
 from crams.lang_utils import strip_lower
 from crams.dateUtils import get_current_time_for_app_tz, get_seconds_elapsed
@@ -22,12 +20,9 @@ def user_has_roles(userobj, role_list):
     :return:
     """
     role_set = set([strip_lower(role) for role in role_list])
-    if userobj and hasattr(userobj, 'auth_token'):
-        auth_token = userobj.auth_token
-        if hasattr(auth_token, 'cramstoken') and \
-                auth_token.cramstoken.ks_roles:
-            user_roles = set(json_loads(auth_token.cramstoken.ks_roles))
-            return role_set.issubset(user_roles)
+    user_roles = fetch_cramstoken_roles(userobj)
+    if user_roles:
+        return role_set.issubset(fetch_cramstoken_roles(userobj))
 
     return False
 

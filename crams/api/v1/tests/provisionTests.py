@@ -1,9 +1,10 @@
 from django.db.models import Q
 from rest_framework import status
 
-from crams.DBConstants import REQUEST_STATUS_PROVISIONED
-from crams.models import ProjectContact, ProvisionDetails
-from crams.models import Request, Project, Contact, ContactRole
+from crams.DBConstants import REQUEST_STATUS_PROVISIONED, FUNDING_BODY_NECTAR
+from crams.models import ProvisionDetails
+from crams.models import Request, Project
+from crams.roleUtils import FB_ROLE_MAP_REVERSE
 from tests.sampleData import get_base_nectar_project_data
 from crams.api.v1.tests.baseCramsFlow import BaseCramsFlow
 from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
@@ -157,19 +158,32 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
         response = self._baseGetAPI(view, url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def _get_provision_test_data(self):
-        # print('--- test_provision_update ---')
+    @classmethod
+    def _get_provision_test_data(cls,
+                                 fail_storage_flag=False,
+                                 fail_compute_flag=False,
+                                 fail_project_id_flag=False):
+
+        storage_err_msg = compute_err_msg = project_err_msg = ''
+        if fail_storage_flag:
+            storage_err_msg = 'Provision Failed: '
+        if fail_compute_flag:
+            compute_err_msg = 'Provision Failed: '
+        if fail_project_id_flag:
+            project_err_msg = 'Provision Failed: '
+
         test_data = {
             "id": 3,
-            "message": "",
-            "success": True,
+            "message": project_err_msg + ' project id',
+            "success": not fail_project_id_flag,
             "requests": [{
                 "id": 37,
                 "storage_requests": [
                     {
                         "id": 25,
-                        "message": "Sample request storage_request message ",
-                        "success": True,
+                        "message":
+                            storage_err_msg + "storage_request message ",
+                        "success": not fail_storage_flag,
                         "storage_product": {
                             "id": -1,
                             "name": "NeCTAR Volume (Monash)"
@@ -183,8 +197,9 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
                             "name": "NeCTAR Compute"
                         },
                         "id": 37,
-                        "message": "Sample request compute_request message ",
-                        "success": True
+                        "message":
+                            compute_err_msg + "compute_request message ",
+                        "success": not fail_compute_flag
                     }
                 ]
             }],
@@ -202,7 +217,8 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
 
         return test_data
 
-    def _printRequests(self, rList):
+    @classmethod
+    def _printRequests(cls, rList):
         for sr in rList:
             p = sr.provision_details
             if p:
@@ -233,22 +249,9 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
     # editing fields required to be static after approve action
     #  - fields cannot be modified include Project Identifier(all projects)
     #    and Project Description(Nectar only) fields
-    def _post_provision_static_fields(self, projectId):
-        # setup user as a contact, so that read/update can be done on Project
-        # by current user
-        project = Project.objects.get(pk=projectId)
-        contact, created = Contact.objects.get_or_create(
-            title='title', given_name=self.user.first_name,
-            surname=self.user.last_name, email=self.user.email, phone='0',
-            organisation='org')
-        contact_role = ContactRole.objects.filter()[0]
-        ProjectContact.objects.create(
-            project=project, contact=contact, contact_role=contact_role)
-
-        view = ProjectViewSet.as_view({'get': 'retrieve'})
-        response = self._baseGetAPI(view, 'api/project/', str(projectId))
-        self.assertEqual(response.status_code,
-                         status.HTTP_200_OK, response.data)
+    def _post_provision_static_fields(self, project_id):
+        self.add_project_contact_curr_user(project_id)
+        response = self._get_project_data_by_id(project_id)
 
         test_data = response.data
         # modify existing request
@@ -259,11 +262,85 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
         view = ProjectViewSet.as_view({'get': 'retrieve', 'put': 'update'})
         request = self.factory.put('api/project', test_data)
         request.user = self.user
-        response = view(request, pk=str(projectId))
+        response = view(request, pk=str(project_id))
 
         # should get error
         self.assertEqual(response.status_code,
                          status.HTTP_400_BAD_REQUEST, response.data)
+
+    def update_provision(self, err_data, pd_lambda_list):
+        # Verify API project provisioning status is:
+        # 1. Sent for normal user, with null message
+        # 2. Fail for Admin user, with error message shown
+
+        response = self._returnFetchProvisionListResponse()
+        self.assertEqual(
+            response.status_code,
+            status.HTTP_200_OK,
+            'test_provision_rules - Failed to fetch provision_list, ' +
+            'data: {}'.format(repr(response.data)))
+
+        response = self._returnProvisionUpdateResponse(err_data)
+        # check if update was successfull: HTTP 201
+        self.assertEqual(response.status_code,
+                         status.HTTP_201_CREATED, response.data)
+
+        project_id = response.data['id']
+        self.add_project_contact_curr_user(project_id)
+
+        response = self._get_project_data_by_id(project_id)
+        for fn in pd_lambda_list:
+            request_json, pd = fn(response.data)
+            request_obj = Request.objects.get(pk=request_json['id'])
+            # Validate access as Normal User
+            self.validate_user_provision_details(pd)
+
+            # Validate access as FB Admin
+            funding_body = request_obj.funding_scheme.funding_body
+            request_fb_role = FB_ROLE_MAP_REVERSE.get(funding_body.name)
+
+            # First try all non-FB admin roles
+            user_roles = set(FB_ROLE_MAP_REVERSE.values())
+            user_roles.remove(request_fb_role)
+            self._setUserRoles(list(user_roles))
+            fb_response = self._get_project_data_by_id(project_id)
+            _, fb_role_pd = fn(fb_response.data)
+            self.validate_user_provision_details(fb_role_pd)
+
+            # Now try as FB Admin Role
+            role_list = [request_fb_role]
+            self._setUserRoles(role_list)
+            fb_response = self._get_project_data_by_id(project_id)
+            _, fb_role_pd = fn(fb_response.data)
+            self.validate_admin_provision_details(fb_role_pd)
+
+    @classmethod
+    def sp_pd_fn(cls, x):
+        request_json = x['requests'][0]
+        return request_json, \
+            request_json["storage_requests"][0]['provision_details']
+
+    @classmethod
+    def cp_pd_fn(cls, x):
+        request_json = x['requests'][0]
+        return request_json, \
+            request_json["compute_requests"][0]['provision_details']
+
+    def test_sp_fail_message_display(self):
+        # update provisioning details, set Storage Fail
+        test_data = self._get_provision_test_data(fail_storage_flag=True)
+        self.update_provision(test_data, [self.sp_pd_fn])
+
+    def test_cp_fail_message_display(self):
+        # update provisioning details, set Compute Fail
+        test_data = self._get_provision_test_data(fail_compute_flag=True)
+        self.update_provision(test_data, [self.cp_pd_fn])
+
+    def test_cp_and_sp_fail_message_display(self):
+        # update provisioning details, set both Storage and Compute Fail
+        test_data = self._get_provision_test_data(fail_storage_flag=True,
+                                                  fail_compute_flag=True)
+        self.update_provision(test_data, [self.sp_pd_fn, self.cp_pd_fn])
 
 
 class NectarProjectProvisionTest(BaseCramsFlow):
@@ -274,7 +351,8 @@ class NectarProjectProvisionTest(BaseCramsFlow):
                                                       self.contact)
         self.provisioner_name = 'NeCTAR'
 
-    def _get_nectar_db_id_data(self):
+    @classmethod
+    def _get_nectar_db_id_data(cls):
         return {
             "identifier": "90345",
             "system": {
@@ -283,7 +361,8 @@ class NectarProjectProvisionTest(BaseCramsFlow):
             }
         }
 
-    def _get_nectar_created_by_data(self):
+    @classmethod
+    def _get_nectar_created_by_data(cls):
         return {
             "identifier": "7eea469ec8ff4f9bba3f46766323b388",
             "system": {
@@ -292,7 +371,8 @@ class NectarProjectProvisionTest(BaseCramsFlow):
             }
         }
 
-    def _get_nectar_uuid_data(self):
+    @classmethod
+    def _get_nectar_uuid_data(cls):
         return {
             "identifier": "dfgh563477515b4dsdsda0618d21a6228e50",
             "system": {
@@ -301,8 +381,9 @@ class NectarProjectProvisionTest(BaseCramsFlow):
             }
         }
 
+    @classmethod
     def _fetch_project_ids_provisioned_for_system(
-            self, project_id, system_name):
+            cls, project_id, system_name):
         project = Project.objects.get(pk=project_id)
         if hasattr(project, 'project_ids'):
             return project.project_ids.filter(system__system=system_name)
@@ -314,7 +395,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         response = self.flowUpTo(testCount)
         self.assertEqual(response.status_code,
                          status.HTTP_200_OK, 'Project Approval fail')
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             response,
             expected_provision_status=None,
             project_sent_for_provisioning_flag=False)
@@ -344,7 +425,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
 
         self._checkProjectRequestStatusCode(
             proj_data_response, REQUEST_STATUS_PROVISIONED)
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             proj_data_response,
             expected_provision_status=ProvisionDetails.PROVISIONED,
             project_sent_for_provisioning_flag=True)
@@ -375,10 +456,24 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         self._checkProjectRequestStatusCode(
             proj_data_response, REQUEST_STATUS_PROVISIONED)
 
-        self._verify_project_provisioning_details(
+        self._verify_db_project_provisioning_details(
             proj_data_response,
             expected_provision_status=ProvisionDetails.FAILED,
             project_sent_for_provisioning_flag=True)
+
+        def pd_fn(x):
+            return x.data['provision_details'][0]
+        # verify Normal User cannot see provision error message
+        self.validate_user_provision_details(pd_fn(proj_data_response))
+
+        # verify FB Admin Users can see project provision error message
+        # Validate access as FB Admin
+        request_fb_role = FB_ROLE_MAP_REVERSE.get(FUNDING_BODY_NECTAR)
+        role_list = [request_fb_role]
+        self._setUserRoles(role_list)
+        project_id = proj_data_response.data['id']
+        fb_response = self._get_project_data_by_id(project_id)
+        self.validate_admin_provision_details(pd_fn(fb_response))
 
     def test_update_provision_success_before_sending_out_for_provisioning(
             self):

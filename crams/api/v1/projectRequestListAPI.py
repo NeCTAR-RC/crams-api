@@ -190,12 +190,16 @@ def populate_projects_dict(projects_dict, crams_project, crams_request):
         found_project['requests'].append(crams_request)
 
 
-def _populate_projects_response(request, projects_dict, include_request_flag):
+def _populate_projects_response(
+        rest_request, projects_dict, include_request_flag):
     ret_dict = {}
-    ret_dict['user'] = UserSerializer(request.user).data
+    user_obj = rest_request.user
+    ret_dict['user'] = UserSerializer(user_obj).data
 
     project_list = []
     ret_dict['projects'] = project_list
+
+    pd_context = ProvisionDetailsSerializer.build_context_obj(user_obj)
 
     for key in projects_dict.keys():
 
@@ -205,8 +209,9 @@ def _populate_projects_response(request, projects_dict, include_request_flag):
 
         pd_list = []
         for ppd in proj.linked_provisiondetails.all():
-            pd_data = ProvisionDetailsSerializer(ppd.provision_details).data
-            pd_list.append(pd_data)
+            pd_serializer = ProvisionDetailsSerializer(ppd.provision_details,
+                                                       context=pd_context)
+            pd_list.append(pd_serializer.data)
 
         project_dict = {}
         project_list.append(project_dict)
@@ -218,7 +223,7 @@ def _populate_projects_response(request, projects_dict, include_request_flag):
             request_list = []
             project_dict['requests'] = request_list
             for crams_req in reqs:
-                request_list.append(populate_request_data(crams_req))
+                request_list.append(populate_request_data(crams_req, user_obj))
 
     return Response(ret_dict)
 
@@ -268,7 +273,8 @@ def populate_user_project_list(request, include_request_boolean):
         project_contacts__contact__email=request.user.email,
         parent_project__isnull=True).order_by('title').distinct()
     ret_dict = {}
-    ret_dict['user'] = UserSerializer(request.user).data
+    user_obj = request.user
+    ret_dict['user'] = UserSerializer(user_obj).data
 
     project_list = []
     ret_dict['projects'] = project_list
@@ -282,11 +288,12 @@ def populate_user_project_list(request, include_request_boolean):
             project_dict['requests'] = request_list
             for cramsRequest in project.requests.filter(
                     parent_request__isnull=True).order_by('end_date'):
-                request_list.append(populate_request_data(cramsRequest))
+                request_list.append(populate_request_data(cramsRequest,
+                                                          user_obj))
     return Response(ret_dict)
 
 
-def populate_request_data(crams_request):
+def populate_request_data(crams_request, user_obj):
     """
         populate_request_data
     :param crams_request:
@@ -301,8 +308,13 @@ def populate_request_data(crams_request):
 
     compute_list = []
     request_dict['compute_requests'] = compute_list
+    pd_context = ComputeRequestSerializer.build_context_obj(
+        user_obj, crams_request.funding_scheme.funding_body)
+
     for compute_request in crams_request.compute_requests.all():
-        compute_data = ComputeRequestSerializer(compute_request).data
+        serializer = ComputeRequestSerializer(compute_request,
+                                              context=pd_context)
+        compute_data = serializer.data
         compute_list.append(compute_data)
         # override id value to name value
         compute_data['compute_product'] = {
@@ -312,8 +324,13 @@ def populate_request_data(crams_request):
 
     storage_list = []
     request_dict['storage_requests'] = storage_list
+    pd_context = StorageRequestSerializer.build_context_obj(
+        user_obj, crams_request.funding_scheme.funding_body)
+
     for storage_request in crams_request.storage_requests.all():
-        storage_data = StorageRequestSerializer(storage_request).data
+        serializer = StorageRequestSerializer(storage_request,
+                                              context=pd_context)
+        storage_data = serializer.data
         storage_list.append(storage_data)
         # override id value to name value
         storage_data['storage_product'] = {

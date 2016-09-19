@@ -3,6 +3,7 @@
 
 from django.contrib.auth import get_user_model
 from django.db import transaction
+from rest_framework import serializers
 import logging
 from rest_framework.exceptions import ParseError
 from rest_framework.exceptions import ValidationError
@@ -59,7 +60,45 @@ class ComputeQuestionResponseSerializer(AbstractQuestionResponseSerializer):
         fields = ('id', 'question_response', 'question')
 
 
-class ComputeRequestSerializer(ModelSerializer):
+class ProductRequestSerializer(ModelSerializer):
+    PR_CONTEXT = 'pr_context'
+    provision_details = serializers.SerializerMethodField(
+        method_name='sanitize_provision_details')
+
+    @classmethod
+    def show_error_msg_context(cls):
+        return {
+            cls.PR_CONTEXT: ProvisionDetailsSerializer.show_error_msg_context()
+        }
+
+    @classmethod
+    def hide_error_msg_context(cls):
+        return {
+            cls.PR_CONTEXT: ProvisionDetailsSerializer.hide_error_msg_context()
+        }
+
+    @classmethod
+    def build_context_obj(cls, user_obj, funding_body_obj):
+        return {
+            cls.PR_CONTEXT: ProvisionDetailsSerializer.build_context_obj(
+                user_obj, funding_body_obj)
+        }
+
+    def sanitize_provision_details(self, product_request_obj):
+        default_pd = ProvisionDetailsSerializer.hide_error_msg_context()
+        if self.context:
+            pd_context = self.context.get(self.PR_CONTEXT, default_pd)
+        else:
+            pd_context = default_pd
+
+        pd_serializer = ProvisionDetailsSerializer(
+            product_request_obj.provision_details,
+            context=pd_context)
+
+        return pd_serializer.data
+
+
+class ComputeRequestSerializer(ProductRequestSerializer):
     """class ComputeRequestSerializer."""
 
     compute_product = PrimaryKeyLookupField(
@@ -67,8 +106,6 @@ class ComputeRequestSerializer(ModelSerializer):
             'id', 'name'], queryset=ComputeProduct.objects.all())
     compute_question_responses = ComputeQuestionResponseSerializer(
         many=True, read_only=False, allow_null=True, required=False)
-    provision_details = ProvisionDetailsSerializer(
-        many=False, required=False, allow_null=True)
 
     class Meta(object):
         model = ComputeRequest
@@ -128,14 +165,12 @@ class StorageQuestionResponseSerializer(AbstractQuestionResponseSerializer):
         fields = ('id', 'question_response', 'question')
 
 
-class StorageRequestSerializer(ModelSerializer):
+class StorageRequestSerializer(ProductRequestSerializer):
     """class StorageRequestSerializer."""
 
     storage_product = StorageProductZoneOnlySerializer(required=True)
     storage_question_responses = StorageQuestionResponseSerializer(
         many=True, read_only=False, allow_null=True, required=False)
-    provision_details = ProvisionDetailsSerializer(
-        many=False, required=False, allow_null=True)
 
     class Meta(object):
         model = StorageRequest
@@ -221,9 +256,11 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         queryset=Project.objects.filter(
             parent_project__isnull=True))
 
-    compute_requests = ComputeRequestSerializer(many=True, read_only=False)
+    compute_requests = serializers.SerializerMethodField(
+        method_name='populate_compute_request')
 
-    storage_requests = StorageRequestSerializer(many=True, read_only=False)
+    storage_requests = serializers.SerializerMethodField(
+        method_name='populate_storage_request')
 
     # request question response
     request_question_responses = RequestQuestionResponseSerializer(
@@ -263,6 +300,32 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         read_only_fields = (
             'creation_ts', 'last_modified_ts', 'request_status')
 
+    def populate_compute_request(self, request_obj):
+        user = None
+        if hasattr(self, 'cramsActionState'):
+            user = self.cramsActionState.rest_request.user
+        pd_context = ComputeRequestSerializer.build_context_obj(
+            user, request_obj.funding_scheme.funding_body)
+
+        ret_list = []
+        for c_req in request_obj.compute_requests.all():
+            serializer = ComputeRequestSerializer(c_req, context=pd_context)
+            ret_list.append(serializer.data)
+        return ret_list
+
+    def populate_storage_request(self, request_obj):
+        user = None
+        if hasattr(self, 'cramsActionState'):
+            user = self.cramsActionState.rest_request.user
+        pd_context = StorageRequestSerializer.build_context_obj(
+            user, request_obj.funding_scheme.funding_body)
+
+        ret_list = []
+        for s_req in request_obj.storage_requests.all():
+            serializer = StorageRequestSerializer(s_req, context=pd_context)
+            ret_list.append(serializer.data)
+        return ret_list
+
     def validate(self, data):
         """validate.
 
@@ -278,10 +341,10 @@ class CramsRequestSerializer(ActionStateModelSerializer):
 
         funding_scheme = None
         if cramsActionState.is_create_action:
-            if ('compute_requests' not in data and
-                    'storage_requests' not in data):
-                raise ValidationError({'compute_requests / storage_requests':
-                                       'This field is required.'})
+            # if ('compute_requests' not in data and
+            #         'storage_requests' not in data):
+            #     raise ValidationError({'compute_requests / storage_requests':
+            #                            'This field is required.'})
 
             if 'funding_scheme' not in data:
                 raise ValidationError({
@@ -474,6 +537,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
 
         request = Request.objects.create(**validated_data)
 
+        pd_context = ComputeRequestSerializer.show_error_msg_context()
         if compute_requests_data:
             for compute_req_data in compute_requests_data:
                 compute_request = ComputeRequestSerializer(
@@ -487,7 +551,8 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                 # a new model instance directly.
                 #    - This allows for business logic to be
                 #       encapsulated in one place, i.e., the serializer.
-                temp = ComputeRequestSerializer(computeInstance)
+                temp = ComputeRequestSerializer(computeInstance,
+                                                context=pd_context)
                 compute_request = ComputeRequestSerializer(
                     data=temp.data, context=self.context)
                 # cannot call save without checking is_valid()
@@ -495,6 +560,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                 compute_request.save(request=request)
 
         storage_requests_data = self.initial_data.pop('storage_requests', None)
+        pd_context = StorageRequestSerializer.show_error_msg_context()
         if storage_requests_data:
             for storage_req_data in storage_requests_data:
                 storage_request = StorageRequestSerializer(
@@ -504,7 +570,8 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         elif not cramsActionState.is_create_action:  # partial update or Clone
             for storageInstance in \
                     existingRequestInstance.storage_requests.all():
-                temp = StorageRequestSerializer(storageInstance)
+                temp = StorageRequestSerializer(storageInstance,
+                                                context=pd_context)
                 storage_request = StorageRequestSerializer(
                     data=temp.data, context=self.context)
                 storage_request.is_valid(raise_exception=True)
@@ -576,7 +643,8 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         return RequestStatus.objects.get(code=status_code)
 
     def populate_email_dict_for_request(self, alloc_request):
-        serializer = CramsRequestSerializer(alloc_request)
+        serializer = CramsRequestSerializer(alloc_request,
+                                            context=self.context)
         ret_dict = serializer.data
 
         project_context = {'request': self.context['request'],

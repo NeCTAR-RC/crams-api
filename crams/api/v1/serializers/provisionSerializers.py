@@ -88,6 +88,7 @@ class ProvisionProjectSerializer(ReadOnlyProjectSerializer):
         self._setActionState()
         context_request = self.cramsActionState.rest_request
         current_user = context_request.user
+        pd_context = ProvisionDetailsSerializer.show_error_msg_context()
 
         ret_list = []
         if not Provider.is_provider(current_user):
@@ -117,7 +118,8 @@ class ProvisionProjectSerializer(ReadOnlyProjectSerializer):
             if pd.status == ProvisionDetails.POST_PROVISION_UPDATE:
                 pd.status = ProvisionDetails.POST_PROVISION_UPDATE_SENT
                 pd.save()
-            ret_list.append(ProvisionDetailsSerializer(pd).data)
+            pd_serializer = ProvisionDetailsSerializer(pd, context=pd_context)
+            ret_list.append(pd_serializer.data)
         return ret_list
 
     def filter_requests(self, project_obj):
@@ -297,8 +299,8 @@ class BaseProvisionSerializer(UpdateOnlySerializer):
         if self.context and 'request' in self.context:
             return self.context['request'].user
         raise ValidationError(
-            {'message': '"context" object not found, \
-            required to identify current user.'})
+            {'message': '"context" object not found, ' +
+                        'required to identify current user.'})
 
     def validate_user_is_provider(self):
         """validate user is provider."""

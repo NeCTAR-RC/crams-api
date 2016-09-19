@@ -246,7 +246,10 @@ class RequestViewSet(viewsets.ModelViewSet):
             queryset = Request.objects.filter(
                 project__project_contacts__contact__email=email,
                 parent_request__isnull=True).distinct()
-        serializer = CramsRequestSerializer(queryset, many=True)
+        request_context = {'request': request}
+        serializer = CramsRequestSerializer(queryset,
+                                            context=request_context,
+                                            many=True)
         return Response(serializer.data)
 
 

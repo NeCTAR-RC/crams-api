@@ -2,8 +2,6 @@
 """
     views list
 """
-from json import loads as json_loads
-
 from crams.api.v1.serializers.requestSerializers import \
      RequestHistorySerializer
 from rest_condition import And, Or
@@ -15,6 +13,7 @@ from crams.models import Request, FundingBody
 from crams.permissions import IsRequestApprover, IsProjectContact
 from crams.permissions import IsCramsAuthenticated
 from crams.roleUtils import get_authorised_funding_bodies
+from crams.roleUtils import fetch_cramstoken_roles
 from crams.DBConstants import JSON_APPROVER_STR
 
 
@@ -33,10 +32,8 @@ class CurrentUserRolesView(generics.RetrieveAPIView):
         :return:
         """
         user = request.user
-        ret_dict = {'roles': []}
-        if user.auth_token and user.auth_token.cramstoken \
-                and user.auth_token.cramstoken.ks_roles:
-            ret_dict['roles'] = json_loads(user.auth_token.cramstoken.ks_roles)
+        ret_dict = dict()
+        ret_dict['roles'] = fetch_cramstoken_roles(user)
         ret_dict['user'] = {'name': user.get_full_name(), 'email': user.email}
         return Response(ret_dict)
 
