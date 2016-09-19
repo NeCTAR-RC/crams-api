@@ -1,0 +1,113 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_462c34ac",
+        "filename": "crams/api/v1/serializers/requestSerializers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-19T23:47:07Z",
+      "side": 1,
+      "message": "This need to be here still?",
+      "range": {
+        "startLine": 344,
+        "startChar": 0,
+        "endLine": 347,
+        "endChar": 68
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_66185085",
+        "filename": "crams/api/v1/serializers/utilitySerializers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-19T23:47:07Z",
+      "side": 1,
+      "message": "Better to import modules rather than methods/classes. Would be good to do this for all new code to slowly get it to this spec",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 39
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_861d5c76",
+        "filename": "crams/api/v1/tests/provisionTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-19T23:47:07Z",
+      "side": 1,
+      "message": "non module import",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 47
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_a6125860",
+        "filename": "crams/api/v1/views_list.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-19T23:47:07Z",
+      "side": 1,
+      "message": "non module import",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 50
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_c6176450",
+        "filename": "crams/settings.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-19T23:47:07Z",
+      "side": 1,
+      "message": "non module import",
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
