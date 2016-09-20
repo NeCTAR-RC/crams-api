@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_415fbe0e",
+        "filename": "crams/api/v1/serializers/requestSerializers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 347,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-20T02:47:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_462c34ac",
+      "range": {
+        "startLine": 344,
+        "startChar": 0,
+        "endLine": 347,
+        "endChar": 68
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_66185085",
         "filename": "crams/api/v1/serializers/utilitySerializers.py",
         "patchSetId": 1
@@ -36,6 +60,30 @@
       "writtenOn": "2016-09-19T23:47:07Z",
       "side": 1,
       "message": "Better to import modules rather than methods/classes. Would be good to do this for all new code to slowly get it to this spec",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 39
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_0193f6a3",
+        "filename": "crams/api/v1/serializers/utilitySerializers.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-20T02:47:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_66185085",
       "range": {
         "startLine": 16,
         "startChar": 0,
@@ -71,6 +119,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_61e91a1a",
+        "filename": "crams/api/v1/tests/provisionTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-20T02:47:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_861d5c76",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 47
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_a6125860",
         "filename": "crams/api/v1/views_list.py",
         "patchSetId": 1
@@ -94,6 +166,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_2190f294",
+        "filename": "crams/api/v1/views_list.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 16,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-20T02:47:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_a6125860",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 16,
+        "endChar": 50
+      },
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_c6176450",
         "filename": "crams/settings.py",
         "patchSetId": 1
@@ -105,6 +201,24 @@
       "writtenOn": "2016-09-19T23:47:07Z",
       "side": 1,
       "message": "non module import",
+      "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_418dfe7a",
+        "filename": "crams/settings.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 15,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-09-20T02:47:57Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7adec928_c6176450",
       "revId": "611fefc345d79699db1b6fd5f8a871e99be13702",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
