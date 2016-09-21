@@ -56,17 +56,18 @@ class CRAMSApiTstCase(APITestCase):
             return view(request, pk=id_str)
         return view(request)
 
-    def _create_project_common(self, test_data):
+    def _create_project_common(self, test_data, validate_response=True):
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
         request = self.factory.post('api/project', test_data)
         request.user = self.user
         response = view(request)
 
-        self.assertEqual(response.status_code,
-                         status.HTTP_201_CREATED, response.data)
-        self.assertIsNot(response.data.get("id"), 0, response.data)
-        self.assertEqual(response.data.get("title"),
-                         test_data["title"], response.data)
+        if validate_response:
+            self.assertEqual(response.status_code,
+                             status.HTTP_201_CREATED, response.data)
+            self.assertIsNot(response.data.get("id"), 0, response.data)
+            self.assertEqual(response.data.get("title"),
+                             test_data["title"], response.data)
 
         return response
 

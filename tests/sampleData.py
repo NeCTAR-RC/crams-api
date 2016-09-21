@@ -1,4 +1,9 @@
 # coding=utf-8
+
+from crams import DBConstants
+from crams import dbUtils
+from crams.api.v1 import utils
+
 """
   Sample Data
 """
@@ -11,6 +16,8 @@ def get_base_nectar_project_data(user_id, contact_obj):
     :param contact_obj:
     :return:
     """
+    system_map = dbUtils.get_system_name_map()
+
     return {"title": "Creating allocation request testing1",
             "description": "Creating allocation request testing1",
             "project_question_responses": [
@@ -35,10 +42,10 @@ def get_base_nectar_project_data(user_id, contact_obj):
                         "grant_id": "arc-001",
                         "start_year": 2014,
                         "total_funding": 200}],
-            "project_ids": [{"identifier": "allocation_request_testing1",
-                             "system": {"id": 1,
-                                        "system": "NeCTAR"},
-                             "type": "R"}],
+            "project_ids": [{
+                "identifier": 'nec_' + utils.get_random_string(11),
+                "system": system_map.get(DBConstants.SYSTEM_NECTAR),
+            }],
             "project_contacts": [{"contact": {"id": contact_obj.id,
                                               "email": contact_obj.email},
                                   "contact_role": {"id": 2}}],

@@ -4,6 +4,21 @@
 """
 
 
+def has_invalid_prefix(str, invalid_prefix_list):
+    return not validate_prefix(str, invalid_prefix_list, False)
+
+
+def has_valid_prefix(str, valid_prefix_list):
+    return validate_prefix(str, valid_prefix_list, True)
+
+
+def validate_prefix(str, prefix_list, prefix_list_is_valid=True):
+    for prefix in prefix_list:
+        if str and str.startswith(prefix):
+            return prefix_list_is_valid
+    return not prefix_list_is_valid
+
+
 def strip_lower(str):
     return str.strip().lower()
 
