@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_81f38672",
+        "filename": "crams/api/v1/serializers/projectSerializers.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 271,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-09-21T23:46:07Z",
+      "side": 1,
+      "message": "meant to be commented out?",
+      "range": {
+        "startLine": 271,
+        "startChar": 8,
+        "endLine": 271,
+        "endChar": 10
+      },
+      "revId": "cb953ca2eadb176e894aa84397fed3bee074696a",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
