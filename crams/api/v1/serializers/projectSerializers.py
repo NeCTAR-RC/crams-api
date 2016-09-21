@@ -10,6 +10,8 @@ from rest_framework.exceptions import ParseError
 from rest_framework.exceptions import ValidationError
 from rest_framework.validators import UniqueValidator
 
+from crams import settings
+from crams import lang_utils
 from crams.DBConstants import APPLICANT
 from crams.DBConstants import SYSTEM_NECTAR
 from crams.DBConstants import REQUEST_STATUS_APPROVED
@@ -243,27 +245,57 @@ class ProjectIDSerializer(serializers.ModelSerializer):
                 'id': system_data.get('id', None)})
         return ret_dict
 
+    def validate(self, data):
+        """
+
+        :param data:
+        :return:
+        """
+        identifier = data.get('identifier')
+
+        system_data = data.get('system')
+        if not system_data:
+            raise ValidationError('Project Id ({}): System details is required'
+                                  .format(data.get('identifier')))
+        try:
+            system_obj = get_system_obj(system_data)
+            data['system_obj'] = system_obj
+        except ParseError as e:
+            raise ValidationError('Project Id ({}): {}'.format(
+                identifier, repr(e)))
+
+        # Validate Identifier Prefix
+        self.validate_identifier_prefix(identifier, system_obj)
+
+        # Validate Identifier is Unique for Project System
+        # self.validate_identifier_is_unique(identifier, system_obj)
+
+        return data
+
+    @classmethod
+    def validate_identifier_prefix(cls, identifier, system_obj):
+        invalid_prefix_list = \
+            settings.PROJECT_SYSTEM_ID_INVALID_PREFIX_MAP.get(
+                system_obj.system.lower())
+        if invalid_prefix_list and \
+                lang_utils.has_invalid_prefix(identifier.lower(),
+                                              invalid_prefix_list):
+            raise ValidationError(
+                'Project Id ({}): cannot begin with '.format(
+                    identifier, ' or '.join(invalid_prefix_list)))
+
     def create(self, validated_data):
-        """create.
+        """
 
         :param validated_data:
-        :return: :raise ParseError:
+        :return:
         """
-        system_id = validated_data.pop('system', None)
-        if system_id and 'id' in system_id:
-            system_id = system_id['id']
-            try:
-                validated_data['system'] = ProjectIDSystem.objects.get(
-                    id=system_id)
-                return ProjectID.objects.create(**validated_data)
-            except ProjectIDSystem.DoesNotExist:
-                raise ParseError(
-                    'System id does not exist {}'.format(system_id))
-            except ProjectIDSystem.MultipleObjectsReturned:
-                raise ParseError(
-                    'Multiple System id exists {}'.format(system_id))
-
-        raise ParseError('System id is required')
+        ret = ProjectID.objects.create(
+            identifier=validated_data.get('identifier'),
+            system=validated_data.get('system_obj'),
+            project=validated_data.get('project')
+        )
+        return ret
 
 
 class ProjectContactSerializer(serializers.ModelSerializer):

@@ -4,7 +4,7 @@ Util methods
 """
 import random
 import string
-from itertools import chain, combinations
+import itertools
 
 from django.conf import settings
 from keystoneclient.v3 import client as ks_client_v3
@@ -22,8 +22,17 @@ def get_keystone_admin_client():
                                auth_url=settings.KS_URL)
 
 
+def generate_all_case_combinations(some_str):
+    # Reference: http://stackoverflow.com/questions/11144389/find-all-upper
+    # -lower-and-mixed-case-combinations-of-a-string
+    return \
+        map(''.join, itertools.product(*zip(some_str.upper(),
+                                            some_str.lower())))
+
+
 def get_random_string(num):
-    # http://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python/23728630#23728630
+    # http://stackoverflow.com/questions/2257441/random-string-generation-with
+    # -upper-case-letters-and-digits-in-python/23728630#23728630
     # return ''.join(random.choice(string.ascii_uppercase + string.digits) for
     # _ in range(num))
     """
@@ -45,8 +54,8 @@ def power_set_generator(input_set):
         power_set_generator
     :param input_set:
     """
-    for subset in chain.from_iterable(
-        combinations(
+    for subset in itertools.chain.from_iterable(
+        itertools.combinations(
             input_set, r) for r in range(
             len(input_set) + 1)):
         yield set(subset)
