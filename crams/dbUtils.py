@@ -2,7 +2,7 @@
 """
 Database Utilities
 """
-from crams.models import RequestStatus
+from crams import models
 
 
 def fetch_active_provider_object_for_user(crams_user):
@@ -23,6 +23,16 @@ def get_request_status_lookups():
     :return:
     """
     ret_dict = {}
-    for rs in RequestStatus.objects.all():
+    for rs in models.RequestStatus.objects.all():
         ret_dict[rs.code] = rs
     return ret_dict
+
+
+def get_system_name_map():
+    ret_map = {}
+    for obj in models.ProjectIDSystem.objects.all():
+        ret_map[obj.system] = {
+            'id': obj.id,
+            'system': obj.system
+        }
+    return ret_map

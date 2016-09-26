@@ -1,5 +1,6 @@
 # coding=utf-8
 """Project Serailizers."""
+
 from crams.api.v1.dataUtils.lookupData import LookupDataModel
 from crams.api.v1.dataUtils.lookupData import get_system_obj
 from crams.api.v1.serializers import requestSerializers
@@ -13,6 +14,7 @@ from rest_framework.validators import UniqueValidator
 from crams.DBConstants import APPLICANT
 from crams.DBConstants import SYSTEM_NECTAR
 from crams.DBConstants import REQUEST_STATUS_APPROVED
+from crams.api.v1.validators import projectid_validators
 from crams.models import Contact
 from crams.models import ContactRole
 from crams.models import Domain
@@ -228,14 +230,14 @@ class ProjectIDSerializer(serializers.ModelSerializer):
 
     # noinspection PyUnusedLocal
     def _init_empty(self, str, num):
-        ret_dict = {}
+        ret_dict = dict()
         ret_dict['identifier'] = 'System Identifier for this Project'
         ret_dict['system'] = self.__getitem__(
             'system').to_representation({'id': 1})
         return ret_dict
 
     def _init_from_project_id_data(self, project_id_data):
-        ret_dict = {}
+        ret_dict = dict()
         ret_dict['identifier'] = project_id_data.get('identifier', None)
         system_data = project_id_data.get('system', None)
         if system_data:
@@ -243,27 +245,21 @@ class ProjectIDSerializer(serializers.ModelSerializer):
                 'id': system_data.get('id', None)})
         return ret_dict
 
+    def validate(self, data):
+        return projectid_validators.extract_project_id_save_args(data)
+
     def create(self, validated_data):
-        """create.
+        """
 
         :param validated_data:
-        :return: :raise ParseError:
+        :return:
         """
-        system_id = validated_data.pop('system', None)
-        if system_id and 'id' in system_id:
-            system_id = system_id['id']
-            try:
-                validated_data['system'] = ProjectIDSystem.objects.get(
-                    id=system_id)
-                return ProjectID.objects.create(**validated_data)
-            except ProjectIDSystem.DoesNotExist:
-                raise ParseError(
-                    'System id does not exist {}'.format(system_id))
-            except ProjectIDSystem.MultipleObjectsReturned:
-                raise ParseError(
-                    'Multiple System id exists {}'.format(system_id))
-
-        raise ParseError('System id is required')
+        ret = ProjectID.objects.create(
+            identifier=validated_data.get('identifier'),
+            system=validated_data.get('system_obj'),
+            project=validated_data.get('project')
+        )
+        return ret
 
 
 class ProjectContactSerializer(serializers.ModelSerializer):
@@ -341,8 +337,8 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
         many=True, read_only=False, allow_null=True, required=False)
 
     # Grant information
-    grants = GrantSerializer(many=True, read_only=False,
-                             allow_null=True, required=False)
+    grants = GrantSerializer(
+        many=True, read_only=False, allow_null=True, required=False)
 
     # ProjectID
     project_ids = ProjectIDSerializer(
@@ -489,40 +485,47 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
 
             request_ids = project.requests.values_list('id', flat=True)
 
+            msg_suffix = 'cannot be changed after approval for Nectar Project'
             if Request.objects.filter(
                     request_status__code=REQUEST_STATUS_APPROVED,
                     parent_request__in=request_ids).exists():
 
-                if project.description != data['description']:
-                    nectar_system = get_system_obj({'system': SYSTEM_NECTAR})
-                    if project.project_ids.filter(
-                            system=nectar_system).exists():
+                nectar_system = get_system_obj({'system': SYSTEM_NECTAR})
+                nectar_project_id = project.project_ids.filter(
+                    system=nectar_system)
+                if nectar_project_id.exists():
+                    if project.description != data['description']:
                         raise ValidationError(
-                            'project_decription: ' +
-                            'Description cannot be changed after approval ' +
-                            'for Nectar Project')
+                            'project_decription: ' + msg_suffix)
 
-                for projectIdData in data['project_ids']:
-                    system = get_system_obj(projectIdData['system'])
-                    try:
-                        existing_project_id = project.project_ids.get(
-                            system__system=system)
-                        if existing_project_id.identifier != projectIdData[
-                                'identifier']:
-                            raise ValidationError(
-                                'project_id_identifier: ' +
-                                'Project identifier cannot be changed ' +
-                                'after approval for {}'.format(
-                                    repr(
-                                        system.system)))
-                    except ProjectID.DoesNotExist:
-                        pass
-                    except ProjectID.MultipleObjectsReturned:
-                        raise ValidationError(
-                            'project.system : Multiple Project Ids exist in ' +
-                            'database for {}'.format(repr(system.system)))
+                    existing_pid = nectar_project_id.first()
+                    for p_id in data.get('project_ids'):
+                        p_id_system = get_system_obj(p_id.get('system'))
+                        if p_id_system == nectar_system:
+                            if existing_pid.identifier != p_id['identifier']:
+                                raise ValidationError(
+                                    'project_id_identifier: ' + msg_suffix)
+
+        # Validate project ids after concurrent update validation
+        project_ids = data.get('project_ids')
+        if project_ids:
+            existing_instance = self.cramsActionState.existing_instance
+            self.setup_project_ids(project_ids, existing_instance)
 
         return data
+
+    @classmethod
+    def setup_project_ids(cls, project_ids, project):
+        for p_id_data in project_ids:
+            proj_id_serializer = ProjectIDSerializer(
+                data=p_id_data,
+                validators=[
+                    projectid_validators.ValidateProjectIDPrefix(),
+                    projectid_validators.UniqueSystemProjectIDValidator(
+                        project)]
+            )
+            proj_id_serializer.is_valid(raise_exception=True)
+            p_id_data['serializer'] = proj_id_serializer
 
     @transaction.atomic
     def update(self, instance, validated_data):
@@ -563,6 +566,7 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
         :param existing_project_instance:
         :return: :raise ParseError:
         """
+
         parent_project = validated_data.pop('parent_project', None)
         if parent_project:
             raise ParseError(
@@ -659,9 +663,9 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
 
         if proj_identifiers_data:
             for p_id_data in proj_identifiers_data:
-                proj_id_serializer = ProjectIDSerializer(data=p_id_data)
-                proj_id_serializer.is_valid(raise_exception=True)
-                proj_id_serializer.save(project=project)
+                proj_id_serializer = p_id_data.get('serializer')
+                if proj_id_serializer:
+                    proj_id_serializer.save(project=project)
 
         if proj_contacts_data:
             for proj_contact_data in proj_contacts_data:

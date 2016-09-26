@@ -35,6 +35,7 @@ from crams.models import StorageProduct
 from crams.models import StorageRequest
 from crams.api.v1.APIConstants import DO_NOT_OVERRIDE_PROVISION_DETAILS
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
+from crams.api.v1.validators import projectid_validators
 
 
 PROVISION_ENABLE_REQUEST_STATUS = [
@@ -735,12 +736,12 @@ class UpdateProvisionProjectSerializer(BaseProvisionMessageSerializer):
     def _init_from_project_data(self, projectData):
         ret_dict = super(UpdateProvisionProjectSerializer,
                          self)._initFromBaseIdData(projectData.get('id', None))
-        ret_dict['requests'] = [UpdateProvisionRequestSerializer()
-                                ._initFromRequestData(x)
-                                for x in projectData.get('requests', [])]
-        ret_dict['project_ids'] = [ProjectIDSerializer()
-                                   ._init_from_project_id_data(x)
-                                   for x in projectData.get('project_ids', [])]
+        ret_dict['requests'] = [
+            UpdateProvisionRequestSerializer()._initFromRequestData(x)
+            for x in projectData.get('requests', [])]
+        ret_dict['project_ids'] = [
+            ProjectIDSerializer()._init_from_project_id_data(x)
+            for x in projectData.get('project_ids', [])]
         return ret_dict
 
     def validate(self, data):
@@ -775,7 +776,13 @@ class UpdateProvisionProjectSerializer(BaseProvisionMessageSerializer):
             ) if x.system.id == projIdentifier['system']['id']), None)
             if not existingProjectId:
                 idSerializer = ProjectIDSerializer(
-                    data=projIdentifier, context=self.context)
+                    data=projIdentifier, context=self.context,
+                    validators=[
+                        projectid_validators.ValidateProjectIDPrefix(),
+                        projectid_validators.UniqueSystemProjectIDValidator(
+                            self.instance
+                        )]
+                )
                 idSerializer.is_valid(raise_exception=True)
                 idSerializer.save(project=instance)
                 projIdentifier['update_success'] = True
