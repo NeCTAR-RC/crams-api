@@ -463,14 +463,6 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             raise ParseError('Requests with parent_request value set \
                              are archived, readonly records. Update fail')
 
-        # ComputeRequest data
-        compute_requests_data = validated_data.pop('compute_requests', None)
-
-        # At a later stage we use initial_data as this will provide id's for
-        # storage product which restFramework removes from validated_data
-        # pop StorageRequest data, not used.
-        validated_data.pop('storage_requests', None)
-
         # Request Question responses
         request_question_responses_data = validated_data.pop(
             'request_question_responses', None)
@@ -532,6 +524,9 @@ class CramsRequestSerializer(ActionStateModelSerializer):
 
         request = Request.objects.create(**validated_data)
 
+        # using serializers.SerializerMethodField makes field as read-only.
+        # fetch compute request_data from initial data
+        compute_requests_data = self.initial_data.get('compute_requests', None)
         pd_context = ComputeRequestSerializer.show_error_msg_context()
         if compute_requests_data:
             for compute_req_data in compute_requests_data:
@@ -554,7 +549,9 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                 compute_request.is_valid(raise_exception=True)
                 compute_request.save(request=request)
 
-        storage_requests_data = self.initial_data.pop('storage_requests', None)
+        # using serializers.SerializerMethodField makes field as read-only.
+        # fetch storage request_data from initial data
+        storage_requests_data = self.initial_data.get('storage_requests', None)
         pd_context = StorageRequestSerializer.show_error_msg_context()
         if storage_requests_data:
             for storage_req_data in storage_requests_data:

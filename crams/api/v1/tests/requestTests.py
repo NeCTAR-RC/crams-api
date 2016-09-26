@@ -23,7 +23,8 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
                 requestDict,
                 instances,
                 cores,
-                quota):
+                quota,
+                assert_response=True):
             # update compute
             compute_requests = requestDict.get('compute_requests', [])
             if compute_requests:
@@ -37,6 +38,38 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
             # update request
             response = self._update_project_common(
                 projectDict, requestDict.get('id'), instances, cores, quota)
+
+            if assert_response:
+                self.assertEqual(response.status_code,
+                                 status.HTTP_200_OK,
+                                 'update fail : {}'.format(response.data))
+                requests = response.data.get('requests')
+                err_msg = 'Expected one request, got None'
+                self.assertIsNotNone(requests, err_msg)
+                err_msg = 'Expected one request, got {} requests'.format(
+                    str(len(requests))
+                )
+                self.assertEqual(len(requests), 1, err_msg)
+
+                storage_requests = requests[0].get('storage_requests')
+                err_msg = 'Expected storage requests, got None'
+                self.assertIsNotNone(storage_requests, err_msg)
+                err_msg = 'Expected 1 storage request, got {}'.format(
+                    str(len(storage_requests)))
+                self.assertEqual(len(storage_requests), 1, err_msg)
+                storage_request = storage_requests[0]
+                self.assertEqual(storage_request.get('quota'), quota)
+
+                compute_requests = requests[0].get('compute_requests')
+                err_msg = 'Expected compute requests, got None'
+                self.assertIsNotNone(compute_requests, err_msg)
+                err_msg = 'Expected 1 compute request, got {}'.format(
+                    str(len(compute_requests)))
+                self.assertEqual(len(compute_requests), 1, err_msg)
+                compute_request = compute_requests[0]
+                self.assertEqual(compute_request.get('instances'), instances)
+                self.assertEqual(compute_request.get('cores'), cores)
+
             return response
         # creating request
         response = self._create_project_common(self.test_data)
