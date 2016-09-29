@@ -59,39 +59,44 @@ class _AbstractCramsBase(CRAMSApiTstCase):
             ' status got ' +
             status_code)
 
-    def _updateResponseDataRandom(self, projectData, validateFn=None):
+    @classmethod
+    def setup_random_update(cls, project_data, update_fn):
         instances = 4
         cores = 4
         quota = 4000
 
-        projectData['notes'] = get_random_string(
-            8) + ' - ' + projectData.get('description', '')
-        for requestData in projectData.get("requests", []):
+        project_data['notes'] = get_random_string(
+            8) + ' - ' + project_data.get('description', '')
+        for request_data in project_data.get("requests", []):
             # update compute
-            compute_requests = requestData.get('compute_requests', None)
+            compute_requests = request_data.get('compute_requests', None)
             if compute_requests:
                 count = 0
                 for c in compute_requests:
-                    count = count + 1
+                    count += 1
                     c["instances"] = instances * count
                     c["cores"] = cores * count
 
             # update storage
-            storage_requests = requestData.get('storage_requests', None)
+            storage_requests = request_data.get('storage_requests', None)
             if storage_requests:
                 count = 0
                 for s in storage_requests:
-                    count = count + 1
+                    count += 1
                     s["quota"] = quota * count
+        return update_fn(request_data, instances, cores, quota)
 
-        # update project/request first time
-        return self._update_project_common(
-            projectData,
-            requestData.get('id'),
-            instances,
-            cores,
-            quota,
-            validateFn)
+    def update_response_data_random(self, project_data, validate_fn=None):
+        def update_fn(request_data, instances, cores, quota):
+            return self._update_project_common(
+                project_data,
+                request_data.get('id'),
+                instances,
+                cores,
+                quota,
+                validate_fn)
+
+        return self.setup_random_update(project_data, update_fn)
 
     def _adminRequest(self, in_response, adminActionData,
                       expected_http_status=status.HTTP_200_OK,
@@ -169,7 +174,7 @@ class _AbstractCramsBase(CRAMSApiTstCase):
         msg = 'Update first'
         if debug:
             self.pp.pprint(msg)
-        out_response = self._updateResponseDataRandom(in_response.data)
+        out_response = self.update_response_data_random(in_response.data)
         if debug:
             self.debugResponse(out_response, msg)
         return out_response
@@ -310,7 +315,7 @@ class BaseCramsFlow(_AbstractCramsBase):
 
         if debug:
             self.pp.pprint(msg)
-        error_response = self._updateResponseDataRandom(
+        error_response = self.update_response_data_random(
             response3.data, _updateFailFn)
         if flowCount == self.UPDATE_FAIL_FOR_APPROVE_STATUS:
             return error_response
@@ -336,7 +341,8 @@ class BaseCramsFlow(_AbstractCramsBase):
         if debug:
             print('**** before update after First Provision after Approve')
 
-        edit_response = self._updateResponseDataRandom(proj_data_response.data)
+        edit_response = \
+            self.update_response_data_random(proj_data_response.data)
         self._checkProjectRequestStatusCode(
             edit_response, REQUEST_STATUS_UPDATE_OR_EXTEND)
 

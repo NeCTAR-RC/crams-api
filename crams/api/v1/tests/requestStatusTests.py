@@ -85,7 +85,7 @@ class NectarRequestStatusTests(BaseCramsFlow):
         response = self.flowUpTo(testCount)
         project = response.data
         project['description'] = 'New Description ' + get_random_string(64)
-        self._updateResponseDataRandom(project, _updateFailFn)
+        self.update_response_data_random(project, _updateFailFn)
 
     def test_decline_to_approval_fails_without_edit(self):
         testCount = self.SUBMITTED_TO_DECLINE_RETURN_PROJECT
@@ -93,14 +93,14 @@ class NectarRequestStatusTests(BaseCramsFlow):
         self.approveRequest(decline_proj_response,
                             status.HTTP_404_NOT_FOUND,
                             False)
-        editResponse = self._updateResponseDataRandom(
+        editResponse = self.update_response_data_random(
             decline_proj_response.data)
         self.approveRequest(editResponse, status.HTTP_200_OK, False)
 
     def test_provisioned_to_update_extended_status_success(self):
         testCount = self.PROVISION_PROJECT_RETURN_PROJECT
         provision_proj_response = self.flowUpTo(testCount)
-        editResponse = self._updateResponseDataRandom(
+        editResponse = self.update_response_data_random(
             provision_proj_response.data)
         self._checkProjectRequestStatusCode(
             editResponse, REQUEST_STATUS_UPDATE_OR_EXTEND)
@@ -136,14 +136,14 @@ class NectarRequestStatusTests(BaseCramsFlow):
 
     def test_extended_decline_to_update_extended_success(self):
         declined_project = self.test_update_extend_to_update_extend_decline()
-        editResponse = self._updateResponseDataRandom(declined_project.data)
+        editResponse = self.update_response_data_random(declined_project.data)
         self._checkProjectRequestStatusCode(
             editResponse, REQUEST_STATUS_UPDATE_OR_EXTEND)
         return editResponse
 
     def test_update_extended_cycle_on_update(self):
         response = self.test_extended_decline_to_update_extended_success()
-        editResponse = self._updateResponseDataRandom(response.data)
+        editResponse = self.update_response_data_random(response.data)
         self._checkProjectRequestStatusCode(
             editResponse, REQUEST_STATUS_UPDATE_OR_EXTEND)
 

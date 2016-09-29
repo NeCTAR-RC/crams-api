@@ -11,6 +11,7 @@ from crams import settings
 from crams import DBConstants
 from crams.api.v1 import utils as api_utils
 from crams.api.v1.validators import projectid_validators
+from crams import roleUtils
 
 
 class ProjectViewSetTest(CRAMSApiTstCase):
@@ -49,7 +50,7 @@ class BaseProjectTests(_AbstractCramsBase):
         self.system_id_map = dbUtils.get_system_name_map()
 
     def validate_concurrent_project_update(self):
-        def _updateFailFn(response):
+        def validate_update_fail_fn(response):
             self.assertEqual(
                 response.status_code,
                 status.HTTP_400_BAD_REQUEST,
@@ -57,11 +58,11 @@ class BaseProjectTests(_AbstractCramsBase):
                     response.data))
             expected_msg = 'concurrent update: <User: newContact@monash.edu>' \
                            ' has updated project, please refresh and try again'
-            self.assertEqual(response.data.get('non_field_errors')[0],
+            self.assertEqual(response.data.get('detail'),
                              expected_msg,
                              'Concurrent Error messages do not match')
 
-        contact_user = self._getUser('randomUser', self.contact_email)
+        contact_user = self.get_new_user('randomUser', self.contact_email)
         contact_token, created = CramsToken.objects.get_or_create(
             user=contact_user)
         self.test_data = self.generate_test_data_fn(self.user.id, self.contact)
@@ -76,7 +77,19 @@ class BaseProjectTests(_AbstractCramsBase):
 
         self.user = originalUser
         self.token = originalToken
-        self._updateResponseDataRandom(response.data, _updateFailFn)
+
+        def update_fn(request_data, instances, cores, quota):
+            view = ProjectViewSet.as_view({'post': 'update'})
+
+            pk = request_data.get('id')
+            request = self.factory.post('api/project?request_id=' + str(pk),
+                                        request_data)
+            request.user = self.user
+            response = view(request)
+            return validate_update_fail_fn(response)
+
+        self.update_response_data_random(response.data,
+                                         validate_update_fail_fn)
 
     def validate_project_id_prefix(self, project_json,
                                    required_sysid_list=set()):
@@ -118,6 +131,34 @@ class BaseProjectTests(_AbstractCramsBase):
                 "system": self.system_id_map.get(sys),
             })
 
+    def validate_project_access(self):
+        def fetch_project_by_request_param():
+            view = ProjectViewSet.as_view({'get': 'list',
+                                           'post': 'update'})
+
+            url_with_param = 'api/project?request_id=' + str(request_id)
+            request = self.factory.get(url_with_param,)
+            request.user = self.user
+            return view(request)
+
+        project_json = self.generate_test_data_fn(self.user.id, self.contact)
+        response = self._create_project_common(project_json, True)
+        project_id = response.data.get('id')
+        request_id = response.data.get('requests')[0].get('id')
+
+        # Access project as not contact and not approver
+        # List access without URL param
+        self.setup_new_user()
+        response = self._get_project_data_by_id(project_id, False)
+        msg = 'Access to project must be restricted to Project Contact'
+        status_code = response.status_code
+        self.assertEqual(status_code, status.HTTP_403_FORBIDDEN, msg)
+
+        # Detail access with URL param request_id
+        role_list = roleUtils.ROLE_FB_MAP.keys()
+        self.apply_fn_to_userrole_combo(role_list,
+                                        fetch_project_by_request_param)
+
 
 class NectarProjectTests(BaseProjectTests):
     def setUp(self):
@@ -135,6 +176,9 @@ class NectarProjectTests(BaseProjectTests):
 
     def test_concurrent_project_update(self):
         super().validate_concurrent_project_update()
+
+    def test_request_id_param_access(self):
+        super().validate_project_access()
 
     def test_unique_project_identifier(self):
         required_ids_set = set([DBConstants.SYSTEM_NECTAR])
@@ -156,6 +200,6 @@ class NectarProjectTests(BaseProjectTests):
                 identifier = p_id['identifier']
         expected_msg = 'Project Id ({}): exists, must be unique'
         expected_msg = expected_msg.format(identifier)
-        self.assertEqual(response.data.get('non_field_errors')[0],
+        self.assertEqual(response.data.get('detail'),
                          expected_msg,
                          'Unique Nectar project id Error message do not match')

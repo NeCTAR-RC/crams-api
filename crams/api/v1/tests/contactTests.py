@@ -80,7 +80,7 @@ class ContactTest(CRAMSApiTstCase):
 
     # Test Rest PUT for Contact
     def test_contact_put(self):
-        contact = Contact.objects.get(email="tests.merc@monash.edu")
+        contact = Contact.objects.get(email=self.user.email)
 
         test_data = {
             "id": contact.id,
@@ -108,7 +108,7 @@ class ContactTest(CRAMSApiTstCase):
 
     # Test Rest PATCH for Contact
     def test_contact_patch(self):
-        contact = Contact.objects.get(email="tests.merc@monash.edu")
+        contact = Contact.objects.get(email=self.user.email)
 
         view = ContactViewSet.as_view(
             {'get': 'retrieve', 'patch': 'partial_update'})
@@ -136,7 +136,7 @@ class ContactTest(CRAMSApiTstCase):
             "title": "Mr.",
             "given_name": "Test",
             "surname": "Test",
-            "email": "tests.merc@monash.edu",  # existing email from setUp
+            "email": self.user.email,  # existing email from setUp
             "phone": "123456789",
             "organisation": "Monash"
         }
@@ -158,7 +158,7 @@ class ContactTest(CRAMSApiTstCase):
 
     # Test email validation for PUT contact
     def test_contact_put_email_validation(self):
-        contact = Contact.objects.get(email="tests.merc@monash.edu")
+        contact = Contact.objects.get(email=self.user.email)
 
         test_data = {
             "id": contact.id,
@@ -187,7 +187,7 @@ class ContactTest(CRAMSApiTstCase):
 
     # Test email validation for PATCH contact
     def test_contact_patch_validation(self):
-        contact = Contact.objects.get(email="tests.merc@monash.edu")
+        contact = Contact.objects.get(email=self.user.email)
 
         view = ContactViewSet.as_view(
             {'get': 'retrieve', 'patch': 'partial_update'})

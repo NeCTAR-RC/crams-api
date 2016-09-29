@@ -16,14 +16,15 @@ class PermissionsTest(CRAMSApiTstCase):
             self.user.id, self.contact)
 
     def _set_roles(self, roleList):
-        self._setUserRoles(roleList)
+        self.set_user_roles(roleList)
         self.http_request.user = self.user
 
     def test_is_project_contact(self):
         self._create_project_common(self.test_data)
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
         valid_user = self.user
-        invalid_user = self._getUser('randomUser', 'dummy@permissions.test')
+        invalid_user = self.get_new_user('randomUser',
+                                         'dummy@permissions.test')
 
         for project in Project.objects.filter(
                 project_contacts__contact__email=self.user.email):

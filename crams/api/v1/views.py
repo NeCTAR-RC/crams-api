@@ -2,7 +2,6 @@
 """
     views
 """
-# import pprint
 from json import loads as json_loads
 
 from crams.api.v1.serializers.adminSerializers import \
@@ -14,7 +13,7 @@ from crams.api.v1.serializers.provisionSerializers import \
     ProvisionRequestSerializer, ProvisionProjectSerializer, \
     UpdateProvisionProjectSerializer, PROVISION_ENABLE_REQUEST_STATUS
 from crams.api.v1.serializers.requestSerializers import CramsRequestSerializer
-from django.core.exceptions import PermissionDenied
+from django.core import exceptions
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect
 from django.http import JsonResponse
@@ -23,20 +22,19 @@ from keystoneclient.exceptions import ClientException
 from rest_condition import And, Or
 from rest_framework import filters
 from rest_framework import viewsets, generics, mixins
-from rest_framework.exceptions import NotFound, AuthenticationFailed
+from rest_framework import exceptions as rest_exceptions
 from rest_framework.response import Response
 
 from crams.account.models import User
 from crams.lang_utils import strip_lower
-from crams.dbUtils import fetch_active_provider_object_for_user
+from crams import dbUtils
 from crams.models import Project, Request, Contact, Provider, CramsToken
-from crams.models import UserEvents, ProvisionDetails
+from crams.models import UserEvents
 from crams.permissions import IsRequestApprover, IsProjectContact
 from crams import settings
 from crams.permissions import IsActiveProvider, IsCramsAuthenticated
 from crams.api.v1.utils import get_keystone_admin_client
-from crams.roleUtils import get_configurable_roles, generate_project_role
-from crams.roleUtils import setup_case_insensitive_roles
+from crams import roleUtils
 
 
 @csrf_exempt
@@ -57,7 +55,7 @@ def auth_token_common(rawTokenExtractFn, request):
     try:
         client = get_keystone_admin_client()
         if not client:
-            raise PermissionDenied(
+            raise exceptions.PermissionDenied(
                 'Unable to fetch authentication details from keystone')
 
         user_token = client.tokens.get_token_data(raw_token)
@@ -126,9 +124,8 @@ def nectar_token_auth_view(request):
     if not isinstance(crams_token, CramsToken):
         if isinstance(crams_token, HttpResponse):
             return crams_token
-        raise PermissionDenied('Error fetching Keystone token {}'.format(
-            repr(crams_token)
-        ))
+        raise exceptions.PermissionDenied(
+            'Error fetching Keystone token {}'.format(repr(crams_token)))
 
     username = crams_token.user.username
     query_string = "?username=%s&rest_token=%s" % (username, crams_token.key)
@@ -170,7 +167,7 @@ def _get_crams_token_for_keystone_user(request, ks_user):
             events.save()
 
     except User.MultipleObjectsReturned:
-        raise AuthenticationFailed(
+        raise rest_exceptions.AuthenticationFailed(
             'Multiple UserIds exist for User, contact Support')
     except User.DoesNotExist:
         try:
@@ -204,7 +201,7 @@ def _get_crams_token_for_keystone_user(request, ks_user):
     )
     events.save()
 
-    configurable_roles = get_configurable_roles()
+    configurable_roles = roleUtils.get_configurable_roles()
     user_roles = []
     for (project, roles) in ks_user.get("roles", {}).items():
         for role_obj in roles:
@@ -212,73 +209,105 @@ def _get_crams_token_for_keystone_user(request, ks_user):
             if role in configurable_roles:
                 user_roles.append(role)
             else:
-                p_role = generate_project_role(project, role)
+                p_role = roleUtils.generate_project_role(project, role)
                 if p_role not in configurable_roles:  # additional security
                     user_roles.append(p_role)
 
-    return setup_case_insensitive_roles(user, user_roles)
+    return roleUtils.setup_case_insensitive_roles(user, user_roles)
 
 
-class RequestViewSet(viewsets.ModelViewSet):
+class AbstractCramsRequestViewSet(viewsets.ModelViewSet):
+    def __init__(self, **kwargs):
+        self.crams_object_level = False
+        super().__init__(**kwargs)
+
+    def get_object(self):
+        self.crams_object_level = True
+        return super().get_object()
+
+    def get_queryset(self):
+        """
+
+        :return:
+        """
+        def get_project_contact_filter(data):
+            q_obj = Q(project_contacts__contact__email=data.email)
+            if not self.crams_object_level:
+                q_obj = q_obj & Q(parent_project__isnull=True)
+            return q_obj
+
+        def get_request_contact_filter(data):
+            q_obj = Q(project__project_contacts__contact__email=data.email)
+            if not self.crams_object_level:
+                q_obj = q_obj & Q(parent_request__isnull=True,
+                                  project__parent_project__isnull=True)
+            return q_obj
+
+        def get_project_request_id_filter(data):
+            f_l = data.user_fb_list
+            c_q = Q(project_contacts__contact__email=data.email)
+            if f_l:
+                c_q = c_q | Q(requests__funding_scheme__funding_body__in=f_l)
+            return Q(requests__id=data.request_id) & c_q
+
+        def get_request_id_filter(data):
+            fb_list = data.user_fb_list
+            c_q = Q(project__project_contacts__contact__email=data.email)
+            if fb_list:
+                c_q = c_q | Q(funding_scheme__funding_body__in=fb_list)
+            return Q(id=data.request_id) & c_q
+
+        class TempObject(object):
+            user_obj = self.request.user
+            email = user_obj.email
+            user_fb_list = dbUtils.get_fb_obj_for_fb_names(
+                roleUtils.fetch_user_role_fb_list(user_obj))
+            request_id = self.request.query_params.get('request_id', None)
+
+        queryset = self.queryset
+        qs_filter = Q(id__isnull=True)  # exclude everything by default
+
+        data = TempObject()
+        if data.request_id and data.request_id.isnumeric():
+            if queryset.model is Project:
+                qs_filter = get_project_request_id_filter(data)
+            elif queryset.model is Request:
+                qs_filter = get_request_id_filter(data)
+        else:
+            if queryset.model is Project:
+                qs_filter = get_project_contact_filter(data)
+            elif queryset.model is Request:
+                qs_filter = get_request_contact_filter(data)
+
+        if (data.request_id or self.crams_object_level) and \
+                not queryset.filter(qs_filter).exists():
+            raise exceptions.PermissionDenied()
+
+        return queryset.filter(qs_filter).distinct()
+
+
+class RequestViewSet(AbstractCramsRequestViewSet):
     """
     class RequestViewSet
     """
     permission_classes = [
         And(IsCramsAuthenticated,
             Or(IsProjectContact, IsRequestApprover))]
-    queryset = Request.objects.filter(parent_request__isnull=True)
+    queryset = Request.objects.all()
     serializer_class = CramsRequestSerializer
-
-    def list(self, request, **kwargs):
-        """
-        list
-        :param request:
-        :param kwargs:
-        :return:
-        """
-        request_id = request.query_params.get('request_id', None)
-        if request_id:
-            queryset = Project.objects.filter(
-                requests__id=request_id).distinct()
-        else:
-            # noinspection PyPep8
-            email = self.request.user.email
-            queryset = Request.objects.filter(
-                project__project_contacts__contact__email=email,
-                parent_request__isnull=True).distinct()
-        request_context = {'request': request}
-        serializer = CramsRequestSerializer(queryset,
-                                            context=request_context,
-                                            many=True)
-        return Response(serializer.data)
+    ordering_fields = ('project', 'creation_ts')
+    ordering = ('project', '-creation_ts')
 
 
-class ProjectViewSet(viewsets.ModelViewSet):
+class ProjectViewSet(AbstractCramsRequestViewSet):
     """
     class ProjectViewSet
     """
     permission_classes = (IsCramsAuthenticated, IsProjectContact)
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
-
-    def list(self, request, **kwargs):
-        """
-        list
-        :param request:
-        :param kwargs:
-        :return:
-        """
-        request_id = request.query_params.get('request_id', None)
-        if request_id:
-            queryset = Project.objects.filter(
-                requests__id=request_id).distinct()
-        else:
-            queryset = Project.objects.filter(
-                project_contacts__contact__email=self.request.user.email,
-                parent_project__isnull=True).distinct()
-        serializer = ProjectSerializer(
-            queryset, many=True, context={'request': request})
-        return Response(serializer.data)
+    ordering_fields = ('title', 'creation_ts')
+    ordering = ('title', '-creation_ts')
 
 
 class ContactViewSet(viewsets.ModelViewSet):
@@ -367,7 +396,43 @@ class UpdateProvisionProjectViewSet(viewsets.ModelViewSet):
                 'Sample ', 1))
 
 
-class ProvisionProjectViewSet(viewsets.ReadOnlyModelViewSet):
+class AbstractListProvisionViewSet(viewsets.ReadOnlyModelViewSet):
+    permission_classes = (IsCramsAuthenticated, IsActiveProvider)
+
+    def filter_queryset(self, queryset):  # for List
+        """
+        filter_queryset
+        :param queryset:
+        :return: :raise NotFound:
+        """
+        return self.filter_provision_view_queryset(queryset)
+
+    def filter_provision_view_queryset(self, queryset):
+        crams_user = self.request.user
+        if not Provider.is_provider(crams_user):
+            msg = 'User does not have a provider Role'
+            raise rest_exceptions.NotFound(msg)
+
+        valid_provider = dbUtils.fetch_active_provider_object_for_user(
+            crams_user)
+        if not valid_provider:
+            msg = 'User {} does not have an active provider Role'
+            raise rest_exceptions.NotFound(msg.format(repr(crams_user)))
+        vp = valid_provider
+
+        if queryset.model is Project:
+            provider_filter = \
+                Q(requests__compute_requests__compute_product__provider=vp) | \
+                Q(requests__storage_requests__storage_product__provider=vp)
+        elif queryset.model is Request:
+            provider_filter = \
+                Q(compute_requests__compute_product__provider=valid_provider) \
+                | Q(storage_requests__storage_product__provider=valid_provider)
+
+        return queryset.filter(provider_filter).distinct()
+
+
+class ProvisionProjectViewSet(AbstractListProvisionViewSet):
     """
     class ProvisionProjectViewSet
     """
@@ -377,32 +442,8 @@ class ProvisionProjectViewSet(viewsets.ReadOnlyModelViewSet):
         parent_project__isnull=True, requests__parent_request__isnull=True,
         requests__request_status__code__in=PROVISION_ENABLE_REQUEST_STATUS)
 
-    def filter_queryset(self, queryset):  # for List
-        """
-        filter_queryset
-        :param queryset:
-        :return: :raise NotFound:
-        """
-        crams_user = self.request.user
-        if not Provider.is_provider(crams_user):
-            raise NotFound('User does not have a provider Role')
 
-        valid_provider = fetch_active_provider_object_for_user(crams_user)
-        if not valid_provider:
-            raise NotFound('User {} does not have an active provider Role'.
-                           format(repr(crams_user)))
-        vp = valid_provider
-        provider_filter = \
-            Q(requests__compute_requests__compute_product__provider=vp) | \
-            Q(requests__storage_requests__storage_product__provider=vp)
-        # noinspection PyPep8
-        exclude_filter = \
-            Q(linked_provisiondetails__provision_details__status=ProvisionDetails.FAILED)  # noqa
-        return queryset.filter(provider_filter).\
-            exclude(exclude_filter).all().distinct()
-
-
-class ProvisionRequestViewSet(viewsets.ReadOnlyModelViewSet):
+class ProvisionRequestViewSet(AbstractListProvisionViewSet):
     """
     class ProvisionRequestViewSet
     """
@@ -412,19 +453,3 @@ class ProvisionRequestViewSet(viewsets.ReadOnlyModelViewSet):
         request_status__code__in=PROVISION_ENABLE_REQUEST_STATUS,
         parent_request__isnull=True,
     )
-
-    def filter_queryset(self, queryset):  # for List
-        """
-        filter_queryset
-        :param queryset:
-        :return: :raise NotFound:
-        """
-        crams_user = self.request.user
-        if not Provider.is_provider(crams_user):
-            raise NotFound('User does not have a provider Role')
-
-        valid_provider = fetch_active_provider_object_for_user(crams_user)
-        provider_filter = Q(
-            compute_requests__compute_product__provider=valid_provider) | Q(
-            storage_requests__storage_product__provider=valid_provider)
-        return queryset.filter(provider_filter).distinct()

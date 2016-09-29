@@ -55,7 +55,7 @@ class Bug_740_TestCase(CRAMSApiTstCase):
         for sampleSet in power_set_generator(fb_name_list):
             if len(sampleSet) > 0:
                 user_roles = [FB_ROLE_MAP_REVERSE[x] for x in sampleSet]
-                self._setUserRoles(user_roles)
+                self.set_user_roles(user_roles)
 
                 response = self.getUserRolesAPIResponse()
                 self.assertEqual(response.status_code,

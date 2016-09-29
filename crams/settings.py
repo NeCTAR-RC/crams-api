@@ -123,7 +123,13 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': (
+        'rest_framework.filters.DjangoFilterBackend',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'crams.rest_utils.BrowsableAPIRendererWithoutForms',
+    ),
 }
 
 # Keystone Admin client
@@ -147,6 +153,8 @@ NECTAR_PREFIX_INVALID = ['pt-']
 PROJECT_SYSTEM_ID_INVALID_PREFIX_MAP = {
     DBConstants.SYSTEM_NECTAR.lower(): NECTAR_PREFIX_INVALID
 }
+
+CRAMS_UNIQUE_PROJECT_ID_LIST = [DBConstants.SYSTEM_NECTAR]
 
 # PROVISONER ROLES
 CRAMS_PROVISIONER_ROLE = 'crams_provisioner'

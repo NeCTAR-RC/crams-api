@@ -329,7 +329,7 @@ class ProjectID(models.Model):
         app_label = 'crams'
 
     def __str__(self):
-        return '{} {}'.format(self.identifier, self.project)
+        return '{} - {} {}'.format(self.system, self.identifier, self.project)
 
 
 class RequestStatus(models.Model):

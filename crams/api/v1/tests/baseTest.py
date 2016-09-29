@@ -7,13 +7,14 @@ from crams.account.models import User
 from crams.models import Contact, CramsToken, Provider, ComputeProduct
 from crams.models import Request, Project, ProjectContact, ContactRole
 from crams.models import StorageProduct
-from crams.roleUtils import ROLE_FB_MAP, setup_case_insensitive_roles
+from crams import roleUtils
 
 from tests.testUtils import get_compute_requests_for_request
 from tests.testUtils import get_storage_requests_for_request
 from crams.api.v1.views import DeclineRequestViewSet, ProvisionProjectViewSet
 from crams.api.v1.views import ProjectViewSet, ApproveRequestViewSet
 from crams.api.v1.views import UpdateProvisionProjectViewSet
+from crams.api.v1 import utils as api_utils
 
 
 class CRAMSApiTstCase(APITestCase):
@@ -22,25 +23,36 @@ class CRAMSApiTstCase(APITestCase):
         super(CRAMSApiTstCase, self).setUp()
         self.pp = pprint.PrettyPrinter(indent=4)
         self.roleList = None
-        testEmail = 'tests.merc@monash.edu'
-        self.user = self._getUser('merctest', testEmail)
+        self.setup_new_user()
         self.contact, created = Contact.objects.get_or_create(
-            title='Mr', given_name='Test', surname='MeRC', email=testEmail,
-            phone='99020780', organisation='Monash University')
-        self.token, created = CramsToken.objects.get_or_create(user=self.user)
+            title='Mr', given_name='Test', surname='MeRC',
+            email=self.user.email, phone='99020780',
+            organisation='Monash University')
         self.factory = APIRequestFactory()
 
-    def _getUser(self, userName, testEmail):
+    def setup_new_user(self):
+        username = api_utils.get_random_string(12)
+        self.user = self.get_new_user(username, username + '@crams.tst')
+        self.token, created = CramsToken.objects.get_or_create(user=self.user)
+
+    @classmethod
+    def get_new_user(cls, username, testEmail):
         user, created = User.objects.get_or_create(
-            username=userName, email=testEmail, password='merc2test')
+            username=username, email=testEmail, password=username)
         user.is_staff = True
         user.save()
         return user
 
-    def _setUserRoles(self, roleList):
-        setup_case_insensitive_roles(self.user, roleList)
+    def set_user_roles(self, roleList):
+        roleUtils.setup_case_insensitive_roles(self.user, roleList)
         # reload User to ensure latest permissions are available
         self.user = User.objects.get(pk=self.user.id)
+
+    def apply_fn_to_userrole_combo(self, userrole_list, fn):
+        for user_roles in api_utils.power_set_generator(userrole_list):
+            if len(user_roles) > 0:
+                self.set_user_roles(user_roles)
+                fn()
 
     def _baseGetAPI(self, view, url, idStr=None):
         request = self.factory.get(url)
@@ -70,14 +82,15 @@ class CRAMSApiTstCase(APITestCase):
 
         return response
 
-    def _get_project_data_by_id(self, project_id):
+    def _get_project_data_by_id(self, project_id, validate_response=True):
         view = ProjectViewSet.as_view({'get': 'retrieve'})
         request = self.factory.get('api/project')
         request.user = self.user
         response = view(request, pk=str(project_id))
-        # Expecting HTTP 200 response status
-        self.assertEqual(response.status_code,
-                         status.HTTP_200_OK, response.data)
+        if validate_response:
+            # Expecting HTTP 200 response status
+            self.assertEqual(response.status_code,
+                             status.HTTP_200_OK, response.data)
         return response
 
     def add_project_contact_curr_user(self, project_id):
@@ -170,6 +183,7 @@ class CRAMSApiTstCase(APITestCase):
             return response
 
         view = ProjectViewSet.as_view({'get': 'retrieve', 'put': 'update'})
+
         request = self.factory.put('api/project', test_data)
         request.user = self.user
         response = view(request, pk=test_data.get('id'))
@@ -204,8 +218,8 @@ class AdminBaseTstCase(CRAMSApiTstCase):
 
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
-        approver_roles = list(ROLE_FB_MAP.keys())
-        self._setUserRoles(approver_roles)
+        approver_roles = list(roleUtils.ROLE_FB_MAP.keys())
+        self.set_user_roles(approver_roles)
 
     def _assert_approve_request(self, projectId, approval_notes="",
                                 expected_http_status=status.HTTP_200_OK,
@@ -293,7 +307,7 @@ class ProvisionBaseTstCase(CRAMSApiTstCase):
 
         # Setup Provisioner Role
         keystoneRoles = ['crams_provisioner']
-        self._setUserRoles(keystoneRoles)
+        self.set_user_roles(keystoneRoles)
 
         # Make user provider for all products
         self.providers = {}

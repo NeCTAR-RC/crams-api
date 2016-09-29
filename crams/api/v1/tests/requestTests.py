@@ -4,6 +4,8 @@ from crams.models import Project, Request
 from tests.sampleData import get_base_nectar_project_data
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.views import ProjectViewSet, RequestViewSet
+from crams import roleUtils
+from tests import sampleData
 
 
 class CramsProjectViewSetTest(CRAMSApiTstCase):
@@ -116,6 +118,8 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
 
     def test_request_update_history_fail(self):
         def _updateFailFn(response):
+            # The Viewset will not fetch history records without param
+            # request_id
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
                              'update history fail : {}'.format(response.data))
 
@@ -160,7 +164,7 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
                 requests__isnull=False,
                 parent_project__isnull=True):
             response = view(request, pk=str(p.id))
-            if response.status_code == status.HTTP_403_FORBIDDEN:
+            if response.status_code == status.HTTP_404_NOT_FOUND:
                 continue  # Ignore rows for which user is not authorized
             # Expecting HTTP 200 response status
             self.assertEqual(response.status_code,
@@ -211,6 +215,9 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
                 # Expecting project id
                 # List view return an array, even though the API is for a
                 # specific project request
+                if not response.data:  # could be empty list
+                    return
+
                 projectData = response.data[0]
 
                 self.assertEqual(projectData.get(
@@ -226,13 +233,51 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
 class RequestViewSetTest(CRAMSApiTstCase):
     fixtures = ['v1/test_common_data', 'v1/test_nectar_data']
 
-    def setUp(self):
+    def setUp(self, test_data_fn):
         CRAMSApiTstCase.setUp(self)
-        self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.contact)
+        self.generate_test_data_fn = test_data_fn
+        self.test_data = self.generate_test_data_fn(self.user.id, self.contact)
+
+    def get_request_data_by_id(self, request_id, validate_response=True):
+        view = RequestViewSet.as_view({'get': 'retrieve'})
+        request = self.factory.get('api/request')
+        request.user = self.user
+        response = view(request, pk=str(request_id))
+        if validate_response:
+            # Expecting HTTP 200 response status
+            self.assertEqual(response.status_code,
+                             status.HTTP_200_OK, response.data)
+        return response
+
+    def validate_request_id_param_access(self):
+        def fetch_request_by_request_param():
+            view = RequestViewSet.as_view({'get': 'list',
+                                           'post': 'update'})
+
+            url_with_param = 'api/request?request_id=' + str(request_id)
+            request = self.factory.get(url_with_param,)
+            request.user = self.user
+            return view(request)
+
+        project_json = self.generate_test_data_fn(self.user.id, self.contact)
+        response = self._create_project_common(project_json, True)
+        request_id = response.data.get('id')
+
+        # Access project as not contact and not approver
+        # List access without URL param
+        self.setup_new_user()
+        response = self.get_request_data_by_id(request_id, False)
+        msg = 'Access to request must be restricted to Project Contact'
+        status_code = response.status_code
+        self.assertEqual(status_code, status.HTTP_403_FORBIDDEN, msg)
+
+        # Detail access with URL param request_id
+        role_list = roleUtils.ROLE_FB_MAP.keys()
+        self.apply_fn_to_userrole_combo(role_list,
+                                        fetch_request_by_request_param)
 
     # Test Rest GET for Request
-    def test_request_get(self):
+    def validate_request_list_get(self):
         # create atleast one project/request for testing get
         self._create_project_common(self.test_data)
 
@@ -259,3 +304,19 @@ class RequestViewSetTest(CRAMSApiTstCase):
             response.data['request_status']['code'],
             request_obj.request_status.code,
             response.data)
+
+
+class NectarRequestTests(RequestViewSetTest):
+    def setUp(self):
+        def test_data_fn(user_id, contact_obj, project_ids=None):
+            return sampleData.get_base_nectar_project_data(user_id,
+                                                           contact_obj,
+                                                           project_ids)
+
+        super().setUp(test_data_fn, 'NeCTAR')
+
+    def validate_request_id_param_access(self):
+        super().validate_request_id_param_access()
+
+    def validate_request_list_get(self):
+        super().validate_request_list_get()

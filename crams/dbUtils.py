@@ -36,3 +36,7 @@ def get_system_name_map():
             'system': obj.system
         }
     return ret_map
+
+
+def get_fb_obj_for_fb_names(fb_name_list):
+    return models.FundingBody.objects.filter(name__in=fb_name_list).all()

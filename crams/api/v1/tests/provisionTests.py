@@ -98,7 +98,7 @@ class ProvisionRequestViewSetTest(ProvisionBaseTstCase):
     # Test Rest Get a request id
     def test_request_get_without_authorization(self):
         keystoneRoles = ['not_crams_provisioner']
-        self._setUserRoles(keystoneRoles)
+        self.set_user_roles(keystoneRoles)
         view = ProvisionRequestViewSet.as_view({'get': 'retrieve'})
         request = self.factory.get('api/provision_request/list/')
         request.user = self.user
@@ -144,7 +144,7 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
 
     def test_provision_get_update_without_authorization(self):
         keystoneRoles = ['not_crams_provisioner']
-        self._setUserRoles(keystoneRoles)
+        self.set_user_roles(keystoneRoles)
         # print('--- update sample ---')
         view = UpdateProvisionProjectViewSet.as_view({'get': 'list'})
         url = 'api/provision_project/update/'
@@ -303,14 +303,14 @@ class UpdateProvisionViewSetTest(ProvisionBaseTstCase):
             # First try all non-FB admin roles
             user_roles = set(roleUtils.FB_ROLE_MAP_REVERSE.values())
             user_roles.remove(request_fb_role)
-            self._setUserRoles(list(user_roles))
+            self.set_user_roles(list(user_roles))
             fb_response = self._get_project_data_by_id(project_id)
             _, fb_role_pd = fn(fb_response.data)
             self.validate_user_provision_details(fb_role_pd)
 
             # Now try as FB Admin Role
             role_list = [request_fb_role]
-            self._setUserRoles(role_list)
+            self.set_user_roles(role_list)
             fb_response = self._get_project_data_by_id(project_id)
             _, fb_role_pd = fn(fb_response.data)
             self.validate_admin_provision_details(fb_role_pd)
@@ -472,7 +472,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         request_fb_role = \
             roleUtils.FB_ROLE_MAP_REVERSE.get(FUNDING_BODY_NECTAR)
         role_list = [request_fb_role]
-        self._setUserRoles(role_list)
+        self.set_user_roles(role_list)
         project_id = proj_data_response.data['id']
         fb_response = self._get_project_data_by_id(project_id)
         self.validate_admin_provision_details(pd_fn(fb_response))

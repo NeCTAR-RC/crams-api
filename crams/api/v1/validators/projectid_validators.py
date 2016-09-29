@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models as django_models
 
 from rest_framework import serializers
-from rest_framework.exceptions import ParseError
+from rest_framework import exceptions as rest_exceptions
 
 from crams import settings
 from crams import lang_utils
@@ -27,7 +27,7 @@ def extract_project_id_save_args(project_id_data):
                 project_id_data.get('identifier')))
     try:
         ret_dict['system_obj'] = lookupData.get_system_obj(system_data)
-    except ParseError as e:
+    except rest_exceptions.ParseError as e:
         raise serializers.ValidationError('Project Id ({}): {}'.format(
             ret_dict['identifier'], repr(e)))
 
@@ -56,8 +56,11 @@ class AbstractUniqueSystemProjectIDValidator(metaclass=abc.ABCMeta):
 
     def __call__(self, data):
         save_args = extract_project_id_save_args(data)
-        self.validate_identifier_is_unique(save_args['identifier'],
-                                           save_args['system_obj'])
+
+        system_obj = save_args.get('system_obj')
+        if system_obj.system.strip() in settings.CRAMS_UNIQUE_PROJECT_ID_LIST:
+            self.validate_identifier_is_unique(save_args['identifier'],
+                                               system_obj)
 
     def validate_identifier_is_unique(self, identifier, system):
         """
@@ -78,7 +81,7 @@ class AbstractUniqueSystemProjectIDValidator(metaclass=abc.ABCMeta):
                         project__parent_project=parent_project) |
                     django_models.Q(project=parent_project))
         if qs.exists():
-            raise serializers.ValidationError(
+            raise rest_exceptions.ParseError(
                 'Project Id ({}): exists, must be unique'.format(identifier))
 
 

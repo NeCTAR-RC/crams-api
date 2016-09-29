@@ -93,6 +93,8 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
 
     def test_request_update_history_fail(self):
         def _updateFailFn(response):
+            # The Viewset will not fetch history records without param
+            # request_id
             self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
                              'update history fail : {}'.format(response.data))
 
@@ -129,7 +131,7 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
                                         requests__isnull=False,
                                         parent_project__isnull=True):
             response = view(request, pk=str(p.id))
-            if response.status_code == status.HTTP_403_FORBIDDEN:
+            if response.status_code == status.HTTP_404_NOT_FOUND:
                 continue  # Ignore rows for which user is not authorized
             # Expecting HTTP 200 response status
             self.assertEqual(response.status_code,
@@ -180,6 +182,10 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
                 # Expecting project id
                 # List view return an array, even though the API is for a
                 # specific project request
+
+                if not response.data:  # could be empty list
+                    return
+
                 projectData = response.data[0]
 
                 self.assertEqual(projectData.get(

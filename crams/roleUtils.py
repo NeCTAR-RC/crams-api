@@ -86,3 +86,12 @@ def has_role_fb(user_obj, fb_obj):
         return req_role and req_role in user_roles
 
     return False
+
+
+def fetch_user_role_fb_list(user_obj):
+    ret_set = set()
+    user_roles = fetch_cramstoken_roles(user_obj)
+    for role, fb in ROLE_FB_MAP.items():
+        if role in user_roles:
+            ret_set.add(fb)
+    return list(ret_set)

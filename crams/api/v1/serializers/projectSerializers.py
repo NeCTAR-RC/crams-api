@@ -479,9 +479,9 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
             project = self.cramsActionState.existing_instance
             if project.parent_project:
                 concurrent_user = project.parent_project.updated_by
-                raise ValidationError('concurrent update: {} has updated '
-                                      'project, please refresh and try again'
-                                      .format(repr(concurrent_user)))
+                raise ParseError('concurrent update: {} has updated '
+                                 'project, please refresh and try again'
+                                 .format(repr(concurrent_user)))
 
             request_ids = project.requests.values_list('id', flat=True)
 
