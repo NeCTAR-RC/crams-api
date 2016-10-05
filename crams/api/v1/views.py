@@ -193,7 +193,8 @@ def _get_crams_token_for_keystone_user(request, ks_user):
                                 '  ' + str(e))
 
     # Expire existing Token and log Login
-    user.auth_token.delete()
+    if user.auth_token:
+        user.auth_token.delete()
     msg = 'User logged in with valid Keystone token'
     events = UserEvents(
         created_by=user,
