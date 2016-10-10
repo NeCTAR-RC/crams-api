@@ -715,4 +715,9 @@ def get_request_contact_email_ids(allocation_request):
     for project_contact in allocation_request.project.project_contacts.all():
         ret_set.add(project_contact.contact.email)
 
+    # Fix for missing applicant notification. Applicants are not added
+    # to contacts until after Notifications are sent at create time.
+    if allocation_request.updated_by.email not in ret_set:
+        ret_set.add(allocation_request.updated_by.email)
+
     return list(ret_set)
