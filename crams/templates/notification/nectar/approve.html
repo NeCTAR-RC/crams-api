@@ -1,21 +1,21 @@
 {% load crams_tags %}
-{% with project=request.project project_ids=request.project_ids project_contacts=request.project.project_contacts %}
+{% with project_title=request.project.title project_ids=request.project_ids project_contacts=request.project.project_contacts %}
 {% with UUID=project_ids|filter_project_id:"NeCTAR_UUID" contact_email=project_contacts|filter_project_contact:"Applicant" %}
 
 {% if UUID %}
-Please amend the allocation for {{ project_name }}
+Please amend the allocation for {{ project_title }}
 {% else %}
-Please set up an allocation for {{ project_name }}
+Please set up an allocation for {{ project_title }}
 {% endif %}
 
 Hello Research Cloud Admins,
 {% if UUID %}
-An amendment for the {{ project_name }} project has been approved. Please amend the quotas for the following allocation:
+An amendment for the {{ project_title }} project has been approved. Please amend the quotas for the following allocation:
 {% else %}
-An allocation request for the {{ project_name }} project has been approved. Please set up the following allocation:
+An allocation request for the {{ project_title }} project has been approved. Please set up the following allocation:
 {% endif %}
 {% if UUID %}Project UUID: {{ UUID }}{% endif %}
-{{ project_name }}, {{ contact_email }}
+{{ project_title }}, {{ contact_email }}
 
 Quota
 -----
@@ -30,7 +30,7 @@ Cores:          {{ compute_request.cores }}
 {% endspaceless %}
 
 You can view the request at:
-    {{ client_request_url }}
+{{ request.client_request_url }}
 
 NOTE {{ contact_email }}: you will receive another email once this has been provisioned.
 

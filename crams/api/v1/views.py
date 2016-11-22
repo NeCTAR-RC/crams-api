@@ -35,6 +35,7 @@ from crams import settings
 from crams.permissions import IsActiveProvider, IsCramsAuthenticated
 from crams.api.v1.utils import get_keystone_admin_client
 from crams import roleUtils
+from crams import django_utils
 
 
 @csrf_exempt
@@ -88,12 +89,12 @@ def provision_auth_token_view(request):
     :param request:
     :return:
     """
-    def rawTokenExtractFn():
+    def raw_token_extract_fn():
         json_data = request.read()
         data = json_loads(json_data.decode())
         return data.get("token", None)
 
-    response_data = auth_token_common(rawTokenExtractFn, request)
+    response_data = auth_token_common(raw_token_extract_fn, request)
 
     if isinstance(response_data, CramsToken):
         return JsonResponse({
@@ -111,16 +112,15 @@ def nectar_token_auth_view(request):
     :return: :raise PermissionDenied:
     """
 
-    def rawTokenExtractFn():
+    def raw_token_extract_fn():
         return request.POST.get("token", None)
 
     client_login_url = request.COOKIES.get(settings.CRAMS_CLIENT_COOKIE_KEY)
     if not client_login_url:
-        print('No Client URL cookie, set default')
-        client_login_url = \
-            settings.NECTAR_CLIENT_BASE_URL + settings.CLIENT_KS_LOGIN_PATH
+        client_login_url = django_utils.generate_client_login_url(
+            request, settings.NECTAR_CLIENT_BASE_URL)
 
-    crams_token = auth_token_common(rawTokenExtractFn, request)
+    crams_token = auth_token_common(raw_token_extract_fn, request)
     if not isinstance(crams_token, CramsToken):
         if isinstance(crams_token, HttpResponse):
             return crams_token
@@ -131,8 +131,6 @@ def nectar_token_auth_view(request):
     query_string = "?username=%s&rest_token=%s" % (username, crams_token.key)
     if client_login_url:
         # redirect and authenticate user into crams
-        print('redirecting...', client_login_url + query_string)
-        print(' ---- client URL', client_login_url)
         response = HttpResponseRedirect(client_login_url + query_string)
         response['token'] = crams_token.key
         response['roles'] = crams_token.ks_roles
