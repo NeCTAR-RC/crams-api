@@ -6,6 +6,10 @@ from django.core import serializers
 
 
 # noinspection PyProtectedMember
+from crams import DBConstants
+from crams import settings
+
+
 def list_model_fields(model_instance):
     """
         List model fields for given instance
@@ -43,3 +47,28 @@ def json_serialize(query_set):
     :return:
     """
     return serializers.serialize("json", query_set)
+
+
+def get_referer_host_url(request):
+    base_url = None
+    if request:
+        base_url = request.META.get('HTTP_REFERER')
+    return base_url
+
+
+def generate_client_login_url(request, base_url):
+    if not base_url:
+        base_url = get_referer_host_url(request)
+
+    return base_url + settings.CLIENT_KS_LOGIN_PATH
+
+
+def get_funding_body_request_url(funding_body_name):
+    return FUNDING_BODY_CLIENT_REQUEST_PATH.get(funding_body_name.lower())
+
+
+FUNDING_BODY_CLIENT_REQUEST_PATH = {
+    DBConstants.FUNDING_BODY_NECTAR.lower():
+        settings.NECTAR_CLIENT_BASE_URL +
+        settings.NECTAR_CLIENT_VIEW_REQUEST_PATH
+}

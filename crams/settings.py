@@ -10,8 +10,9 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-import os
 import logging
+import os
+
 from crams import DBConstants
 
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
@@ -161,15 +162,11 @@ CRAMS_PROVISIONER_ROLE = 'crams_provisioner'
 
 # CRAMS Frontend Keystone login page
 CRAMS_CLIENT_COOKIE_KEY = 'client_url'
+HTML_ENCODE_HASH_CHAR = '%23'
 # Do not remove trailing slash
-CLIENT_KS_LOGIN_PATH = '/#/ks-login/'
+CLIENT_KS_LOGIN_PATH = '/' + HTML_ENCODE_HASH_CHAR + '/ks-login/'
 NECTAR_CLIENT_BASE_URL = ''
 NECTAR_CLIENT_VIEW_REQUEST_PATH = '/#/allocations/view_request/'
-
-FUNDING_BODY_CLIENT_REQUEST_PATH = {
-    DBConstants.FUNDING_BODY_NECTAR.lower():
-        NECTAR_CLIENT_BASE_URL + NECTAR_CLIENT_VIEW_REQUEST_PATH
-}
 
 CRAMS_RC_SHIB_URL_PART = 'https://example.org/rcshibboleth/?return-path='
 
