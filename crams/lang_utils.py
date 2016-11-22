@@ -101,3 +101,5 @@ class SortableObject(CommonEqualityMixin):
                 (isinstance(self.obj, type(other))):
             return other.obj == self.obj
         return False
+
+

@@ -10,6 +10,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.serializers import ModelSerializer
 from rest_framework.serializers import PrimaryKeyRelatedField
 
+from crams import django_utils
 from crams import settings
 from crams.DBConstants import ADMIN_STATES
 from crams.DBConstants import APPROVAL_STATES
@@ -645,9 +646,10 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             alloc_request.project, many=False, context=project_context)
         ret_dict['project'] = project_serializer.data
 
-        fb_lower = alloc_request.funding_scheme.funding_body.name.lower()
-        base_url = settings.FUNDING_BODY_CLIENT_REQUEST_PATH.get(fb_lower)
+        fb_name = alloc_request.funding_scheme.funding_body.name
+        base_url = django_utils.get_funding_body_request_url(fb_name)
         ret_dict['client_request_url'] = base_url + str(alloc_request.id)
+        print('Client request URL is ', ret_dict['client_request_url'])
 
         return ret_dict
 
