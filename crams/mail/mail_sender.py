@@ -40,5 +40,5 @@ def send_notification(
     if bcc_list:
         email.bcc = bcc_list
     if reply_to:
-        email.headers = {'Reply-To': reply_to}
+        email.reply_to = reply_to
     email.send()
