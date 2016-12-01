@@ -215,7 +215,7 @@ def _get_crams_token_for_keystone_user(request, ks_user):
     return roleUtils.setup_case_insensitive_roles(user, user_roles)
 
 
-class AbstractCramsRequestViewSet(viewsets.ModelViewSet):
+class AbstractCramsRequestViewSet(django_utils.CramsModelViewSet):
     def __init__(self, **kwargs):
         self.crams_object_level = False
         super().__init__(**kwargs)
@@ -309,7 +309,7 @@ class ProjectViewSet(AbstractCramsRequestViewSet):
     ordering = ('title', '-creation_ts')
 
 
-class ContactViewSet(viewsets.ModelViewSet):
+class ContactViewSet(django_utils.CramsModelViewSet):
     """
     class ContactViewSet
     """
@@ -349,7 +349,7 @@ class SearchContact(generics.ListAPIView):
     search_fields = ('given_name', 'surname', 'email')
 
 
-class ApproveRequestViewSet(viewsets.ModelViewSet):
+class ApproveRequestViewSet(django_utils.CramsModelViewSet):
     """
     class ApproveRequestViewSet
     """
@@ -360,7 +360,7 @@ class ApproveRequestViewSet(viewsets.ModelViewSet):
         request_status__code__in=ADMIN_ENABLE_REQUEST_STATUS)
 
 
-class DeclineRequestViewSet(viewsets.ModelViewSet):
+class DeclineRequestViewSet(django_utils.CramsModelViewSet):
     """
     class DeclineRequestViewSet
     """
@@ -371,7 +371,7 @@ class DeclineRequestViewSet(viewsets.ModelViewSet):
         request_status__code__in=ADMIN_ENABLE_REQUEST_STATUS)
 
 
-class UpdateProvisionProjectViewSet(viewsets.ModelViewSet):
+class UpdateProvisionProjectViewSet(django_utils.CramsModelViewSet):
     """
     class UpdateProvisionProjectViewSet
     """

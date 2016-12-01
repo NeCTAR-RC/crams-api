@@ -106,8 +106,8 @@ class ContactTest(CRAMSApiTstCase):
         # Results match tests data
         self.assertEquals(response.data, test_data, response.data)
 
-    # Test Rest PATCH for Contact
-    def test_contact_patch(self):
+    # Test Rest PATCH fail for Contact
+    def test_contact_patch_fail(self):
         contact = Contact.objects.get(email=self.user.email)
 
         view = ContactViewSet.as_view(
@@ -121,12 +121,7 @@ class ContactTest(CRAMSApiTstCase):
         # HTTP 200
         self.assertEquals(
             response.status_code,
-            status.HTTP_200_OK,
-            response.data)
-        # Email has been updated
-        self.assertEquals(
-            response.data.get("email"),
-            'tests.merc@hotmail.com',
+            status.HTTP_405_METHOD_NOT_ALLOWED,
             response.data)
 
     # Test email validation for POST contact
@@ -184,27 +179,6 @@ class ContactTest(CRAMSApiTstCase):
         # Expected error message
         self.assertEqual(str(response.data.get('email')[
                          0]), 'This field must be unique.', response.data)
-
-    # Test email validation for PATCH contact
-    def test_contact_patch_validation(self):
-        contact = Contact.objects.get(email=self.user.email)
-
-        view = ContactViewSet.as_view(
-            {'get': 'retrieve', 'patch': 'partial_update'})
-        # update email with an existing email
-        request = self.factory.patch(
-            'api/contact', {'email': 'john.smith@monash.edu'})
-        request.user = self.user
-        response = view(request, pk=contact.id)
-
-        # HTTP 400
-        self.assertEquals(
-            response.status_code,
-            status.HTTP_400_BAD_REQUEST,
-            response.data)
-        # Expected error message
-        self.assertEquals(str(response.data.get("email")[
-                          0]), 'This field must be unique.', response.data)
 
     # Test search function, searching using given_name
     def test_contact_search_given_name(self):
