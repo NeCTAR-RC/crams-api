@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7adec928_16008200",
+        "filename": "crams/api/v1/tests/contactTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 149,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-12-01T23:05:32Z",
+      "side": 1,
+      "message": "Just remove, thats what version control is for",
+      "range": {
+        "startLine": 127,
+        "startChar": 0,
+        "endLine": 149,
+        "endChar": 28
+      },
+      "revId": "b6d69150aa6766ecd80635af37755b55db0315e7",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7adec928_36057e11",
+        "filename": "crams/api/v1/tests/contactTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 227,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2016-12-01T23:05:32Z",
+      "side": 1,
+      "message": "dito",
+      "range": {
+        "startLine": 207,
+        "startChar": 0,
+        "endLine": 227,
+        "endChar": 77
+      },
+      "revId": "b6d69150aa6766ecd80635af37755b55db0315e7",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
