@@ -3,11 +3,35 @@
     Utilities to manipulate django model fields
 """
 from django.core import serializers
+from rest_framework import mixins, viewsets
+from rest_framework import response
+from rest_framework import status
 
 
 # noinspection PyProtectedMember
 from crams import DBConstants
 from crams import settings
+
+
+class CramsModelViewSet(mixins.CreateModelMixin,
+                        mixins.RetrieveModelMixin,
+                        mixins.UpdateModelMixin,
+                        mixins.ListModelMixin,
+                        viewsets.GenericViewSet):
+    """
+        A viewset similar to viewset.ModelViewSet except 
+         - no destroy() action
+         - partial update will return error message
+    """
+
+    def partial_update(self, request, *args, **kwargs):
+        msg = {
+            "detail": "Method \"PATCH\" not allowed."
+        }
+        headers = self.get_success_headers(msg)
+        return response.Response(msg,
+                                 status=status.HTTP_405_METHOD_NOT_ALLOWED,
+                                 headers=headers)
 
 
 def list_model_fields(model_instance):
