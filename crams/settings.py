@@ -120,8 +120,6 @@ DATABASES = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.BasicAuthentication',
-        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
     'DEFAULT_FILTER_BACKENDS': (
@@ -173,6 +171,7 @@ CRAMS_RC_SHIB_URL_PART = 'https://example.org/rcshibboleth/?return-path='
 # Default Email setup to console
 # Email notification configuration
 EMAIL_SENDER = 'admin@crams.dev'
+NECTAR_NOTIFICATION_REPLY_TO = [EMAIL_SENDER]
 
 # Send email to the console by default
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
