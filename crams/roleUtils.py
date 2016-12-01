@@ -6,9 +6,14 @@ from crams.DBConstants import FUNDING_BODY_NECTAR, FUNDING_BODY_VICNODE
 from crams.lang_utils import reverse_dict, strip_lower
 from crams.settings import NECTAR_APPROVER_ROLE, VICNODE_APPROVER_ROLE
 from crams.settings import CRAMS_PROVISIONER_ROLE
+from crams.settings import NECTAR_NOTIFICATION_REPLY_TO
 from crams.models import CramsToken
 from json import dumps as json_dumps
 
+# Funding Body Reply-to Email Map
+FB_REPLY_TO_MAP = {
+    strip_lower(FUNDING_BODY_NECTAR): NECTAR_NOTIFICATION_REPLY_TO
+}
 
 # Funding Body Role Map
 ROLE_FB_MAP = {

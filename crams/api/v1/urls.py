@@ -14,8 +14,6 @@ from crams.api.v1.views import RequestViewSet, ContactViewSet, ContactDetail, \
     SearchContact, ProvisionRequestViewSet, ProvisionProjectViewSet, \
     UpdateProvisionProjectViewSet
 
-from crams.api.v1.auth import CramsLoginAuthToken
-
 from crams.api.v1.views_list import CurrentUserApproverRoleList, \
     RequestHistoryViewSet, CurrentUserRolesView
 from crams.api.v1 import lookup, auth
@@ -41,10 +39,8 @@ router.register(r'contact', ContactViewSet)
 
 
 urlpatterns = [
-    url(r'^accounts/auth/$', CramsLoginAuthToken.as_view()),
     url(r'^', include(router.urls, namespace='crams')),
     url(r'set_tokens', auth.set_tokens),
-    url(r'api-token-auth', CramsLoginAuthToken.as_view()),
     url(r'redirect-to-rc-shib', auth.redirect_to_rc_shib),
     url(r'user_roles', CurrentUserRolesView.as_view()),
     url(r'alloc_home', lookup.allocation_home),

@@ -16,6 +16,8 @@ from crams.DBConstants import ADMIN_STATES
 from crams.DBConstants import APPROVAL_STATES
 from crams.DBConstants import DECLINED_STATES
 from crams.roleUtils import FUNDING_BODY_NECTAR
+from crams.roleUtils import FB_REPLY_TO_MAP
+from crams.lang_utils import strip_lower
 from crams.DBConstants import LEGACY_STATES
 from crams.DBConstants import NON_ADMIN_STATES
 from crams.DBConstants import REQUEST_STATUS_DECLINED
@@ -673,9 +675,10 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             subject = 'Allocation request - ' + desc
 
             sender = settings.EMAIL_SENDER
-            funding_body_email = alloc_req.funding_scheme.funding_body.email
             recipient_list = get_request_contact_email_ids(alloc_req)
-            cc_list = [funding_body_email]
+            funding_body = alloc_req.funding_scheme.funding_body
+            cc_list = [funding_body.email]
+            reply_to = FB_REPLY_TO_MAP.get(strip_lower(funding_body.name))
             mail_sender.send_notification(
                 sender=sender,
                 subject=subject,
@@ -684,7 +687,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                 recipient_list=recipient_list,
                 cc_list=cc_list,
                 bcc_list=None,
-                reply_to=None)
+                reply_to=reply_to)
         except Exception as e:
             error_message = '{} : Project - {}'.format(repr(e), desc)
             LOG.error(error_message)
