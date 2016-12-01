@@ -17,6 +17,11 @@ DATABASES = {
 SECRET_KEY = 'secret'
 
 # Set the djangorestframework testing
+REST_FRAMEWORK['DEFAULT_AUTHENTICATION_CLASSES'] = (
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.TokenAuthentication'
+    )
 REST_FRAMEWORK.update({
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
     'TEST_REQUEST_RENDERER_CLASSES': (
