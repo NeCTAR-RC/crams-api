@@ -48,6 +48,30 @@
     },
     {
       "key": {
+        "uuid": "7adec928_b9e4210e",
+        "filename": "crams/django_utils.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2016-12-05T05:18:08Z",
+      "side": 1,
+      "message": "No, viewsets.ModelViewSet includes delete functionality (destroy() method), Crams API should not allow delete, all entities are archived instead.",
+      "parentUuid": "7adec928_b6226eb7",
+      "range": {
+        "startLine": 16,
+        "startChar": 0,
+        "endLine": 20,
+        "endChar": 49
+      },
+      "revId": "b1481c1a00d367dc0f0db40914910602abcc5557",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7adec928_d62ffa9f",
         "filename": "crams/django_utils.py",
         "patchSetId": 4
