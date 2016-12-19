@@ -358,6 +358,8 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
     # Request
     requests = serializers.SerializerMethodField(method_name='filter_requests')
 
+    historic = serializers.SerializerMethodField(method_name='is_historic')
+
     class Meta(object):
         """class Meta."""
 
@@ -366,6 +368,7 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
             'id',
             'title',
             'description',
+            'historic',
             'notes',
             'project_question_responses',
             'institutions',
@@ -379,6 +382,10 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
         read_only_fields = ('provision_details',
                             'creation_ts',
                             'last_modified_ts')
+
+    @staticmethod
+    def is_historic(project_obj):
+        return project_obj.parent_project is not None
 
     def filter_provision_project(self, project_obj):
         """
@@ -570,7 +577,7 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
         parent_project = validated_data.pop('parent_project', None)
         if parent_project:
             raise ParseError(
-                'Projects with parent_project value set are archived, ' +
+                'Projects with parent_project value set are historic, ' +
                 'readonly records. Update fail')
 
         # Project Question responses
@@ -688,7 +695,7 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
             for requestData in requests:
                 parent_request = requestData.pop('parent_request', None)
                 if parent_request:
-                    # These are archived requests, should not be updated.
+                    # These are historic requests, should not be updated.
                     continue
 
                 # will be set later with new project

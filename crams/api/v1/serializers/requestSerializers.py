@@ -286,6 +286,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             'first_name',
             'last_name'],
         queryset=User.objects.all())
+
     updated_by = PrimaryKeyLookupField(
         many=False,
         required=True,
@@ -296,12 +297,18 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             'last_name'],
         queryset=User.objects.all())
 
+    historic = serializers.SerializerMethodField(method_name='is_historic')
+
     class Meta(object):
         model = Request
-        field = ('id', 'start_date', 'end_date', 'approval_notes',
+        field = ('id', 'start_date', 'end_date', 'approval_notes', 'historic',
                  'compute_requests', 'storage_requests', 'funding_scheme')
         read_only_fields = (
             'creation_ts', 'last_modified_ts', 'request_status')
+
+    @staticmethod
+    def is_historic(request_obj):
+        return request_obj.parent_request is not None
 
     def populate_compute_request(self, request_obj):
         user = None
@@ -436,7 +443,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                                        being provisioned'})
 
         newRequest = self._saveRequest(validated_data, instance)
-        # update parent_request property for the project archive, required to
+        # update parent_request property for the historic project, required to
         # identify list for history
         instance.parent_request = newRequest
         instance.save()
@@ -464,7 +471,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         parent_request = validated_data.pop('parent_request', None)
         if parent_request:
             raise ParseError('Requests with parent_request value set \
-                             are archived, readonly records. Update fail')
+                             are historic, readonly records. Update fail')
 
         # Request Question responses
         request_question_responses_data = validated_data.pop(
