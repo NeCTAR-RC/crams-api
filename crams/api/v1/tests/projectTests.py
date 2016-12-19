@@ -121,6 +121,42 @@ class BaseProjectTests(_AbstractCramsBase):
                                      status.HTTP_400_BAD_REQUEST,
                                      msg)
 
+    def validate_duplicate_project_id(self, system_name_set):
+        project_json = self.generate_test_data_fn(self.user.id,
+                                                  self.user_contact)
+        response = self._create_project_common(project_json, True)
+
+        # Verify project has required System Ids
+        project_ids = response.data.get('project_ids')
+        system_id_map = dict()
+        for pid_json in project_ids:
+            system_name = pid_json.get('system').get('system')
+            if system_name in system_name_set:
+                pid_json.pop('id')
+                system_id_map[system_name] = pid_json.get('identifier')
+        not_found_set = system_name_set.difference(system_id_map.keys())
+        self.assertFalse(not_found_set,
+                         'SystemIds not found for ' + ','.join(not_found_set))
+
+        # create a new project json and replace system id's with existing ones
+        new_proj_json = self.generate_test_data_fn(self.user.id,
+                                                   self.user_contact)
+        project_ids = new_proj_json.get('project_ids')
+        for pid_json in project_ids:
+            system_name = pid_json.get('system').get('system')
+            if system_name in system_id_map.keys():
+                pid_json['identifier'] = system_id_map.get(system_name)
+        response = self._create_project_common(project_json, False)
+        self.assertEqual(response.status_code,
+                         status.HTTP_400_BAD_REQUEST,
+                         'Duplicate Project Id creation must fail')
+        msg = response.data.get('detail')
+        self.assertIsNotNone(msg, 'Expected error message')
+        self.assertTrue(msg.startswith('Project Id ('),
+                        'Invalid error message: ' + msg)
+        self.assertTrue(msg.endswith('): exists, must be unique'),
+                        'Invalid error message: ' + msg)
+
     def add_required_project_ids(self, project_json, required_sysid_list):
         project_ids = project_json.get('project_ids')
         system_list = set()
@@ -183,6 +219,10 @@ class NectarProjectTests(BaseProjectTests):
 
     def test_request_id_param_access(self):
         super().validate_project_access()
+
+    def test_duplicate_project_id_fail(self):
+        req_set = set([DBConstants.SYSTEM_NECTAR])
+        super().validate_duplicate_project_id(req_set)
 
     def test_unique_project_identifier(self):
         required_ids_set = set([DBConstants.SYSTEM_NECTAR])
