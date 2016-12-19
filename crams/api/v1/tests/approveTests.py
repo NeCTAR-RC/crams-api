@@ -281,25 +281,47 @@ class ApproveRequestViewSetTest(AdminBaseTstCase):
             Q(requests__request_status__code="X"))
         self.assertEquals(len(response.data), len(projects), response.data)
 
-    # def test_approve_get_request_without_authorization(self):
-    #     keystoneRoles = ['not_crams_provisioner']
-    #     self._setUserRoles(keystoneRoles)
-    #     view = ApproveRequestViewSet.as_view({'get': 'list'})
-    #     request = self.factory.get('api/approve_request')
-    #     request.user = self.user
-    #     response = view(request)
-    #
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def fetch_submitted_projects(self):
+        proj_list = Project.objects.filter(
+            requests__request_status__code=REQUEST_STATUS_SUBMITTED)
+        self.assertTrue(proj_list.exists(),
+                        'Approve test requires Submitted Projects')
+        return proj_list
+
+    def test_approve_with_invalid_national_percent(self):
+        def anon_fn(national_percent):
+            proj_list = self.fetch_submitted_projects()
+            self._assert_approve_request(
+                proj_list[0].id,
+                national_percent=national_percent,
+                approval_notes="Approve request without national percent",
+                expected_http_status=status.HTTP_400_BAD_REQUEST,
+                expected_req_status=None,
+                expected_status_code=None)
+        # National Percent not given
+        anon_fn(None)
+        # National Percent < 0
+        anon_fn(-4.53)
+        # National Percent > 100
+        anon_fn(102.56)
+        # National Percent decimal places > 2
+        anon_fn(66.33333335)
+
+    def test_approve_with_valid_national_percent(self):
+        proj_list = self.fetch_submitted_projects()
+        self._assert_approve_request(
+            proj_list[0].id,
+            national_percent=35.67,
+            approval_notes="Approve request with valid national percent")
 
     # testing change of request status from 'E - Submitted' to 'A - Approved'
     def test_approve_submitted_request(self):
         # setup test_data
         # .get(title="Test Project 2 - E: Submitted")
-        projList = Project.objects.filter(
-            requests__request_status__code=REQUEST_STATUS_SUBMITTED)
-        if projList.exists():
-            self._assert_approve_request(
-                projList[0].id, approval_notes="Approve request for project 2")
+        proj_list = self.fetch_submitted_projects()
+        self._assert_approve_request(
+            proj_list[0].id,
+            approval_notes="Approve request for project 2")
 
     # testing change request status from 'X - Update/Extension Requested' to
     # 'A - Approved'

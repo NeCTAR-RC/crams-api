@@ -152,6 +152,14 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
             'id'), instances, cores, quota, _updateFailFn)
 
     def test_request_get(self):
+        def validate_national_percent(request_data):
+            np = float(request_data.get('national_percent'))
+            self.assertIsNotNone(np, 'API: National Percent value expected')
+            self.assertTrue(np <= 100,
+                            'National percent must not be greater than 100')
+            self.assertTrue(np >= 0,
+                            'National percent must not be smaller than 0')
+
         # create atleast one project/request for testing get
         self._create_project_common(self.test_data)
 
@@ -174,8 +182,10 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
             self.assertEqual(projectData.get('title', None),
                              p.title, response.data)
             requestIdList = set()
-            for requestData in projectData.get('requests', None):
-                requestIdList.add(requestData['id'])
+            for request_data in projectData.get('requests', None):
+                requestIdList.add(request_data['id'])
+                validate_national_percent(request_data)
+
             if len(requestIdList) > 0:
                 atleastOneProjectRequestExists = True
             for r in p.requests.all():

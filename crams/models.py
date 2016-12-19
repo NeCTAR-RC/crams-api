@@ -365,6 +365,11 @@ class Request(CramsCommon):
 
     funding_scheme = models.ForeignKey(FundingScheme, related_name='requests')
 
+    national_percent = models.DecimalField(
+        default=100, max_digits=5, decimal_places=2,
+        validators=[MinValueValidator(0), MaxValueValidator(100)]
+    )
+
     start_date = models.DateField(
         default=datetime.date.today
     )

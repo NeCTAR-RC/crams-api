@@ -138,6 +138,8 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
         many=True, read_only=False, validators=[
             ApproveStorReqValid()])
     funding_body = serializers.SerializerMethodField(method_name='get_fbody')
+    national_percent = serializers.DecimalField(
+        5, 2, max_value=100, min_value=0)
 
     class Meta(object):
         """meta for class ApproveRequestModelSerializer."""
@@ -146,6 +148,7 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
         fields = (
             'id',
             'funding_body',
+            'national_percent',
             'compute_requests',
             'storage_requests',
             'approval_notes',
@@ -180,6 +183,8 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
         :return: :raise ParseError:
         """
         update_data = {}
+        update_data['national_percent'] = validated_data.get(
+            'national_percent')
         update_data['approval_notes'] = validated_data.get(
             'approval_notes', None)
         update_data['compute_requests'] = validated_data.get(

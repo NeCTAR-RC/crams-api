@@ -222,6 +222,7 @@ class AdminBaseTstCase(CRAMSApiTstCase):
         self.set_user_roles(approver_roles)
 
     def _assert_approve_request(self, projectId, approval_notes="",
+                                national_percent=65.54,
                                 expected_http_status=status.HTTP_200_OK,
                                 expected_req_status="Approved",
                                 expected_status_code="A"):
@@ -232,6 +233,8 @@ class AdminBaseTstCase(CRAMSApiTstCase):
             "storage_requests": get_storage_requests_for_request(req),
             "approval_notes": approval_notes
         }
+        if national_percent:
+            test_data["national_percent"] = national_percent
 
         view = ApproveRequestViewSet.as_view(
             {'get': 'retrieve', 'put': 'update'})

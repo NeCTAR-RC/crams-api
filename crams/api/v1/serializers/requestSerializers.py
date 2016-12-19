@@ -299,7 +299,8 @@ class CramsRequestSerializer(ActionStateModelSerializer):
     class Meta(object):
         model = Request
         field = ('id', 'start_date', 'end_date', 'approval_notes',
-                 'compute_requests', 'storage_requests', 'funding_scheme')
+                 'compute_requests', 'storage_requests', 'funding_scheme',
+                 'national_percent')
         read_only_fields = (
             'creation_ts', 'last_modified_ts', 'request_status')
 
