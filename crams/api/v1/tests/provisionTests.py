@@ -65,7 +65,7 @@ class ProvisionProjectViewSetTest(ProvisionBaseTstCase):
                     'Returned requests with status other than Approved : ' +
                     requestStatus)
                 self.assertIsNone(rData['parent_request'],
-                                  'API returned archived requests')
+                                  'API returned historic requests')
 
 
 class ProvisionRequestViewSetTest(ProvisionBaseTstCase):
