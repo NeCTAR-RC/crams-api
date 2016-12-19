@@ -286,6 +286,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             'first_name',
             'last_name'],
         queryset=User.objects.all())
+
     updated_by = PrimaryKeyLookupField(
         many=False,
         required=True,
@@ -296,12 +297,17 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             'last_name'],
         queryset=User.objects.all())
 
+    archived = serializers.SerializerMethodField(method_name='is_archived')
+
     class Meta(object):
         model = Request
-        field = ('id', 'start_date', 'end_date', 'approval_notes',
+        field = ('id', 'start_date', 'end_date', 'approval_notes', 'archived',
                  'compute_requests', 'storage_requests', 'funding_scheme')
         read_only_fields = (
             'creation_ts', 'last_modified_ts', 'request_status')
+
+    def is_archived(self, request_obj):
+        return request_obj.parent_request is not None
 
     def populate_compute_request(self, request_obj):
         user = None

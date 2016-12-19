@@ -126,6 +126,57 @@ class CRAMSApiTstCase(APITestCase):
             if r.get('parent_request', None):
                 print('      - archived')
 
+    def validate_requests_are_archived_on_project_update(
+            self, pre_update_project_obj, new_project_id):
+
+            prev_requests_qs = pre_update_project_obj.requests
+            pre_update_req_count = prev_requests_qs.count()
+            if not prev_requests_qs:
+                return
+            try:
+                project_id = pre_update_project_obj.id
+                post_update_project = Project.objects.get(pk=project_id)
+                self.assertIsNotNone(
+                    post_update_project.parent_project,
+                    'Project not archived on update'
+                )
+                new_parent_project = post_update_project.parent_project
+                self.assertEqual(
+                    new_parent_project.id, new_project_id,
+                    'Archived project id is not correct. Expected ' +
+                    'parent_project {}, got {}'.format(new_project_id,
+                                                       new_parent_project.id))
+                post_update_unarchived_requests = \
+                    post_update_project.requests.filter(
+                        parent_request__isnull=True)
+                self.assertFalse(
+                    post_update_unarchived_requests.exists(),
+                    'All requests must be archived for given project on update'
+                )
+
+                post_requests_qs = post_update_project.requests
+                post_update_req_count = post_requests_qs.count()
+                self.assertEqual(
+                    pre_update_req_count, post_update_req_count,
+                    'Request count mismatch pre-archive {}, post archive {}'.
+                    format(pre_update_req_count, post_update_req_count))
+
+                for request in post_requests_qs.all():
+                    self.assertIsNotNone(
+                        request.parent_request,
+                        'Request not archived on update proj/req : {}/{}'.
+                        format(post_update_project.id, request.id))
+
+                    new_project_linked = request.parent_request.project.id
+                    self.assertEqual(
+                        new_project_linked, new_project_id,
+                        'Archived request id {} not connected to correct '
+                        'parent project, expected {} got {}'.format(
+                            request.id, new_project_id, new_project_linked))
+
+            except Project.DoesNotExist:
+                self.assertTrue(False, 'old project is missing on update')
+
     def _update_project_common(
             self,
             test_data,
@@ -134,7 +185,8 @@ class CRAMSApiTstCase(APITestCase):
             cores,
             quota,
             updateValidateFn=None):
-        def _updateSuccessFn(response):
+
+        def _updateSuccessFn(response, pre_update_proj_obj):
             # check HTTP 200
             self.assertEqual(response.status_code,
                              status.HTTP_200_OK, response.data)
@@ -148,6 +200,9 @@ class CRAMSApiTstCase(APITestCase):
                 new_project_id, 'Project Id is null after update')
             self.assertNotEqual(
                 new_project_id, test_data.get('id'), response.data)
+
+            self.validate_requests_are_archived_on_project_update(
+                pre_update_proj_obj, new_project_id)
 
             requests = []
             for r in project.get('requests', None):
@@ -191,7 +246,9 @@ class CRAMSApiTstCase(APITestCase):
         if updateValidateFn:
             return updateValidateFn(response)
         else:
-            return _updateSuccessFn(response)
+            project_id = test_data.get('id')
+            pre_update_proj_obj = Project.objects.get(pk=project_id)
+            return _updateSuccessFn(response, pre_update_proj_obj)
 
     def validate_user_provision_details(self, provision_details_json):
         self.assertIsNotNone(provision_details_json,

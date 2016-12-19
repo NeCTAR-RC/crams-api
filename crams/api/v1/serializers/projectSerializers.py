@@ -358,6 +358,8 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
     # Request
     requests = serializers.SerializerMethodField(method_name='filter_requests')
 
+    archived = serializers.SerializerMethodField(method_name='is_archived')
+
     class Meta(object):
         """class Meta."""
 
@@ -366,6 +368,7 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
             'id',
             'title',
             'description',
+            'archived',
             'notes',
             'project_question_responses',
             'institutions',
@@ -379,6 +382,9 @@ class ProjectSerializer(utilitySerializers.ActionStateModelSerializer):
         read_only_fields = ('provision_details',
                             'creation_ts',
                             'last_modified_ts')
+
+    def is_archived(self, project_obj):
+        return project_obj.parent_project is not None
 
     def filter_provision_project(self, project_obj):
         """
