@@ -149,7 +149,7 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
                 if r.parent_request:
                     self.assertFalse(
                         r.id in requestIdList,
-                        'Archived Request should not be returned by API - '
+                        'Historic Request should not be returned by API - '
                         'project {} /request {}'.format(p.id, r.id))
                 else:
                     self.assertTrue(
