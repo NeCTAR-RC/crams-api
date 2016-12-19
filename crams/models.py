@@ -413,33 +413,27 @@ class ComputeRequest(ProvisionableItem):
     ComputeRequest Model
     """
     instances = models.IntegerField(
-        default=2,
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(0)]
     )
 
     approved_instances = models.IntegerField(
-        default=2,
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(0)]
     )
 
     cores = models.IntegerField(
-        default=2,
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(0)]
     )
 
     approved_cores = models.IntegerField(
-        default=2,
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(0)]
     )
 
     core_hours = models.IntegerField(
-        default=744,
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(0)]
     )
 
     approved_core_hours = models.IntegerField(
-        default=744,
-        validators=[MinValueValidator(1)]
+        validators=[MinValueValidator(0)]
     )
 
     compute_product = models.ForeignKey(
