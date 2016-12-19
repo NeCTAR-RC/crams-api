@@ -4,6 +4,23 @@
 """
 from json import loads as json_loads
 
+from django.core import exceptions
+from django.db.models import Q
+from django.http import HttpResponse, HttpResponseRedirect
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from keystoneclient.exceptions import ClientException
+from rest_condition import And, Or
+from rest_framework import exceptions as rest_exceptions
+from rest_framework import filters
+from rest_framework import viewsets, generics, mixins
+from rest_framework.response import Response
+
+from crams import dbUtils
+from crams import django_utils
+from crams import roleUtils
+from crams import settings
+from crams.account.models import User
 from crams.api.v1.serializers.adminSerializers import \
     ApproveRequestModelSerializer, DeclineRequestModelSerializer, \
     ADMIN_ENABLE_REQUEST_STATUS
@@ -13,29 +30,12 @@ from crams.api.v1.serializers.provisionSerializers import \
     ProvisionRequestSerializer, ProvisionProjectSerializer, \
     UpdateProvisionProjectSerializer, PROVISION_ENABLE_REQUEST_STATUS
 from crams.api.v1.serializers.requestSerializers import CramsRequestSerializer
-from django.core import exceptions
-from django.db.models import Q
-from django.http import HttpResponse, HttpResponseRedirect
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from keystoneclient.exceptions import ClientException
-from rest_condition import And, Or
-from rest_framework import filters
-from rest_framework import viewsets, generics, mixins
-from rest_framework import exceptions as rest_exceptions
-from rest_framework.response import Response
-
-from crams.account.models import User
+from crams.api.v1.utils import get_keystone_admin_client
 from crams.lang_utils import strip_lower
-from crams import dbUtils
 from crams.models import Project, Request, Contact, Provider, CramsToken
 from crams.models import UserEvents
-from crams.permissions import IsRequestApprover, IsProjectContact
-from crams import settings
 from crams.permissions import IsActiveProvider, IsCramsAuthenticated
-from crams.api.v1.utils import get_keystone_admin_client
-from crams import roleUtils
-from crams import django_utils
+from crams.permissions import IsRequestApprover, IsProjectContact
 
 
 @csrf_exempt
