@@ -20,12 +20,12 @@ An allocation request for the {{ project_title }} project has been approved. Ple
 Quota
 -----
 {% for compute_request in request.compute_requests %}
-Instances:      {{ compute_request.instances }}
-Cores:          {{ compute_request.cores }}
+Instances:      {{ compute_request.approved_instances }}
+Cores:          {{ compute_request.approved_cores }}
 {% endfor %}
 {% spaceless %}
 {% for storage_request in request.storage_requests %}
-{{ storage_request.storage_product.name }} ({{ storage_request.storage_product.zone.name }}): {{ storage_request.quota }} GB
+{{ storage_request.storage_product.name }} ({{ storage_request.storage_product.zone.name }}): {{ storage_request.approved_quota }} GB
 {% endfor %}
 {% endspaceless %}
 
