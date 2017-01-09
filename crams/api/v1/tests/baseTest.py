@@ -11,9 +11,7 @@ from crams import roleUtils
 
 from tests.testUtils import get_compute_requests_for_request
 from tests.testUtils import get_storage_requests_for_request
-from crams.api.v1.views import DeclineRequestViewSet, ProvisionProjectViewSet
-from crams.api.v1.views import ProjectViewSet, ApproveRequestViewSet
-from crams.api.v1.views import UpdateProvisionProjectViewSet
+from crams.api.v1 import views
 from crams.api.v1 import utils as api_utils
 
 
@@ -23,17 +21,17 @@ class CRAMSApiTstCase(APITestCase):
         super(CRAMSApiTstCase, self).setUp()
         self.pp = pprint.PrettyPrinter(indent=4)
         self.roleList = None
-        self.setup_new_user()
-        self.contact, created = Contact.objects.get_or_create(
-            title='Mr', given_name='Test', surname='MeRC',
-            email=self.user.email, phone='99020780',
-            organisation='Monash University')
         self.factory = APIRequestFactory()
+        self.setup_new_user()
 
     def setup_new_user(self):
         username = api_utils.get_random_string(12)
         self.user = self.get_new_user(username, username + '@crams.tst')
         self.token, created = CramsToken.objects.get_or_create(user=self.user)
+        self.user_contact, created = Contact.objects.get_or_create(
+            title='Mr', given_name='Test', surname='MeRC',
+            email=self.user.email, phone='99020780',
+            organisation='Monash University')
 
     @classmethod
     def get_new_user(cls, username, testEmail):
@@ -69,7 +67,7 @@ class CRAMSApiTstCase(APITestCase):
         return view(request)
 
     def _create_project_common(self, test_data, validate_response=True):
-        view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
+        view = views.ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
         request = self.factory.post('api/project', test_data)
         request.user = self.user
         response = view(request)
@@ -83,7 +81,7 @@ class CRAMSApiTstCase(APITestCase):
         return response
 
     def _get_project_data_by_id(self, project_id, validate_response=True):
-        view = ProjectViewSet.as_view({'get': 'retrieve'})
+        view = views.ProjectViewSet.as_view({'get': 'retrieve'})
         request = self.factory.get('api/project')
         request.user = self.user
         response = view(request, pk=str(project_id))
@@ -182,7 +180,8 @@ class CRAMSApiTstCase(APITestCase):
 
             return response
 
-        view = ProjectViewSet.as_view({'get': 'retrieve', 'put': 'update'})
+        view = views.ProjectViewSet.as_view(
+            {'get': 'retrieve', 'put': 'update'})
 
         request = self.factory.put('api/project', test_data)
         request.user = self.user
@@ -218,6 +217,9 @@ class AdminBaseTstCase(CRAMSApiTstCase):
 
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
+        self.project_contact = self.user_contact
+        self.project_user = self.user
+        self.setup_new_user()  # create approver user
         approver_roles = list(roleUtils.ROLE_FB_MAP.keys())
         self.set_user_roles(approver_roles)
 
@@ -233,7 +235,7 @@ class AdminBaseTstCase(CRAMSApiTstCase):
             "approval_notes": approval_notes
         }
 
-        view = ApproveRequestViewSet.as_view(
+        view = views.ApproveRequestViewSet.as_view(
             {'get': 'retrieve', 'put': 'update'})
         # Approve request where id == req.id
         request = self.factory.put('api/approve_request/', test_data)
@@ -272,7 +274,7 @@ class AdminBaseTstCase(CRAMSApiTstCase):
             "approval_notes": approval_notes
         }
 
-        view = DeclineRequestViewSet.as_view(
+        view = views.DeclineRequestViewSet.as_view(
             {'get': 'retrieve', 'put': 'update'})
         # Approve request where id == req.id
         request = self.factory.put('api/decline_request/', test_data)
@@ -335,12 +337,12 @@ class ProvisionBaseTstCase(CRAMSApiTstCase):
             s.save()
 
     def _returnFetchProvisionListResponse(self):
-        view = ProvisionProjectViewSet.as_view({'get': 'list'})
+        view = views.ProvisionProjectViewSet.as_view({'get': 'list'})
         url = 'api/provision_project/list/'
         return self._baseGetAPI(view, url)
 
     def _returnProvisionUpdateResponse(self, test_data):
-        view = UpdateProvisionProjectViewSet.as_view(
+        view = views.UpdateProvisionProjectViewSet.as_view(
             {'get': 'list', 'post': 'create'})
         request = self.factory.post('api/provision_project/update/', test_data)
         request.user = self.user

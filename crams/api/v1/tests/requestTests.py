@@ -14,7 +14,7 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
         self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.contact)
+                                                      self.user_contact)
 
     def test_request_creation(self):
         self._create_project_common(self.test_data)
@@ -236,7 +236,8 @@ class RequestViewSetTest(CRAMSApiTstCase):
     def setUp(self, test_data_fn):
         CRAMSApiTstCase.setUp(self)
         self.generate_test_data_fn = test_data_fn
-        self.test_data = self.generate_test_data_fn(self.user.id, self.contact)
+        self.test_data = self.generate_test_data_fn(self.user.id,
+                                                    self.user_contact)
 
     def get_request_data_by_id(self, request_id, validate_response=True):
         view = RequestViewSet.as_view({'get': 'retrieve'})
@@ -259,7 +260,8 @@ class RequestViewSetTest(CRAMSApiTstCase):
             request.user = self.user
             return view(request)
 
-        project_json = self.generate_test_data_fn(self.user.id, self.contact)
+        project_json = self.generate_test_data_fn(self.user.id,
+                                                  self.user_contact)
         response = self._create_project_common(project_json, True)
         request_id = response.data.get('id')
 
@@ -287,7 +289,7 @@ class RequestViewSetTest(CRAMSApiTstCase):
         request.user = self.user
 
         # get the first request from tests data set
-        projects = self.contact.project_contacts.distinct().\
+        projects = self.user_contact.project_contacts.distinct().\
             values_list('project', flat=True)
         request_obj = Request.objects.filter(project__in=projects).first()
         self.assertIsNotNone(request_obj, 'No Requests found in DB')
