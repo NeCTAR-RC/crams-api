@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_bd3b5f37",
+        "filename": "crams/api/v1/serializers/projectSerializers.py",
+        "patchSetId": 3
+      },
+      "lineNbr": 388,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-09T04:58:36Z",
+      "side": 1,
+      "message": "if this is a class method then the first argument should be cls, if it\u0027s a static method then there should be no self or cls argument. I\u0027m not sure exactly what class is what here but this should either be:\n\n@staticmethod\ndef is_historic(project_obj):\n\nor\n\n@classmethod\ndef is_historic(cls):\n\ngood explanation at http://stackoverflow.com/questions/12179271/python-classmethod-and-staticmethod-for-beginner",
+      "range": {
+        "startLine": 386,
+        "startChar": 0,
+        "endLine": 388,
+        "endChar": 53
+      },
+      "revId": "de02651dc8730f175c8976cc72659cd2e970bc76",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
