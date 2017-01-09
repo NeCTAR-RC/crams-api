@@ -13,7 +13,7 @@ class PermissionsTest(CRAMSApiTstCase):
         CRAMSApiTstCase.setUp(self)
         self.http_request = self.factory.get('api/project')
         self.test_data = get_base_nectar_project_data(
-            self.user.id, self.contact)
+            self.user.id, self.user_contact)
 
     def _set_roles(self, roleList):
         self.set_user_roles(roleList)

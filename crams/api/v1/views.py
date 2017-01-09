@@ -231,12 +231,20 @@ class AbstractCramsRequestViewSet(django_utils.CramsModelViewSet):
         """
         def get_project_contact_filter(data):
             q_obj = Q(project_contacts__contact__email=data.email)
+            f_l = data.user_fb_list
+            if f_l:
+                q_obj = q_obj | \
+                        Q(requests__funding_scheme__funding_body__in=f_l)
             if not self.crams_object_level:
                 q_obj = q_obj & Q(parent_project__isnull=True)
             return q_obj
 
         def get_request_contact_filter(data):
             q_obj = Q(project__project_contacts__contact__email=data.email)
+            f_l = data.user_fb_list
+            if f_l:
+                q_obj = q_obj | \
+                        Q(requests__funding_scheme__funding_body__in=f_l)
             if not self.crams_object_level:
                 q_obj = q_obj & Q(parent_request__isnull=True,
                                   project__parent_project__isnull=True)
@@ -302,7 +310,9 @@ class ProjectViewSet(AbstractCramsRequestViewSet):
     """
     class ProjectViewSet
     """
-    permission_classes = (IsCramsAuthenticated, IsProjectContact)
+    permission_classes = [
+        And(IsCramsAuthenticated,
+            Or(IsProjectContact, IsRequestApprover))]
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
     ordering_fields = ('title', 'creation_ts')

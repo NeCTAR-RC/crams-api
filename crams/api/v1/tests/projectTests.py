@@ -20,7 +20,7 @@ class ProjectViewSetTest(CRAMSApiTstCase):
     def test_project_fetch(self):
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
         project_data = get_project_only_no_request_data(self.user.id,
-                                                        self.contact)
+                                                        self.user_contact)
         request = self.factory.post('api/project', project_data)
         request.user = self.user
 
@@ -37,13 +37,14 @@ class BaseProjectTests(_AbstractCramsBase):
     def setUp(self, test_data_fn, provisioner_name):
         _AbstractCramsBase.setUp(self)
         self.contact_email = 'newContact@monash.edu'
-        self.contact, created = Contact.objects.get_or_create(
+        self.user_contact, created = Contact.objects.get_or_create(
             title='Mr', given_name='Test', surname='MeRC',
             email=self.contact_email,
             phone='99020780', organisation='Monash University')
 
         self.generate_test_data_fn = test_data_fn
-        self.test_data = self.generate_test_data_fn(self.user.id, self.contact)
+        self.test_data = self.generate_test_data_fn(self.user.id,
+                                                    self.user_contact)
 
         self.provisioner_name = provisioner_name
         self.requestStatusLookups = dbUtils.get_request_status_lookups()
@@ -65,7 +66,8 @@ class BaseProjectTests(_AbstractCramsBase):
         contact_user = self.get_new_user('randomUser', self.contact_email)
         contact_token, created = CramsToken.objects.get_or_create(
             user=contact_user)
-        self.test_data = self.generate_test_data_fn(self.user.id, self.contact)
+        self.test_data = self.generate_test_data_fn(self.user.id,
+                                                    self.user_contact)
 
         response = self.createNew()
         originalUser = self.user
@@ -141,7 +143,8 @@ class BaseProjectTests(_AbstractCramsBase):
             request.user = self.user
             return view(request)
 
-        project_json = self.generate_test_data_fn(self.user.id, self.contact)
+        project_json = self.generate_test_data_fn(self.user.id,
+                                                  self.user_contact)
         response = self._create_project_common(project_json, True)
         project_id = response.data.get('id')
         request_id = response.data.get('requests')[0].get('id')
@@ -171,7 +174,8 @@ class NectarProjectTests(BaseProjectTests):
 
     def test_project_id_prefix(self):
         required_ids_set = set([DBConstants.SYSTEM_NECTAR])
-        project_json = self.generate_test_data_fn(self.user.id, self.contact)
+        project_json = self.generate_test_data_fn(self.user.id,
+                                                  self.user_contact)
         super().validate_project_id_prefix(project_json, required_ids_set)
 
     def test_concurrent_project_update(self):
@@ -182,14 +186,15 @@ class NectarProjectTests(BaseProjectTests):
 
     def test_unique_project_identifier(self):
         required_ids_set = set([DBConstants.SYSTEM_NECTAR])
-        project_json = self.generate_test_data_fn(self.user.id, self.contact)
+        project_json = self.generate_test_data_fn(self.user.id,
+                                                  self.user_contact)
         self.add_required_project_ids(project_json, required_ids_set)
         project_ids = project_json.get('project_ids')
         self._create_project_common(project_json, True)
 
         # create another project with same nectar project id
         project_json = self.generate_test_data_fn(
-            self.user.id, self.contact, project_ids)
+            self.user.id, self.user_contact, project_ids)
         response = self._create_project_common(project_json, False)
         self.assertEqual(
             response.status_code, status.HTTP_400_BAD_REQUEST,

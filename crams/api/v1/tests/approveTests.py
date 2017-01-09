@@ -5,10 +5,11 @@ from crams.api.v1.projectRequestListAPI import FundingBodyAllocationsCounter
 from django.db.models import Q
 from rest_framework import status
 
-from crams.DBConstants import REQUEST_STATUS_SUBMITTED
+from crams.DBConstants import REQUEST_STATUS_SUBMITTED, APPLICANT
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
 from crams.models import FundingScheme
 from crams.models import Project, RequestStatus, Request, FundingBody
+from crams.models import ProjectContact, ContactRole
 from crams.api.v1.tests.baseTest import AdminBaseTstCase
 from crams.api.v1.views import ApproveRequestViewSet
 
@@ -21,81 +22,34 @@ class ApproverReviewerRequestListTest(AdminBaseTstCase):
         self.funding_body = FundingBody.objects.get(name='NeCTAR')
         self.funding_scheme = FundingScheme.objects.get(
             funding_scheme='NeCTAR National Merit')
+        role_obj = ContactRole.objects.get(name=APPLICANT)
 
-        self.project_1 = Project.objects.create(
-            title='Test Project 1',
-            description="Test Project 1",
-            notes="Test Project 1",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
-        self.project_2 = Project.objects.create(
-            title='Test Project 2',
-            description="Test Project 2",
-            notes="Test Project 2",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
-        self.project_3 = Project.objects.create(
-            title='Test Project 3',
-            description="Test Project 3",
-            notes="Test Project 3",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
-        self.project_4 = Project.objects.create(
-            title='Test Project 4',
-            description="Test Project 4",
-            notes="Test Project 4",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
-        self.project_6 = Project.objects.create(
-            title='Test Project 6',
-            description="Test Project 6",
-            notes="Test Project 6",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
-        self.project_5 = Project.objects.create(
-            title='Test Project 5',
-            parent_project=self.project_6,
-            description="Test Project 5",
-            notes="Test Project 5",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
+        def setup_project(title_str, parent_project=None):
+            proj = Project.objects.create(
+                title=title_str,
+                description=title_str + " : Desc",
+                notes=title_str + " : notes",
+                creation_ts=datetime.date.today(),
+                last_modified_ts=datetime.date.today(),
+                created_by=self.user,
+                updated_by=self.user,
+                parent_project=parent_project
+            )
+            ProjectContact.objects.create(
+                project=proj, contact=self.project_contact,
+                contact_role=role_obj)
+            return proj
 
-        self.project_7 = Project.objects.create(
-            title='Test Project 7',
-            description="Test Project 7",
-            notes="Test Project 7",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
-        self.project_8 = Project.objects.create(
-            title='Test Project 8',
-            description="Test Project 8",
-            notes="Test Project 8",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
-        self.project_9 = Project.objects.create(
-            title='Test Project 9',
-            description="Test Project 9",
-            notes="Test Project 9",
-            creation_ts=datetime.date.today(),
-            last_modified_ts=datetime.date.today(),
-            created_by=self.user,
-            updated_by=self.user)
+        self.project_1 = setup_project('Test Project 1')
+        self.project_2 = setup_project('Test Project 2')
+        self.project_3 = setup_project('Test Project 3')
+        self.project_4 = setup_project('Test Project 4')
+        self.project_6 = setup_project('Test Project 6')
+        self.project_5 = setup_project(
+            'Test Project 5', parent_project=self.project_6)
+        self.project_7 = setup_project('Test Project 7')
+        self.project_8 = setup_project('Test Project 8')
+        self.project_9 = setup_project('Test Project 9')
 
         self.request_status_x = RequestStatus.objects.get(
             code='X', status='Update/Extension Requested')
@@ -257,6 +211,30 @@ class ApproverReviewerRequestListTest(AdminBaseTstCase):
         self.assertEquals(response.data['counter']['active'], 1, response.data)
         self.assertEquals(response.data['counter'][
                           'expired'], 1, response.data)
+
+    # Test Approvers have edit Access to Request
+    def test_approver_edit_access(self):
+        def update_success_fn(response):
+            self.assertEqual(response.status_code, status.HTTP_200_OK,
+                             'Approver should have edit access : {}'.format(
+                                 repr(response.data)))
+        view = ApproverReviewerRequestListView.as_view()
+        request = self.factory.get('api/approve_list')
+        request.user = self.user
+        response = view(request)
+
+        # HTTP 200
+        self.assertEquals(
+            response.status_code, status.HTTP_200_OK, response.data)
+        for proj in response.data.get("projects"):
+            response = self._get_project_data_by_id(proj.get("id"))
+            request1 = response.data.get("requests")[0]
+            instances = 4
+            cores = 4
+            quota = 4000
+            self._update_project_common(response.data, request1.get("id"),
+                                        instances, cores, quota,
+                                        updateValidateFn=update_success_fn)
 
 
 class ApproveRequestViewSetTest(AdminBaseTstCase):

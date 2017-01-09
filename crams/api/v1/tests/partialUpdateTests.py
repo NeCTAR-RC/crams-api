@@ -13,7 +13,7 @@ class PartialUpdateTest(baseCramsFlow.BaseCramsFlow):
     def setUp(self):
         baseCramsFlow.BaseCramsFlow.setUp(self)
         self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.contact)
+                                                      self.user_contact)
         self.testCount = self.CREATE_NEW_PROJECT
         self.response = self.flowUpTo(self.testCount)
 
@@ -64,7 +64,7 @@ class PartialUpdateTest(baseCramsFlow.BaseCramsFlow):
         request = factory.patch('/api/v1/contact/',
                                 {"email": "test.partial_fail@cart.test"})
         force_authenticate(request, user=self.user)
-        response = view(request, pk=self.contact.id)
+        response = view(request, pk=self.user_contact.id)
 
         # HTTP 405
         self.assertEquals(

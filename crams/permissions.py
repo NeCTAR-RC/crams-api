@@ -59,17 +59,31 @@ class IsRequestApprover(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
         """
-        User is an approver for given request object's funding boby
+        User is an approver for given request's funding boby
+        For a project object,
+         - User must be an approver for every non-historic project request
         :param request:
         :param view:
         :param obj:
         :return:
         """
-        if request.user and isinstance(obj, Request):
+        def is_request_approver(request_obj):
             required_role = FB_ROLE_MAP_REVERSE.get(
-                obj.funding_scheme.funding_body.name)
+                request_obj.funding_scheme.funding_body.name)
             if required_role:
                 return user_has_roles(request.user, [required_role])
+            return False
+
+        if request.user:
+            if isinstance(obj, Request):
+                return is_request_approver(obj)
+            if isinstance(obj, Project):
+                requests = obj.requests
+                for req in requests.filter(parent_request__isnull=True):
+                    if not is_request_approver(req):
+                        return False
+                return True
+
         return False
 
 
