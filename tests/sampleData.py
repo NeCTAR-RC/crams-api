@@ -42,6 +42,7 @@ def get_base_nectar_project_data(user_id, contact_obj, proj_ids=None):
                     "funding_body_and_scheme": "arc tests funding",
                     "grant_id": "arc-001",
                     "start_year": 2014,
+                    "duration": 57,
                     "total_funding": 200}],
         "project_contacts": [{
             "contact": {
@@ -162,6 +163,7 @@ def get_project_only_no_request_data(user_id, contact_obj):
                 "funding_body_and_scheme": "arc tests funding",
                 "grant_id": "arc-001",
                 "start_year": 2014,
+                "duration": 304,
                 "total_funding": 200
             }
         ],
@@ -348,7 +350,7 @@ def get_vicnode_test_data(user_id, contact_obj):
                 "approval_notes":
                     "",
 
-                "paent_request": None
+                "parent_request": None
 
             }
         ]

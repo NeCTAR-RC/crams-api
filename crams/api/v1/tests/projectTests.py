@@ -198,6 +198,62 @@ class BaseProjectTests(_AbstractCramsBase):
         self.apply_fn_to_userrole_combo(role_list,
                                         fetch_project_by_request_param)
 
+    def validate_grant_id_optional(self):
+        project_json = self.generate_test_data_fn(self.user.id,
+                                                  self.user_contact)
+        for grant in project_json.get('grants'):
+            if 'grant_id' not in grant:
+                grant['grant_id'] = 'random-grant-001'
+
+            # Test create with grant_id
+            self._create_project_common(project_json, True)
+            # Test without grant_id
+            grant.pop('grant_id')
+            project_json.pop('project_ids')
+            self._create_project_common(project_json, True)
+
+    def validate_grant_duration(self):
+        def get_duration_json(duration_value, remove_duration=False):
+            project_json = self.generate_test_data_fn(self.user.id,
+                                                      self.user_contact)
+            for grant in project_json.get('grants'):
+                grant['duration'] = duration_value
+                if remove_duration:
+                    grant.pop('duration')
+            return project_json
+
+    # Test with invalid duration
+        project_json = get_duration_json(3, True)
+        response = self._create_project_common(project_json, False)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
+                         'Null value for duration should not be processed')
+
+        project_json = get_duration_json(-2)
+        response = self._create_project_common(project_json, False)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
+                         'Negative value duration should not be processed')
+
+        project_json = get_duration_json(1001)
+        response = self._create_project_common(project_json, False)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
+                         'duration value > 1000 should not be processed')
+
+    # Test with valid duration
+        project_json = get_duration_json(3)
+        response = self._create_project_common(project_json)
+        project_json = get_duration_json(49)
+        response = self._create_project_common(project_json)
+        project_json = get_duration_json(803)
+        response = self._create_project_common(project_json)
+
+    # Test Grant duration is returned on project fetch
+        project_id = response.data.get('id')
+        response = self._get_project_data_by_id(project_id)
+        project_json = response.data
+        msg = 'grant duration must be returned when fetching project data'
+        for grant in project_json.get('grants'):
+            self.assertTrue('duration' in grant, msg)
+
 
 class NectarProjectTests(BaseProjectTests):
     def setUp(self):
@@ -223,6 +279,12 @@ class NectarProjectTests(BaseProjectTests):
     def test_duplicate_project_id_fail(self):
         req_set = set([DBConstants.SYSTEM_NECTAR])
         super().validate_duplicate_project_id(req_set)
+
+    def test_grant_id_optional(self):
+        super().validate_grant_id_optional()
+
+    def test_grant_duration(self):
+        super().validate_grant_duration()
 
     def test_unique_project_identifier(self):
         required_ids_set = set([DBConstants.SYSTEM_NECTAR])
