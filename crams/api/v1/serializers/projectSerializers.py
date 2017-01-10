@@ -126,7 +126,7 @@ class GrantSerializer(serializers.ModelSerializer):
 
         model = Grant
         fields = ('id', 'grant_type', 'funding_body_and_scheme',
-                  'grant_id', 'start_year', 'total_funding')
+                  'duration', 'grant_id', 'start_year', 'total_funding')
 
 
 class PublicationSerializer(serializers.ModelSerializer):
