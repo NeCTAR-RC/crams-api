@@ -559,13 +559,11 @@ class Grant(models.Model):
     grant_type = models.ForeignKey(GrantType, related_name='grants')
 
     funding_body_and_scheme = models.CharField(
-        blank=False,
-        max_length=200
+        blank=False, max_length=200
     )
 
     grant_id = models.CharField(
-        blank=True,
-        max_length=200
+        blank=True, null=True, max_length=200
     )
 
     start_year = models.IntegerField(
@@ -575,6 +573,14 @@ class Grant(models.Model):
         error_messages={
             'min_value': 'Please input a year between 1970 ~ 3000',
             'max_value': 'Please input a year between 1970 ~ 3000'}
+    )
+
+    duration = models.IntegerField(
+        blank=False,
+        validators=[MinValueValidator(1), MaxValueValidator(1000)],
+        error_messages={
+            'min_value': 'Please enter the funding duration (in months 0-1000).',
+            'max_value': 'Please enter the funding duration (in months 0~1000).'}
     )
 
     total_funding = models.FloatField(
