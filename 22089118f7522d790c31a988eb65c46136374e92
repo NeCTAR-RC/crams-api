@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_e0337cf4",
+        "filename": "crams/models.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-10T22:26:20Z",
+      "side": 1,
+      "message": "This error message seems a bit off? A year between 0 and 1000 is pretty early history :-)\n\nWhat is this field meant to store?",
+      "range": {
+        "startLine": 582,
+        "startChar": 26,
+        "endLine": 582,
+        "endChar": 62
+      },
+      "revId": "22089118f7522d790c31a988eb65c46136374e92",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
