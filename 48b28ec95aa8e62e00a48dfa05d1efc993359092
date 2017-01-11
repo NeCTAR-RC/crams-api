@@ -22,6 +22,30 @@
       "revId": "48b28ec95aa8e62e00a48dfa05d1efc993359092",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5adbc538_a0a25498",
+        "filename": "crams/models.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 584,
+      "author": {
+        "id": 1000133
+      },
+      "writtenOn": "2017-01-11T05:54:55Z",
+      "side": 1,
+      "message": "shouldn\u0027t be limited to 1 to 12 for validation,\nlet\u0027s say: 2 years and 3 months funding duration, it\u0027s a funding for 27 months.",
+      "parentUuid": "5adbc538_e06b7c83",
+      "range": {
+        "startLine": 578,
+        "startChar": 0,
+        "endLine": 584,
+        "endChar": 5
+      },
+      "revId": "48b28ec95aa8e62e00a48dfa05d1efc993359092",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
