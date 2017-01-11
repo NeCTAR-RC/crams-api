@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_e06b7c83",
+        "filename": "crams/models.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 584,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-11T03:24:32Z",
+      "side": 1,
+      "message": "I\u0027m still a little confused what this field is meant to store. If it\u0027s a month then shouldn\u0027t the validation be 1 - 12?",
+      "range": {
+        "startLine": 578,
+        "startChar": 0,
+        "endLine": 584,
+        "endChar": 5
+      },
+      "revId": "48b28ec95aa8e62e00a48dfa05d1efc993359092",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
