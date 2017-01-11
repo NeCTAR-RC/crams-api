@@ -46,6 +46,30 @@
       "revId": "48b28ec95aa8e62e00a48dfa05d1efc993359092",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5adbc538_80b558cf",
+        "filename": "crams/models.py",
+        "patchSetId": 2
+      },
+      "lineNbr": 584,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-11T21:18:06Z",
+      "side": 1,
+      "message": "OK then this error message needs to change to something like. Please enter the amount of months between 0 - 1000 \n\nor something similar",
+      "parentUuid": "5adbc538_a0a25498",
+      "range": {
+        "startLine": 578,
+        "startChar": 0,
+        "endLine": 584,
+        "endChar": 5
+      },
+      "revId": "48b28ec95aa8e62e00a48dfa05d1efc993359092",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
