@@ -20,7 +20,7 @@ class NectarRequestStatusTests(BaseCramsFlow):
     def setUp(self):
         BaseCramsFlow.setUp(self)
         self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.contact)
+                                                      self.user_contact)
         self.provisioner_name = 'NeCTAR'
         self.requestStatusLookups = get_request_status_lookups()
 
@@ -162,7 +162,7 @@ class VicnodeRequestStatus(BaseCramsFlow):
         self.provisioner_name = 'Vicnode'
         self.requestStatusLookups = get_request_status_lookups()
         # override default Nectar test_data
-        self.test_data = get_vicnode_test_data(self.user.id, self.contact)
+        self.test_data = get_vicnode_test_data(self.user.id, self.user_contact)
 
     def test_new_vicnode_request_status_is_new(self):
         testCount = self.CREATE_NEW_PROJECT

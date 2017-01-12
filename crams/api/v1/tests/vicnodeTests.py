@@ -15,7 +15,7 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
         # self.user = User.objects.get(username="crams_user")
         # self.token = Token.objects.get_or_create(user=self.user)[0]
 
-        self.test_data = get_vicnode_test_data(self.user.id, self.contact)
+        self.test_data = get_vicnode_test_data(self.user.id, self.user_contact)
 
     def test_request_creation(self):
         self._create_project_common(self.test_data)

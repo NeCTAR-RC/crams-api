@@ -349,7 +349,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
     def setUp(self):
         BaseCramsFlow.setUp(self)
         self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.contact)
+                                                      self.user_contact)
         self.provisioner_name = 'NeCTAR'
 
     @classmethod

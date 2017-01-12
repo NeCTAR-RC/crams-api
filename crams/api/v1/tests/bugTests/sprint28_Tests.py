@@ -9,7 +9,7 @@ class Bug_719_TestCase(CRAMSApiTstCase):
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
         self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.contact)
+                                                      self.user_contact)
 
     def test_applicant_contact_should_not_fail_when_user_email_not_found(
             self):
