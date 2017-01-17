@@ -23,7 +23,7 @@ from crams.DBConstants import REQUEST_STATUS_LEGACY_DECLINED
 from crams.DBConstants import REQUEST_STATUS_SUBMITTED
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED
-from crams.models import Request
+from crams.models import Request, AllocationHome
 from crams.api.v1.APIConstants import OVERRIDE_READONLY_DATA
 
 
@@ -138,6 +138,11 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
         many=True, read_only=False, validators=[
             ApproveStorReqValid()])
     funding_body = serializers.SerializerMethodField(method_name='get_fbody')
+    national_percent = serializers.DecimalField(
+        5, 2, max_value=100, min_value=0)
+    allocation_node = SlugRelatedField(
+        many=False, slug_field='code', required=False, allow_null=True,
+        queryset=AllocationHome.objects.all())
 
     class Meta(object):
         """meta for class ApproveRequestModelSerializer."""
@@ -146,6 +151,8 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
         fields = (
             'id',
             'funding_body',
+            'national_percent',
+            'allocation_node',
             'compute_requests',
             'storage_requests',
             'approval_notes',
@@ -179,18 +186,25 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
         :param validated_data:
         :return: :raise ParseError:
         """
-        update_data = {}
-        update_data['approval_notes'] = validated_data.get(
-            'approval_notes', None)
-        update_data['compute_requests'] = validated_data.get(
-            'compute_requests', None)
+        update_data = dict()
+        update_data['approval_notes'] = validated_data.get('approval_notes')
+
+        alloc_home_obj = validated_data.get('allocation_node')
+        if alloc_home_obj:
+            update_data['allocation_node'] = alloc_home_obj.code
+        update_data['national_percent'] = \
+            validated_data.get('national_percent')
+
+        update_data['compute_requests'] = \
+            validated_data.get('compute_requests')
+
         # Storage request has nested classes (zone, product etc) that do not
         # use PrimaryKeyLookup, hence require initial_data to ensure id is
         # passed down
         update_data['storage_requests'] = self.initial_data.get(
             'storage_requests', None)
 
-        context = {}
+        context = dict()
         context['request'] = self.context['request']
         # only approve where request status code is 'E' or 'X'
         # noinspection PyPep8
@@ -206,7 +220,6 @@ class ApproveRequestModelSerializer(UpdateOnlyModelSerializer):
             raise ParseError(
                 'Can not approve request when the request_status is: ' +
                 str(instance.request_status))
-
         new_request = CramsRequestSerializer(
             instance, data=update_data, partial=True, context=context)
         new_request.is_valid(raise_exception=True)

@@ -302,9 +302,17 @@ def populate_request_data(crams_request, user_obj):
     request_dict = {}
     request_dict['id'] = crams_request.id
 
-    request_dict['status'] = crams_request.request_status.status
+    request_status = crams_request.request_status
+    request_dict['status'] = {
+        'code': request_status.code,
+        'status': request_status.status
+    }
     request_dict['expiry'] = crams_request.end_date
     request_dict['funding'] = crams_request.funding_scheme.funding_scheme
+    request_dict['national_percent'] = crams_request.national_percent
+    request_dict['allocation_node'] = None
+    if crams_request.allocation_node:
+        request_dict['allocation_node'] = crams_request.allocation_node.code
 
     compute_list = []
     request_dict['compute_requests'] = compute_list
