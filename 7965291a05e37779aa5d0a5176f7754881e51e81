@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_061a406e",
+        "filename": "crams/models.py",
+        "patchSetId": 6
+      },
+      "lineNbr": 582,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-17T05:32:49Z",
+      "side": 1,
+      "message": "Think this should be 1-1000 (see min value above)?",
+      "range": {
+        "startLine": 582,
+        "startChar": 67,
+        "endLine": 582,
+        "endChar": 73
+      },
+      "revId": "7965291a05e37779aa5d0a5176f7754881e51e81",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
