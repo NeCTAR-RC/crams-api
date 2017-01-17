@@ -1,0 +1,73 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_a6398cda",
+        "filename": "crams/api/v1/tests/baseTest.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-17T05:41:04Z",
+      "side": 1,
+      "message": "whoops",
+      "range": {
+        "startLine": 23,
+        "startChar": 7,
+        "endLine": 23,
+        "endChar": 55
+      },
+      "revId": "35334eff94f2b6065d08cd2c70350df85466c5a9",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5adbc538_862570ad",
+        "filename": "crams/api/v1/tests/declineTests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 102,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-17T05:41:04Z",
+      "side": 1,
+      "message": "should this just be deleted? Why commented out?",
+      "range": {
+        "startLine": 93,
+        "startChar": 0,
+        "endLine": 102,
+        "endChar": 69
+      },
+      "revId": "35334eff94f2b6065d08cd2c70350df85466c5a9",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5adbc538_6620649c",
+        "filename": "crams/models.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 372,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-17T05:41:04Z",
+      "side": 1,
+      "message": "should we call this allocation_home to be consistent?",
+      "range": {
+        "startLine": 372,
+        "startChar": 4,
+        "endLine": 372,
+        "endChar": 19
+      },
+      "revId": "35334eff94f2b6065d08cd2c70350df85466c5a9",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
