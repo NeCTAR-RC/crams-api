@@ -58,3 +58,6 @@ REST_FRAMEWORK.update({
 #    'django_jenkins.tasks.with_coverage',
 # )
 # PROJECT_APPS = ['crams_api']
+
+# Allocation Home
+ALLOCATION_HOME_MONASH = 'monash'

@@ -365,6 +365,13 @@ class Request(CramsCommon):
 
     funding_scheme = models.ForeignKey(FundingScheme, related_name='requests')
 
+    national_percent = models.PositiveSmallIntegerField(
+        default=100, validators=[MaxValueValidator(100)]
+    )
+
+    allocation_home = models.ForeignKey(
+        'AllocationHome', null=True, blank=True, related_name='requests')
+
     start_date = models.DateField(
         default=datetime.date.today
     )
@@ -579,7 +586,7 @@ class Grant(models.Model):
 
     total_funding = models.FloatField(
         blank=True,
-        default=0.0
+        default=0.0,
     )
 
     class Meta:
@@ -797,7 +804,7 @@ class AllocationHome(models.Model):
     Allocation Home
     """
     code = models.CharField(
-        max_length=50
+        max_length=50, unique=True
     )
     description = models.CharField(
         max_length=200

@@ -504,3 +504,29 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         response = self.flowUpTo(testCount)
         msg = 'Provision List fail for post update Provisioned Project'
         self.assertEqual(response.status_code, status.HTTP_200_OK, msg)
+
+    def test_post_provision_unchanged_national_percent(self):
+        def assert_request_field(field_str, pre_response, post_response):
+            msg = 'Provision action must not update field: ' + field_str
+            pre = pre_response.data.get('requests')[0].get(field_str)
+            post = post_response.data.get('requests')[0].get(field_str)
+            self.assertEqual(pre, post, msg)
+
+        testCount = self.SUBMITTED_TO_APPROVE_RETURN_PROJECT
+        pre_response = self.flowUpTo(testCount)
+        msg = 'Approve fail for post provision unchanged fields'
+        self.assertEqual(pre_response.status_code, status.HTTP_200_OK, msg)
+        provision_response, post_provision_proj_response = \
+            self.provisionGivenProjectResponse(
+                self.provisioner_name, pre_response,
+                getProjectDataFlag=True, debug=False)
+        msg = 'Provision fail for post provision unchanged fields'
+        self.assertEqual(provision_response.status_code,
+                         status.HTTP_201_CREATED,
+                         msg)
+
+        # Ensure National Percent is unchanged
+        assert_request_field(
+            'national_percent', pre_response, post_provision_proj_response)
+        assert_request_field(
+            'allocation_home', pre_response, post_provision_proj_response)
