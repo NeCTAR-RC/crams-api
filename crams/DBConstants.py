@@ -13,6 +13,9 @@ SYSTEM_NECTAR = 'NeCTAR'
 FUNDING_BODY_NECTAR = 'NeCTAR'
 FUNDING_BODY_VICNODE = 'VicNode'
 
+# Allocation Home
+ALLOCATION_HOME_MONASH = 'monash'
+
 # Contact Role
 APPLICANT = 'Applicant'
 

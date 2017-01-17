@@ -2,7 +2,6 @@ import datetime
 
 from crams.api.v1.projectRequestListAPI import ApproverReviewerRequestListView
 from crams.api.v1.projectRequestListAPI import FundingBodyAllocationsCounter
-from django.db.models import Q
 from rest_framework import status
 
 from crams import DBConstants
@@ -13,6 +12,16 @@ from crams.api.v1.tests.baseTest import AdminBaseTstCase
 from crams.api.v1.views import ApproveRequestViewSet
 
 
+def get_request_status_map():
+    ret_map = dict()
+    for rs in RequestStatus.objects.all():
+        ret_map[rs.code] = {
+            'code': rs.code,
+            'status': rs.status
+        }
+    return ret_map
+
+
 class ApproverReviewerRequestListTest(AdminBaseTstCase):
 
     def setUp(self):
@@ -21,6 +30,8 @@ class ApproverReviewerRequestListTest(AdminBaseTstCase):
         self.funding_body = FundingBody.objects.get(name='NeCTAR')
         self.funding_scheme = FundingScheme.objects.get(
             funding_scheme='NeCTAR National Merit')
+        self.request_status_map = get_request_status_map()
+
         role_obj = ContactRole.objects.get(name=DBConstants.APPLICANT)
 
         def setup_project(title_str, parent_project=None):
@@ -168,15 +179,17 @@ class ApproverReviewerRequestListTest(AdminBaseTstCase):
         # Expecting 3 results from response
         self.assertEquals(len(response.data['projects']), 3, response.data)
         # Expected results of response status code 'X'
+        expected_status = self.request_status_map.get('X')
         self.assertEquals(response.data['projects'][0]['requests'][0][
-                          'status'], "Update/Extension Requested",
-                          response.data)
+                          'status'], expected_status, response.data)
         # Expected results of response status code 'E'
+        expected_status = self.request_status_map.get('E')
         self.assertEquals(response.data['projects'][1]['requests'][
-                          0]['status'], "Submitted", response.data)
+                          0]['status'], expected_status, response.data)
         # Expected results of response status code 'X'
+        expected_status = self.request_status_map.get('X')
         self.assertEquals(response.data['projects'][2]['requests'][0][
-                          'status'], "Update/Extension Requested",
+                          'status'], expected_status,
                           response.data)
 
     # tests list of approved allocations for fundingbody - status 'A'
@@ -192,8 +205,9 @@ class ApproverReviewerRequestListTest(AdminBaseTstCase):
         # Expecting 3 results from response
         self.assertEquals(len(response.data['projects']), 1)
         # Expected results of response status code 'A'
+        expected_status = self.request_status_map.get('A')
         self.assertEquals(response.data['projects'][0]['requests'][
-                          0]['status'], "Approved", response.data)
+                          0]['status'], expected_status, response.data)
 
     def test_allocation_counter(self):
         view = FundingBodyAllocationsCounter.as_view()
@@ -249,35 +263,62 @@ class ApproveRequestViewSetTest(AdminBaseTstCase):
         request.user = self.user
         response = view(request)
 
-        # HTTP 200
+        # HTTP 405
         self.assertEquals(response.status_code,
-                          status.HTTP_200_OK, response.data)
-        # get submitted and update/extend requests
-        projects = Project.objects.filter(
-            Q(requests__request_status__code="E") |
-            Q(requests__request_status__code="X"))
-        self.assertEquals(len(response.data), len(projects), response.data)
+                          status.HTTP_405_METHOD_NOT_ALLOWED, response.data)
 
-    # def test_approve_get_request_without_authorization(self):
-    #     keystoneRoles = ['not_crams_provisioner']
-    #     self._setUserRoles(keystoneRoles)
-    #     view = ApproveRequestViewSet.as_view({'get': 'list'})
-    #     request = self.factory.get('api/approve_request')
-    #     request.user = self.user
-    #     response = view(request)
-    #
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+    def fetch_submitted_projects(self):
+        proj_list = Project.objects.filter(
+            requests__request_status__code=DBConstants.REQUEST_STATUS_SUBMITTED
+        )
+        self.assertTrue(proj_list.exists(),
+                        'Approve test requires Submitted Projects')
+        return proj_list
+
+    def test_approve_with_invalid_national_percent(self):
+        def anon_fn(national_percent, allocation_home_is_none=False):
+            proj_list = self.fetch_submitted_projects()
+            allocation_home = None
+            if not allocation_home_is_none:
+                allocation_home = DBConstants.ALLOCATION_HOME_MONASH
+            self._assert_approve_request(
+                proj_list[0].id,
+                national_percent=national_percent,
+                approval_notes="Approve request with invalid national percent",
+                expected_http_status=status.HTTP_400_BAD_REQUEST,
+                expected_req_status=None,
+                expected_status_code=None,
+                allocation_home=allocation_home)
+        # National Percent not given
+        anon_fn(None)
+        # National Percent < 0
+        anon_fn(-4)
+        # National Percent > 100
+        anon_fn(102)
+        # National Percent non-integer
+        anon_fn(66.345)
+        # National Percent is 100, allocation_home is given
+        anon_fn(100)
+        # National Percent is valid, less than 100, but no allocation_home
+        anon_fn(45, allocation_home_is_none=True)
+
+    def test_approve_with_valid_national_percent(self):
+        proj_list = self.fetch_submitted_projects()
+        self._assert_approve_request(
+            proj_list[0].id,
+            national_percent=35,
+            allocation_home=DBConstants.ALLOCATION_HOME_MONASH,
+            approval_notes="Approve request with valid national percent")
 
     # testing change of request status from 'E - Submitted' to 'A - Approved'
     def test_approve_submitted_request(self):
         # setup test_data
         # .get(title="Test Project 2 - E: Submitted")
-        status = DBConstants.REQUEST_STATUS_SUBMITTED
-        projList = Project.objects.filter(
-            requests__request_status__code=status)
-        if projList.exists():
-            self._assert_approve_request(
-                projList[0].id, approval_notes="Approve request for project 2")
+        proj_list = self.fetch_submitted_projects()
+        self._assert_approve_request(
+            proj_list[0].id,
+            national_percent=100,
+            approval_notes="Approve request for project 2")
 
     # testing change request status from 'X - Update/Extension Requested' to
     # 'A - Approved'
@@ -289,7 +330,9 @@ class ApproveRequestViewSetTest(AdminBaseTstCase):
         # proj = Project.objects.get(title="Test Project 5 - X:
         # Update/Extension Request")
         self._assert_approve_request(
-            projList[0].id, approval_notes="Approve request for project 5")
+            projList[0].id,
+            national_percent=100,
+            approval_notes="Approve request for project 5")
 
     # Disabled for now, current view does not handle legacy submission
     # testing change request status from 'L - Legacy Submission' to 'M -
@@ -300,6 +343,9 @@ class ApproveRequestViewSetTest(AdminBaseTstCase):
             title="Test Project 8 - L: Legacy Submission")
         self._assert_approve_request(
             proj.id,
+            national_percent=100,
             approval_notes="Approve request for project 8",
             expected_req_status="Legacy Approved",
             expected_status_code="M")
+
+# AssertionError: 400 != 200 : {'allocation_home': ['This field is required.']}

@@ -4,12 +4,9 @@
 """
 from rest_framework.exceptions import ParseError
 
-from crams.models import GrantType, ProjectIDSystem, ContactRole, FORCode, \
-    FundingScheme, ComputeProduct, StorageProduct, RequestStatus, Provider
-from crams.api.v1.serializers.lookupSerializers import GrantTypeSerializer, \
-    ProjectIDSystemSerializer, ContactRoleSerializer, FORCodeSerializer, \
-    FundingSchemeSerializer, ComputeProductSerializer, \
-    StorageProductSerializer, RequestStatusSerializer, ProviderSerializer
+from crams import models
+
+from crams.api.v1.serializers import lookupSerializers
 
 __author__ = 'Rafi M Feroze'
 
@@ -56,13 +53,23 @@ class LookupDataModel:
                                       '_key_dict ' + repr(search_key_dict))
 
 
+def get_allocation_home_obj(search_key_dict):
+    """
+
+    :param search_key_dict:
+    :return:
+    """
+    return LookupDataModel(models.AllocationHome).\
+        get_lookup_data(search_key_dict)
+
+
 def get_provider_obj(search_key_dict):
     """
 
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(Provider).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.Provider).get_lookup_data(search_key_dict)
 
 
 def get_grant_type_obj(search_key_dict):
@@ -71,7 +78,7 @@ def get_grant_type_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(GrantType).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.GrantType).get_lookup_data(search_key_dict)
 
 
 def get_system_obj(search_key_dict):
@@ -80,7 +87,8 @@ def get_system_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(ProjectIDSystem).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.ProjectIDSystem).\
+        get_lookup_data(search_key_dict)
 
 
 def get_request_status_obj(search_key_dict):
@@ -89,7 +97,8 @@ def get_request_status_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(RequestStatus).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.RequestStatus).\
+        get_lookup_data(search_key_dict)
 
 
 def get_contact_role_obj(search_key_dict):
@@ -98,7 +107,8 @@ def get_contact_role_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(ContactRole).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.ContactRole).\
+        get_lookup_data(search_key_dict)
 
 
 def get_for_code_obj(search_key_dict):
@@ -107,7 +117,8 @@ def get_for_code_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(FORCode).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.FORCode).\
+        get_lookup_data(search_key_dict)
 
 
 def get_funding_scheme_obj(search_key_dict):
@@ -116,7 +127,8 @@ def get_funding_scheme_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(FundingScheme).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.FundingScheme).\
+        get_lookup_data(search_key_dict)
 
 
 def get_compute_product_obj(search_key_dict):
@@ -125,7 +137,8 @@ def get_compute_product_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(ComputeProduct).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.ComputeProduct).\
+        get_lookup_data(search_key_dict)
 
 
 def get_storage_product_obj(search_key_dict):
@@ -134,9 +147,22 @@ def get_storage_product_obj(search_key_dict):
     :param search_key_dict:
     :return:
     """
-    return LookupDataModel(StorageProduct).get_lookup_data(search_key_dict)
+    return LookupDataModel(models.StorageProduct).\
+        get_lookup_data(search_key_dict)
+
 
 # LookupData Classes
+def get_allocation_home_lookup_data(search_key_dict, serializer):
+    """
+
+    :param search_key_dict:
+    :param serializer:
+    :return:
+    """
+    if not serializer:
+        serializer = lookupSerializers.AllocationHomeSerializer
+    return LookupDataModel(models.AllocationHome).\
+        serialize(search_key_dict, serializer)
 
 
 def get_provider_lookup_data(search_key_dict, serializer):
@@ -147,8 +173,9 @@ def get_provider_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = ProviderSerializer
-    return LookupDataModel(Provider).serialize(search_key_dict, serializer)
+        serializer = lookupSerializers.ProviderSerializer
+    return LookupDataModel(models.Provider).\
+        serialize(search_key_dict, serializer)
 
 
 def get_grant_type_lookup_data(search_key_dict, serializer):
@@ -159,8 +186,9 @@ def get_grant_type_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = GrantTypeSerializer
-    return LookupDataModel(GrantType).serialize(search_key_dict, serializer)
+        serializer = lookupSerializers.GrantTypeSerializer
+    return LookupDataModel(models.GrantType).\
+        serialize(search_key_dict, serializer)
 
 
 def get_system_lookup_data(search_key_dict, serializer):
@@ -171,8 +199,8 @@ def get_system_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = ProjectIDSystemSerializer
-    return LookupDataModel(ProjectIDSystem).serialize(
+        serializer = lookupSerializers.ProjectIDSystemSerializer
+    return LookupDataModel(models.ProjectIDSystem).serialize(
         search_key_dict, serializer)
 
 
@@ -184,9 +212,9 @@ def get_request_status_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = RequestStatusSerializer
-    return LookupDataModel(RequestStatus).serialize(search_key_dict,
-                                                    serializer)
+        serializer = lookupSerializers.RequestStatusSerializer
+    return LookupDataModel(models.RequestStatus).\
+        serialize(search_key_dict, serializer)
 
 
 def get_contact_role_lookup_data(search_key_dict, serializer):
@@ -197,9 +225,9 @@ def get_contact_role_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = ContactRoleSerializer
-    return LookupDataModel(ContactRole).serialize(search_key_dict,
-                                                  serializer)
+        serializer = lookupSerializers.ContactRoleSerializer
+    return LookupDataModel(models.ContactRole).\
+        serialize(search_key_dict, serializer)
 
 
 def get_for_code_lookup_data(search_key_dict, serializer):
@@ -210,9 +238,9 @@ def get_for_code_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = FORCodeSerializer
-    return LookupDataModel(FORCode).serialize(search_key_dict,
-                                              serializer)
+        serializer = lookupSerializers.FORCodeSerializer
+    return LookupDataModel(models.FORCode).\
+        serialize(search_key_dict, serializer)
 
 
 def get_funding_scheme_lookup_data(search_key_dict, serializer):
@@ -223,9 +251,9 @@ def get_funding_scheme_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = FundingSchemeSerializer
-    return LookupDataModel(FundingScheme).serialize(search_key_dict,
-                                                    serializer)
+        serializer = lookupSerializers.FundingSchemeSerializer
+    return LookupDataModel(models.FundingScheme).\
+        serialize(search_key_dict, serializer)
 
 
 def get_compute_product_lookup_data(search_key_dict, serializer):
@@ -236,9 +264,9 @@ def get_compute_product_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = ComputeProductSerializer
-    return LookupDataModel(ComputeProduct).serialize(search_key_dict,
-                                                     serializer)
+        serializer = lookupSerializers.ComputeProductSerializer
+    return LookupDataModel(models.ComputeProduct).\
+        serialize(search_key_dict, serializer)
 
 
 def get_storage_product_lookup_data(search_key_dict, serializer):
@@ -249,6 +277,6 @@ def get_storage_product_lookup_data(search_key_dict, serializer):
     :return:
     """
     if not serializer:
-        serializer = StorageProductSerializer
-    return LookupDataModel(StorageProduct).serialize(search_key_dict,
-                                                     serializer)
+        serializer = lookupSerializers.StorageProductSerializer
+    return LookupDataModel(models.StorageProduct).\
+        serialize(search_key_dict, serializer)
