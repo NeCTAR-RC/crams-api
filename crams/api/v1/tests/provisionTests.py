@@ -1,15 +1,15 @@
 from django.db.models import Q
 from rest_framework import status
 
-from crams.DBConstants import REQUEST_STATUS_PROVISIONED, FUNDING_BODY_NECTAR
-from crams.models import ProvisionDetails
-from crams.models import Request, Project
 from crams import roleUtils
-from tests.sampleData import get_base_nectar_project_data
+from crams.DBConstants import REQUEST_STATUS_PROVISIONED, FUNDING_BODY_NECTAR
 from crams.api.v1.tests.baseCramsFlow import BaseCramsFlow
 from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
 from crams.api.v1.views import ProvisionProjectViewSet, ProvisionRequestViewSet
 from crams.api.v1.views import UpdateProvisionProjectViewSet, ProjectViewSet
+from crams.models import ProvisionDetails
+from crams.models import Request, Project
+from crams.tests import sampleData
 
 
 class ProvisionProjectViewSetTest(ProvisionBaseTstCase):
@@ -348,8 +348,8 @@ class NectarProjectProvisionTest(BaseCramsFlow):
 
     def setUp(self):
         BaseCramsFlow.setUp(self)
-        self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.user_contact)
+        self.test_data = sampleData.get_base_nectar_project_data(
+            self.user.id, self.user_contact)
         self.provisioner_name = 'NeCTAR'
 
     @classmethod
@@ -504,3 +504,29 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         response = self.flowUpTo(testCount)
         msg = 'Provision List fail for post update Provisioned Project'
         self.assertEqual(response.status_code, status.HTTP_200_OK, msg)
+
+    def test_post_provision_unchanged_national_percent(self):
+        def assert_request_field(field_str, pre_response, post_response):
+            msg = 'Provision action must not update field: ' + field_str
+            pre = pre_response.data.get('requests')[0].get(field_str)
+            post = post_response.data.get('requests')[0].get(field_str)
+            self.assertEqual(pre, post, msg)
+
+        testCount = self.SUBMITTED_TO_APPROVE_RETURN_PROJECT
+        pre_response = self.flowUpTo(testCount)
+        msg = 'Approve fail for post provision unchanged fields'
+        self.assertEqual(pre_response.status_code, status.HTTP_200_OK, msg)
+        provision_response, post_provision_proj_response = \
+            self.provisionGivenProjectResponse(
+                self.provisioner_name, pre_response,
+                getProjectDataFlag=True, debug=False)
+        msg = 'Provision fail for post provision unchanged fields'
+        self.assertEqual(provision_response.status_code,
+                         status.HTTP_201_CREATED,
+                         msg)
+
+        # Ensure National Percent is unchanged
+        assert_request_field(
+            'national_percent', pre_response, post_provision_proj_response)
+        assert_request_field(
+            'allocation_home', pre_response, post_provision_proj_response)

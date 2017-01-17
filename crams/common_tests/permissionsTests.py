@@ -1,18 +1,18 @@
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
-from tests.sampleData import get_base_nectar_project_data
+from crams.api.v1.views import ProjectViewSet
+from crams.models import Request, Project
+from crams.permissions import IsProjectContact
+from crams.permissions import IsRequestApprover, IsActiveProvider
 from crams.roleUtils import FB_ROLE_MAP_REVERSE
 from crams.settings import CRAMS_PROVISIONER_ROLE
-from crams.models import Request, Project
-from crams.api.v1.views import ProjectViewSet
-from crams.permissions import IsRequestApprover, IsActiveProvider
-from crams.permissions import IsProjectContact
+from crams.tests import sampleData
 
 
 class PermissionsTest(CRAMSApiTstCase):
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
         self.http_request = self.factory.get('api/project')
-        self.test_data = get_base_nectar_project_data(
+        self.test_data = sampleData.get_base_nectar_project_data(
             self.user.id, self.user_contact)
 
     def _set_roles(self, roleList):

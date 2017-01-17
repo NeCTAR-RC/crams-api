@@ -15,6 +15,7 @@ from crams import settings
 from crams.DBConstants import ADMIN_STATES
 from crams.DBConstants import APPROVAL_STATES
 from crams.DBConstants import DECLINED_STATES
+from crams.DBConstants import NEW_REQUEST_STATUS
 from crams.roleUtils import FUNDING_BODY_NECTAR
 from crams.roleUtils import FB_REPLY_TO_MAP
 from crams.lang_utils import strip_lower
@@ -33,12 +34,13 @@ from crams.models import ComputeRequestQuestionResponse
 from crams.models import FundingScheme
 from crams.models import Project
 from crams.models import Request
+from crams.models import AllocationHome
 from crams.models import RequestQuestionResponse
 from crams.models import RequestStatus
 from crams.models import StorageRequest
 from crams.models import StorageRequestQuestionResponse
 from crams.models import NotificationTemplate
-from crams.api.v1.dataUtils.lookupData import get_funding_scheme_obj
+from crams.api.v1.dataUtils import lookupData
 from crams.api.v1.serializers.lookupSerializers import \
     StorageProductZoneOnlySerializer
 from crams.api.v1.serializers.utilitySerializers import \
@@ -46,13 +48,19 @@ from crams.api.v1.serializers.utilitySerializers import \
 from crams.api.v1.serializers.utilitySerializers import \
      ActionStateModelSerializer
 from crams.api.v1.serializers import projectSerializers
-from crams.api.v1.serializers.utilitySerializers import PrimaryKeyLookupField
-from crams.api.v1.dataUtils.lookupData import get_compute_product_obj
-from crams.api.v1.dataUtils.lookupData import get_storage_product_obj
+from crams.api.v1.serializers import utilitySerializers
 from crams.api.v1.APIConstants import DO_NOT_SERIALIZE_REQUESTS_FOR_PROJECT
 
 User = get_user_model()
 LOG = logging.getLogger(__name__)
+
+
+class AllocationHomeSerializer(utilitySerializers.ReadOnlyModelSerializer):
+    """class AllocationHomeSerializer."""
+
+    class Meta(object):
+        model = AllocationHome
+        fields = ('id', 'code')
 
 
 class ComputeQuestionResponseSerializer(AbstractQuestionResponseSerializer):
@@ -104,7 +112,7 @@ class ProductRequestSerializer(ModelSerializer):
 class ComputeRequestSerializer(ProductRequestSerializer):
     """class ComputeRequestSerializer."""
 
-    compute_product = PrimaryKeyLookupField(
+    compute_product = utilitySerializers.PrimaryKeyLookupField(
         many=False, required=True, fields=[
             'id', 'name'], queryset=ComputeProduct.objects.all())
     compute_question_responses = ComputeQuestionResponseSerializer(
@@ -146,9 +154,8 @@ class ComputeRequestSerializer(ProductRequestSerializer):
             pSerializer.is_valid(raise_exception=True)
             validated_data['provision_details'] = pSerializer.save()
 
-        validated_data['compute_product'] = get_compute_product_obj({
-            'pk': compute_product_id
-        })
+        validated_data['compute_product'] = \
+            lookupData.get_compute_product_obj({'pk': compute_product_id})
 
         compute_request = ComputeRequest.objects.create(**validated_data)
         if compute_question_responses:
@@ -204,9 +211,8 @@ class StorageRequestSerializer(ProductRequestSerializer):
             pSerializer.is_valid(raise_exception=True)
             validated_data['provision_details'] = pSerializer.save()
 
-        validated_data['storage_product'] = get_storage_product_obj({
-            'pk': storage_product_id
-        })
+        validated_data['storage_product'] = \
+            lookupData.get_storage_product_obj({'pk': storage_product_id})
 
         storage_request = StorageRequest.objects.create(**validated_data)
 
@@ -230,9 +236,9 @@ class RequestQuestionResponseSerializer(AbstractQuestionResponseSerializer):
 class RequestHistorySerializer(ModelSerializer):
     """class RequestHistorySerializer."""
 
-    project = PrimaryKeyLookupField(
+    project = utilitySerializers.PrimaryKeyLookupField(
         many=False, fields=['id', 'title'], read_only=True, model=Project)
-    request_status = PrimaryKeyLookupField(
+    request_status = utilitySerializers.PrimaryKeyLookupField(
         many=False,
         fields=[
             'code',
@@ -269,15 +275,19 @@ class CramsRequestSerializer(ActionStateModelSerializer):
     request_question_responses = RequestQuestionResponseSerializer(
         many=True, read_only=False)
 
-    request_status = PrimaryKeyLookupField(
+    request_status = utilitySerializers.PrimaryKeyLookupField(
         many=False, read_only=True, fields=[
             'id', 'code', 'status'], model=RequestStatus)
 
-    funding_scheme = PrimaryKeyLookupField(
+    funding_scheme = utilitySerializers.PrimaryKeyLookupField(
         many=False, required=True, fields=[
             'id', 'funding_scheme'], queryset=FundingScheme.objects.all())
 
-    created_by = PrimaryKeyLookupField(
+    allocation_home = serializers.SlugRelatedField(
+        many=False, slug_field='code', required=False, allow_null=True,
+        queryset=AllocationHome.objects.all())
+
+    created_by = utilitySerializers.PrimaryKeyLookupField(
         many=False,
         required=True,
         fields=[
@@ -287,7 +297,7 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             'last_name'],
         queryset=User.objects.all())
 
-    updated_by = PrimaryKeyLookupField(
+    updated_by = utilitySerializers.PrimaryKeyLookupField(
         many=False,
         required=True,
         fields=[
@@ -302,7 +312,8 @@ class CramsRequestSerializer(ActionStateModelSerializer):
     class Meta(object):
         model = Request
         field = ('id', 'start_date', 'end_date', 'approval_notes', 'historic',
-                 'compute_requests', 'storage_requests', 'funding_scheme')
+                 'compute_requests', 'storage_requests', 'funding_scheme',
+                 'national_percent', 'allocation_home')
         read_only_fields = (
             'creation_ts', 'last_modified_ts', 'request_status')
 
@@ -336,6 +347,35 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             ret_list.append(serializer.data)
         return ret_list
 
+    @classmethod
+    def validate_allocation_percentage(
+            cls, crams_action_state, national_percent, allocation_home_obj):
+        if crams_action_state.is_create_action:
+            if national_percent or allocation_home_obj:
+                raise ValidationError(
+                    'allocation percent/node can only be set at approval time')
+            return 100
+
+        request_obj = crams_action_state.existing_instance
+        if national_percent is None:
+            if request_obj.request_status not in NEW_REQUEST_STATUS:
+                raise ValidationError(
+                    'request allocation percent is required')
+        if national_percent == 100 and allocation_home_obj:
+            raise ValidationError(
+                'Allocation Node cannot be set if National Percent is 100')
+        elif national_percent < 100 and not allocation_home_obj:
+            raise ValidationError(
+                'Allocation Node must be set if National Percent is not 100')
+
+        if not crams_action_state.is_partial_action:
+            if allocation_home_obj != request_obj.allocation_home or \
+               national_percent != request_obj.national_percent:
+                raise ValidationError(
+                    'allocation percent/node can only be set at approval time')
+
+        return national_percent
+
     def validate(self, data):
         """validate.
 
@@ -349,13 +389,26 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                 'CramsRequestSerializer: ' +
                 self.cramsActionState.error_message)
 
-        funding_scheme = None
+        instance = cramsActionState.existing_instance
+
+        # validate and setup Node information for Allocation
+        allocation_home_obj = data.get('allocation_home')
+        if not allocation_home_obj and instance:
+            allocation_home_obj = instance.allocation_home
+        if allocation_home_obj:
+            data['allocation_home'] = allocation_home_obj
+
+        in_national_percent = data.get('national_percent')
+        if not in_national_percent and instance:
+            in_national_percent = instance.national_percent
+        data['national_percent'] = self.validate_allocation_percentage(
+            cramsActionState, in_national_percent, allocation_home_obj)
+
         if cramsActionState.is_create_action:
             if 'funding_scheme' not in data:
                 raise ValidationError({
                     'funding_scheme': 'This field is required.'
                 })
-            funding_scheme = get_funding_scheme_obj(data['funding_scheme'])
 
             if 'start_date' not in data:
                 raise ValidationError({
@@ -367,15 +420,11 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                     'end_date': 'This field is required.'
                 })
 
-        if not funding_scheme:
-            funding_scheme = cramsActionState.existing_instance.funding_scheme
-
         if cramsActionState.is_partial_action:
             if (cramsActionState.override_data and 'request_status' in
                     cramsActionState.override_data):
                 inStatusCode = cramsActionState.override_data['request_status']
-                existingStatusCode = (cramsActionState.existing_instance
-                                      .request_status.code)
+                existingStatusCode = (instance.request_status.code)
 
                 if (inStatusCode in LEGACY_STATES or existingStatusCode
                         in LEGACY_STATES):
@@ -390,11 +439,10 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                                           .format(inStatusCode))
 
                 if existingStatusCode == inStatusCode:
-                    raise ValidationError('Request Status: Action cancelled \
-                                          current state is same as new state \
-                                          {}'.format(cramsActionState
-                                                     .existing_instance
-                                                     .request_status.status))
+                    raise ValidationError(
+                        'Request Status: Action cancelled current state is '
+                        'same as new state {}'.format(
+                            instance.request_status.status))
 
                 elif existingStatusCode in DECLINED_STATES:
                     if inStatusCode not in [
@@ -594,7 +642,6 @@ class CramsRequestSerializer(ActionStateModelSerializer):
                     RequestQuestionResponseSerializer(data=temp.data)
                 req_question_resp_serializer.is_valid(raise_exception=True)
                 req_question_resp_serializer.save(request=request)
-
         # send email notification
         if not cramsActionState.is_clone_action:
             self.send_notification(request)
@@ -654,7 +701,6 @@ class CramsRequestSerializer(ActionStateModelSerializer):
         project_serializer = projectSerializers.ProjectSerializer(
             alloc_request.project, many=False, context=project_context)
         ret_dict['project'] = project_serializer.data
-
         fb_name = alloc_request.funding_scheme.funding_body.name
         base_url = django_utils.get_funding_body_request_url(fb_name)
         ret_dict['client_request_url'] = base_url + str(alloc_request.id)
