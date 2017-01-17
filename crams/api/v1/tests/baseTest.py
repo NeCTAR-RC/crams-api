@@ -2,17 +2,16 @@ import pprint
 
 from rest_framework import status
 from rest_framework.test import APITestCase, APIRequestFactory
+from crams.tests import testUtils
 
+from crams import roleUtils
 from crams.account.models import User
+from crams.api.v1 import utils as api_utils
+from crams.api.v1 import views
 from crams.models import Contact, CramsToken, Provider, ComputeProduct
 from crams.models import Request, Project, ProjectContact, ContactRole
 from crams.models import StorageProduct
-from crams import roleUtils
-
-from tests.testUtils import get_compute_requests_for_request
-from tests.testUtils import get_storage_requests_for_request
-from crams.api.v1 import views
-from crams.api.v1 import utils as api_utils
+from crams.tests import settings as test_settings
 
 
 class CRAMSApiTstCase(APITestCase):
@@ -280,20 +279,29 @@ class AdminBaseTstCase(CRAMSApiTstCase):
         approver_roles = list(roleUtils.ROLE_FB_MAP.keys())
         self.set_user_roles(approver_roles)
 
-    def _assert_approve_request(self, projectId, approval_notes="",
+    def _assert_approve_request(self, project_id, national_percent,
+                                allocation_home=None,
+                                approval_notes="",
                                 expected_http_status=status.HTTP_200_OK,
                                 expected_req_status="Approved",
                                 expected_status_code="A"):
         # setup tests data
-        req = Request.objects.get(project_id=projectId, parent_request=None)
+        req = Request.objects.get(project_id=project_id, parent_request=None)
+
         test_data = {
-            "compute_requests": get_compute_requests_for_request(req),
-            "storage_requests": get_storage_requests_for_request(req),
-            "approval_notes": approval_notes
+            "compute_requests":
+                testUtils.get_compute_requests_for_request(req),
+            "storage_requests":
+                testUtils.get_storage_requests_for_request(req),
+            "approval_notes": approval_notes,
+            "national_percent": national_percent
         }
+        if allocation_home:
+            test_data["allocation_home"] = allocation_home
 
         view = views.ApproveRequestViewSet.as_view(
             {'get': 'retrieve', 'put': 'update'})
+
         # Approve request where id == req.id
         request = self.factory.put('api/approve_request/', test_data)
         request.user = self.user
@@ -322,13 +330,18 @@ class AdminBaseTstCase(CRAMSApiTstCase):
     def _assert_decline_request(self, projectId, approval_notes="",
                                 expected_http_status=status.HTTP_200_OK,
                                 expected_req_status="Declined",
+                                national_percent=None,
                                 expected_status_code="D"):
         # setup tests data
         req = Request.objects.get(project_id=projectId, parent_request=None)
         test_data = {
-            "compute_requests": get_compute_requests_for_request(req),
-            "storage_requests": get_storage_requests_for_request(req),
-            "approval_notes": approval_notes
+            "compute_requests":
+                testUtils.get_compute_requests_for_request(req),
+            "storage_requests":
+                testUtils.get_storage_requests_for_request(req),
+            "approval_notes": approval_notes,
+            "national_percent": 67,
+            "allocation_home": test_settings.ALLOCATION_HOME_MONASH
         }
 
         view = views.DeclineRequestViewSet.as_view(

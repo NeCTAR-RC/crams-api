@@ -1,9 +1,9 @@
 from rest_framework import status
 
-from crams.models import Project
-from tests.sampleData import get_vicnode_test_data
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.views import ProjectViewSet
+from crams.models import Project
+from crams.tests import sampleData
 
 
 class VicNodeProjectViewSetTest(CRAMSApiTstCase):
@@ -15,7 +15,8 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
         # self.user = User.objects.get(username="crams_user")
         # self.token = Token.objects.get_or_create(user=self.user)[0]
 
-        self.test_data = get_vicnode_test_data(self.user.id, self.user_contact)
+        self.test_data = sampleData.get_vicnode_test_data(
+            self.user.id, self.user_contact)
 
     def test_request_creation(self):
         self._create_project_common(self.test_data)

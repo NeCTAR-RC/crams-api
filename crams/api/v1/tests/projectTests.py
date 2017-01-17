@@ -1,17 +1,16 @@
 from rest_framework import status
 
-from crams import dbUtils
-from crams.models import Contact, CramsToken
-from tests import sampleData
-from tests.sampleData import get_project_only_no_request_data
-from crams.api.v1.tests.baseTest import CRAMSApiTstCase
-from crams.api.v1.tests.baseCramsFlow import _AbstractCramsBase
-from crams.api.v1.views import ProjectViewSet
-from crams import settings
 from crams import DBConstants
-from crams.api.v1 import utils as api_utils
-from crams.api.v1.validators import projectid_validators
+from crams import dbUtils
 from crams import roleUtils
+from crams import settings
+from crams.api.v1 import utils as api_utils
+from crams.api.v1.tests.baseCramsFlow import _AbstractCramsBase
+from crams.api.v1.tests.baseTest import CRAMSApiTstCase
+from crams.api.v1.validators import projectid_validators
+from crams.api.v1.views import ProjectViewSet
+from crams.models import Contact, CramsToken
+from crams.tests import sampleData
 
 
 class ProjectViewSetTest(CRAMSApiTstCase):
@@ -19,8 +18,8 @@ class ProjectViewSetTest(CRAMSApiTstCase):
 
     def test_project_fetch(self):
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
-        project_data = get_project_only_no_request_data(self.user.id,
-                                                        self.user_contact)
+        project_data = sampleData.get_project_only_no_request_data(
+            self.user.id, self.user_contact)
         request = self.factory.post('api/project', project_data)
         request.user = self.user
 

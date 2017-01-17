@@ -1,19 +1,18 @@
 from rest_framework import status
-
 from rest_framework.test import APIRequestFactory
 from rest_framework.test import force_authenticate
 
-from crams.api.v1.tests import baseCramsFlow
-from tests.sampleData import get_base_nectar_project_data
 from crams.api.v1 import views as v1_views
+from crams.api.v1.tests import baseCramsFlow
+from crams.tests import sampleData
 
 
 class PartialUpdateTest(baseCramsFlow.BaseCramsFlow):
 
     def setUp(self):
         baseCramsFlow.BaseCramsFlow.setUp(self)
-        self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.user_contact)
+        self.test_data = sampleData.get_base_nectar_project_data(
+            self.user.id, self.user_contact)
         self.testCount = self.CREATE_NEW_PROJECT
         self.response = self.flowUpTo(self.testCount)
 

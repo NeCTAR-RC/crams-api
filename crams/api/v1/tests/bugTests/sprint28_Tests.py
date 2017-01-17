@@ -1,15 +1,15 @@
-from crams.models import Contact
-from tests.sampleData import get_base_nectar_project_data
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.utils import get_random_string
+from crams.models import Contact
+from crams.tests import sampleData
 
 
 class Bug_719_TestCase(CRAMSApiTstCase):
 
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
-        self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.user_contact)
+        self.test_data = sampleData.get_base_nectar_project_data(
+            self.user.id, self.user_contact)
 
     def test_applicant_contact_should_not_fail_when_user_email_not_found(
             self):

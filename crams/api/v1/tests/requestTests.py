@@ -1,11 +1,10 @@
 from rest_framework import status
 
-from crams.models import Project, Request
-from tests.sampleData import get_base_nectar_project_data
+from crams import roleUtils
 from crams.api.v1.tests.baseTest import CRAMSApiTstCase
 from crams.api.v1.views import ProjectViewSet, RequestViewSet
-from crams import roleUtils
-from tests import sampleData
+from crams.models import Project, Request
+from crams.tests import settings as test_settings, sampleData
 
 
 class CramsProjectViewSetTest(CRAMSApiTstCase):
@@ -13,8 +12,8 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
 
     def setUp(self):
         CRAMSApiTstCase.setUp(self)
-        self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.user_contact)
+        self.test_data = sampleData.get_base_nectar_project_data(
+            self.user.id, self.user_contact)
 
     def test_request_creation(self):
         self._create_project_common(self.test_data)
@@ -152,6 +151,14 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
             'id'), instances, cores, quota, _updateFailFn)
 
     def test_request_get(self):
+        def validate_national_percent(request_data):
+            np = float(request_data.get('national_percent'))
+            self.assertIsNotNone(np, 'API: National Percent value expected')
+            self.assertTrue(np <= 100,
+                            'National percent must not be greater than 100')
+            self.assertTrue(np >= 0,
+                            'National percent must not be smaller than 0')
+
         # create atleast one project/request for testing get
         self._create_project_common(self.test_data)
 
@@ -174,8 +181,10 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
             self.assertEqual(projectData.get('title', None),
                              p.title, response.data)
             requestIdList = set()
-            for requestData in projectData.get('requests', None):
-                requestIdList.add(requestData['id'])
+            for request_data in projectData.get('requests', None):
+                requestIdList.add(request_data['id'])
+                validate_national_percent(request_data)
+
             if len(requestIdList) > 0:
                 atleastOneProjectRequestExists = True
             for r in p.requests.all():
@@ -233,7 +242,7 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
 class RequestViewSetTest(CRAMSApiTstCase):
     fixtures = ['v1/test_common_data', 'v1/test_nectar_data']
 
-    def setUp(self, test_data_fn):
+    def setUp(self, test_data_fn, home_str):
         CRAMSApiTstCase.setUp(self)
         self.generate_test_data_fn = test_data_fn
         self.test_data = self.generate_test_data_fn(self.user.id,
@@ -307,6 +316,52 @@ class RequestViewSetTest(CRAMSApiTstCase):
             request_obj.request_status.code,
             response.data)
 
+    def update_test_data_with_allocation_home_info(
+            self, national_percent=100, allocation_home=None):
+        requests = self.test_data.get('requests')
+        self.assertIsNotNone(requests,
+                             'Test data should contain atleast one request')
+        for req in requests:
+            req['national_percent'] = national_percent
+            req['allocation_home'] = allocation_home
+
+    def validate_no_allocation_home_for_create(self, allocation_home):
+        self.update_test_data_with_allocation_home_info(54, allocation_home)
+
+        response = self._create_project_common(self.test_data,
+                                               validate_response=False)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
+                         'Request create should fail for allocation % data')
+        expect_msg = \
+            ['allocation percent/node can only be set at approval time']
+        got_msg = response.data.get('non_field_errors')
+        self.assertEqual(expect_msg, got_msg, 'Error messages do not match')
+
+    def validate_no_allocation_home_for_non_partial_update(
+            self, allocation_home):
+        def update_fail_fn(response):
+            self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST,
+                             'Request create should fail for allocation % '
+                             'data')
+            expect_msg = \
+                'allocation percent/node can only be set at approval time'
+            got_msg = response.data.get('non_field_errors')
+            self.assertEqual([expect_msg], got_msg,
+                             'Error messages do not match')
+
+        response = self._create_project_common(self.test_data)
+        self.test_data = response.data
+        self.update_test_data_with_allocation_home_info(65, allocation_home)
+        project_dict = self.test_data
+        request_dict = project_dict["requests"][0]
+        instances = 2
+        cores = 4
+        quota = 456
+        response = self._update_project_common(
+            project_dict, request_dict.get('id'), instances, cores, quota,
+            updateValidateFn=update_fail_fn
+        )
+
 
 class NectarRequestTests(RequestViewSetTest):
     def setUp(self):
@@ -317,8 +372,16 @@ class NectarRequestTests(RequestViewSetTest):
 
         super().setUp(test_data_fn, 'NeCTAR')
 
-    def validate_request_id_param_access(self):
+    def test_request_id_param_access(self):
         super().validate_request_id_param_access()
 
-    def validate_request_list_get(self):
+    def test_request_list_get(self):
         super().validate_request_list_get()
+
+    def test_no_allocation_home_for_create(self):
+        super().validate_no_allocation_home_for_create(
+            test_settings.ALLOCATION_HOME_MONASH)
+
+    def test_no_allocation_home_for_non_partial_update(self):
+        super().validate_no_allocation_home_for_non_partial_update(
+            test_settings.ALLOCATION_HOME_MONASH)
