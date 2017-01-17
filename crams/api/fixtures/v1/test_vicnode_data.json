@@ -150,15 +150,6 @@
   "model": "crams.projectcontact"
 },
 {
-  "fields": {
-    "for_code": 186,
-    "percentage": 100.0,
-    "project": 127
-  },
-  "pk": 150,
-  "model": "crams.domain"
-},
-{
     "fields": {
         "creation_ts": "2015-12-15 16:08:51.666504",
         "last_modified_ts": "2015-12-15 16:08:51.666541",

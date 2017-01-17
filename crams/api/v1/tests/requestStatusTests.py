@@ -1,26 +1,24 @@
 from rest_framework import status
 
-from crams.DBConstants import REQUEST_STATUS_SUBMITTED
-from crams.DBConstants import REQUEST_STATUS_DECLINED
 from crams.DBConstants import REQUEST_STATUS_APPROVED
+from crams.DBConstants import REQUEST_STATUS_DECLINED
+from crams.DBConstants import REQUEST_STATUS_NEW
 from crams.DBConstants import REQUEST_STATUS_PROVISIONED
+from crams.DBConstants import REQUEST_STATUS_SUBMITTED
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND_DECLINED
-from crams.DBConstants import REQUEST_STATUS_NEW
-
-from crams.dbUtils import get_request_status_lookups
-from tests.sampleData import get_base_nectar_project_data
-from tests.sampleData import get_vicnode_test_data
 from crams.api.v1.tests.baseCramsFlow import BaseCramsFlow
 from crams.api.v1.utils import get_random_string
+from crams.dbUtils import get_request_status_lookups
+from crams.tests import sampleData
 
 
 class NectarRequestStatusTests(BaseCramsFlow):
 
     def setUp(self):
         BaseCramsFlow.setUp(self)
-        self.test_data = get_base_nectar_project_data(self.user.id,
-                                                      self.user_contact)
+        self.test_data = sampleData.get_base_nectar_project_data(
+            self.user.id, self.user_contact)
         self.provisioner_name = 'NeCTAR'
         self.requestStatusLookups = get_request_status_lookups()
 
@@ -162,7 +160,8 @@ class VicnodeRequestStatus(BaseCramsFlow):
         self.provisioner_name = 'Vicnode'
         self.requestStatusLookups = get_request_status_lookups()
         # override default Nectar test_data
-        self.test_data = get_vicnode_test_data(self.user.id, self.user_contact)
+        self.test_data = sampleData.get_vicnode_test_data(
+            self.user.id, self.user_contact)
 
     def test_new_vicnode_request_status_is_new(self):
         testCount = self.CREATE_NEW_PROJECT

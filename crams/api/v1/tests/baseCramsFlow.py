@@ -14,7 +14,7 @@ from crams.api.v1.tests.baseTest import CRAMSApiTstCase, AdminBaseTstCase
 from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
 from crams.api.v1.utils import get_random_string
 
-from tests.sampleData import get_base_nectar_project_data
+from crams.tests import sampleData
 
 
 class AdminActionData:
@@ -100,49 +100,43 @@ class _AbstractCramsBase(CRAMSApiTstCase):
 
         return self.setup_random_update(project_data, update_fn)
 
-    def _adminRequest(self, in_response, adminActionData,
+    def _adminRequest(self, in_response, action_data,
                       expected_http_status=status.HTTP_200_OK,
                       getProjectDataFlag=False):
 
         if self.debug:
-            self.pp.pprint(adminActionData.actionMsg)
+            self.pp.pprint(action_data.actionMsg)
 
         project = in_response.data
         self.assertIsNotNone(project.get('id', None), 'ProjectId is required')
-        adminResponse = adminActionData.adminFn(
-            project.get(
-                'id',
-                None),
-            approval_notes=str(
-                adminActionData.actionMsg +
-                ' for project status test'),
+        msg = action_data.actionMsg + ' for project status test'
+        admin_response = action_data.adminFn(
+            project.get('id', None),
+            national_percent=100,
+            approval_notes=str(msg),
             expected_http_status=expected_http_status,
-            expected_req_status=adminActionData.expected_req_status.get(
-                'status',
-                None),
-            expected_status_code=adminActionData.expected_req_status.get(
-                'code',
-                None))
+            expected_req_status=action_data.expected_req_status.get('status'),
+            expected_status_code=action_data.expected_req_status.get('code'))
 
         if not getProjectDataFlag:
-            return adminResponse, None
+            return admin_response, None
 
-        projectSubset = adminResponse.data.get('project', None)
+        project_subset = admin_response.data.get('project', None)
         self.assertIsNotNone(
-            projectSubset,
+            project_subset,
             'project not returned after ' +
-            adminActionData.actionMsg)
-        projectId = projectSubset.get('id', None)
+            action_data.actionMsg)
+        projectId = project_subset.get('id', None)
         self.assertIsNotNone(
             projectId,
             'No projectId returned after ' +
-            adminActionData.actionMsg)
+            action_data.actionMsg)
         out_response_proj_data = self._get_project_data_by_id(projectId)
         if self.debug:
             self.debugResponse(out_response_proj_data,
-                               adminActionData.actionMsg)
+                               action_data.actionMsg)
 
-        return adminResponse, out_response_proj_data
+        return admin_response, out_response_proj_data
 
     def _fetch_project_provision_for_provider(
             self, project_id, providerObj):
@@ -194,7 +188,7 @@ class _AbstractCramsBase(CRAMSApiTstCase):
                 self.adminFn = self.adminClass._assert_approve_request
 
         return self._adminRequest(in_response,
-                                  adminActionData=ApproveActionData(),
+                                  action_data=ApproveActionData(),
                                   expected_http_status=expected_http_status,
                                   getProjectDataFlag=getProjectDataFlag)
 
@@ -211,7 +205,7 @@ class _AbstractCramsBase(CRAMSApiTstCase):
                 self.adminFn = self.adminClass._assert_decline_request
 
         return self._adminRequest(in_response,
-                                  adminActionData=DeclineActionData(),
+                                  action_data=DeclineActionData(),
                                   expected_http_status=expected_http_status,
                                   getProjectDataFlag=getProjectDataFlag)
 
@@ -229,7 +223,7 @@ class _AbstractCramsBase(CRAMSApiTstCase):
                 self.adminFn = self.adminClass._assert_decline_request
 
         return self._adminRequest(in_response,
-                                  adminActionData=ExtendDeclineActionData(),
+                                  action_data=ExtendDeclineActionData(),
                                   expected_http_status=expected_http_status,
                                   getProjectDataFlag=getProjectDataFlag)
 
@@ -301,17 +295,17 @@ class BaseCramsFlow(_AbstractCramsBase):
             return proj_data_response
 
         # approve request
-        approveResponse, response3 = self.approveRequest(
+        approve_response, response3 = self.approveRequest(
             response2, getProjectDataFlag=True)
         if flowCount == self.SUBMITTED_TO_APPROVE:
-            return approveResponse
+            return approve_response
         if flowCount == self.SUBMITTED_TO_APPROVE_RETURN_PROJECT:
             return response3
 
         # update again
         msg = 'Update after approve, should fail'
 
-        def _updateFailFn(response):
+        def _update_fail_fn(response):
             self.assertEqual(
                 response.status_code,
                 status.HTTP_400_BAD_REQUEST,
@@ -321,7 +315,7 @@ class BaseCramsFlow(_AbstractCramsBase):
         if debug:
             self.pp.pprint(msg)
         error_response = self.update_response_data_random(
-            response3.data, _updateFailFn)
+            response3.data, _update_fail_fn)
         if flowCount == self.UPDATE_FAIL_FOR_APPROVE_STATUS:
             return error_response
 
@@ -362,7 +356,7 @@ class BaseCramsFlow(_AbstractCramsBase):
             return edit_response
 
         # approve request again
-        approveResponse, response4 = self.approveRequest(
+        approve_response, response4 = self.approveRequest(
             edit_response, getProjectDataFlag=True)
 
         self._verify_db_project_provisioning_details(
@@ -371,7 +365,7 @@ class BaseCramsFlow(_AbstractCramsBase):
         )
 
         if flowCount <= self.APPROVE_UPDATED_PROVISIONED_PROJECT:
-            return approveResponse
+            return approve_response
 
         if debug:
             print('**** Second Provision list after Approve')
@@ -535,6 +529,6 @@ class NectarCramsFlow:
 
     def flow_upto(self, flow_count):
         # setup new test data
-        self.flow_obj.test_data = get_base_nectar_project_data(
+        self.flow_obj.test_data = sampleData.get_base_nectar_project_data(
             self.flow_obj.user.id, self.flow_obj.user_contact)
         return self.flow_obj.flowUpTo(flow_count)

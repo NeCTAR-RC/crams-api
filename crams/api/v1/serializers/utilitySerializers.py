@@ -183,7 +183,9 @@ class ReadOnlyModelSerializer(UpdateOnlyModelSerializer):
 
 
 class PrimaryKeyLookupField(serializers.PrimaryKeyRelatedField):
-    """class PrimaryKeyLookupField."""
+    """class PrimaryKeyLookupField.
+        - cannot be used for optional serializer fields
+    """
 
     def __init__(self, *args, **kwargs):
         """init.
