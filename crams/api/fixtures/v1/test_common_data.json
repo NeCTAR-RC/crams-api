@@ -32,27 +32,6 @@
     "model": "crams.provider"
 },
 {
-    "fields": {
-        "name": "Applicant"
-    },
-    "pk": 1,
-    "model": "crams.contactrole"
-},
-{
-    "fields": {
-        "name": "Chief Investigator"
-    },
-    "pk": 2,
-    "model": "crams.contactrole"
-},
-{
-    "fields": {
-        "name": "Technical Contact"
-    },
-    "pk": 3,
-    "model": "crams.contactrole"
-},
-{
 	"fields": {
 		"title": "Mr.",
 		"given_name": "crams",
@@ -99,92 +78,6 @@
     },
     "pk": 3,
     "model": "crams.contact"
-},
-{
-    "fields": {
-        "description": "National/Unassigned",
-        "code": "National"
-    },
-    "pk": 1,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "Australian Capital Territory (NCI)",
-        "code": "NCI"
-    },
-    "pk": 2,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "New South Wales (Intersect)",
-        "code": "Intersect"
-    },
-    "pk": 3,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "Queensland (QCIF)",
-        "code": "QCIF"
-    },
-    "pk": 4,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "South Australia (eRSA)",
-        "code": "eRSA"
-    },
-    "pk": 5,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "Tasmania (TPAC)",
-        "code": "TPAC"
-    },
-    "pk": 6,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "Victoria (Melbourne)",
-        "code": "UOM"
-    },
-    "pk": 7,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "Victoria (Monash)",
-        "code": "Monash"
-    },
-    "pk": 8,
-    "model": "crams.allocationhome"
-},
-{
-    "fields": {
-        "description": "Western Australia (Pawsey)",
-        "code": "Pawsey"
-    },
-    "pk": 9,
-    "model": "crams.allocationhome"
-},
-{
-	"fields": {
-		"name": "Reviwer"
-	},
-	"pk": 8,
-	"model": "auth.group"
-},
-{
-	"fields": {
-		"name": "Approver"
-	},
-	"pk": 9,
-	"model": "auth.group"
 },
 {
     "fields": {

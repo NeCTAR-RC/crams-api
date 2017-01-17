@@ -397,7 +397,7 @@ class SearchContact(generics.ListAPIView):
     search_fields = ('given_name', 'surname', 'email')
 
 
-class ApproveRequestViewSet(django_utils.CramsModelViewSet):
+class ApproveRequestViewSet(django_utils.CramsModelNoListViewSet):
     """
     class ApproveRequestViewSet
     """
@@ -408,7 +408,7 @@ class ApproveRequestViewSet(django_utils.CramsModelViewSet):
         request_status__code__in=ADMIN_ENABLE_REQUEST_STATUS)
 
 
-class DeclineRequestViewSet(django_utils.CramsModelViewSet):
+class DeclineRequestViewSet(django_utils.CramsModelNoListViewSet):
     """
     class DeclineRequestViewSet
     """

@@ -8,7 +8,7 @@ import django.core.validators
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('crams', '0007_update_compute_request_min_values'),
+        ('crams', '0008_request_national_percent'),
     ]
 
     operations = [
