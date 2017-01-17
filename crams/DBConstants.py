@@ -13,6 +13,8 @@ SYSTEM_NECTAR = 'NeCTAR'
 FUNDING_BODY_NECTAR = 'NeCTAR'
 FUNDING_BODY_VICNODE = 'VicNode'
 
+# Allocation Home
+
 # Contact Role
 APPLICANT = 'Applicant'
 
