@@ -34,6 +34,15 @@ class CramsModelViewSet(mixins.CreateModelMixin,
                                  headers=headers)
 
 
+class CramsModelNoListViewSet(CramsModelViewSet):
+    def list(self, request, *args, **kwargs):
+        msg = {
+            "detail": "Method \"GET\" not allowed."
+        }
+        return response.Response(msg,
+                                 status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
 def list_model_fields(model_instance):
     """
         List model fields for given instance
