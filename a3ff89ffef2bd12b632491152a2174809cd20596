@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_032cf2aa",
+        "filename": "crams/api/v1/views_lookup.py",
+        "patchSetId": 5
+      },
+      "lineNbr": 23,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-17T03:09:43Z",
+      "side": 1,
+      "message": "just wondering why you need to do this? in the filter it uses iexact which is case insensitive anyway?",
+      "range": {
+        "startLine": 23,
+        "startChar": 16,
+        "endLine": 23,
+        "endChar": 47
+      },
+      "revId": "a3ff89ffef2bd12b632491152a2174809cd20596",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
