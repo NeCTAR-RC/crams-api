@@ -13,6 +13,7 @@ from crams.api.v1.views import RequestViewSet, ContactViewSet, ContactDetail, \
     ProjectViewSet, ApproveRequestViewSet, DeclineRequestViewSet, \
     SearchContact, ProvisionRequestViewSet, ProvisionProjectViewSet, \
     UpdateProvisionProjectViewSet
+from crams.api.v1.views_lookup import ExistsViewset
 
 from crams.api.v1.views_list import CurrentUserApproverRoleList, \
     RequestHistoryViewSet, CurrentUserRolesView
@@ -36,6 +37,7 @@ router.register(r'provision_request/list', ProvisionRequestViewSet)
 router.register(r'user_funding_body',
                 CurrentUserApproverRoleList, base_name='funding_body')
 router.register(r'contact', ContactViewSet)
+router.register(r'exists', ExistsViewset)
 
 
 urlpatterns = [
