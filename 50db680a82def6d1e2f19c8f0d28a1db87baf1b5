@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_e69e3463",
+        "filename": "crams/DBConstants.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-18T22:00:24Z",
+      "side": 1,
+      "message": "this is only used in tests so I don\u0027t think it should live here, maybe in some test settings file?",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 33
+      },
+      "revId": "50db680a82def6d1e2f19c8f0d28a1db87baf1b5",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5adbc538_c6913854",
+        "filename": "crams/migrations/0009_add_start_year_to_grant.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-18T22:00:24Z",
+      "side": 1,
+      "message": "I can\u0027t see the change for this, still a little confused why there are 3 migrations",
+      "revId": "50db680a82def6d1e2f19c8f0d28a1db87baf1b5",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
