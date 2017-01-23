@@ -10,7 +10,8 @@ from crams.models import FundingScheme
 from crams.models import Project, RequestStatus, Request, FundingBody
 from crams.models import ProjectContact, ContactRole
 from crams.api.v1.tests.baseTest import AdminBaseTstCase
-from crams.api.v1.views import ApproveRequestViewSet
+from crams.api.v1.tests import baseCramsFlow
+from crams.api.v1 import views
 
 
 class ApproverReviewerRequestListTest(AdminBaseTstCase):
@@ -154,6 +155,35 @@ class ApproverReviewerRequestListTest(AdminBaseTstCase):
             created_by=self.user,
             updated_by=self.user)
 
+    def test_approver_allocation_list_is_personal(self):
+        # create few projects for some random user
+        sample_flow = baseCramsFlow.NectarCramsFlow()
+        sample_flow.flow_upto(baseCramsFlow.BaseCramsFlow.CREATE_NEW_PROJECT)
+        sample_flow.flow_upto(baseCramsFlow.BaseCramsFlow.SUBMITTED_TO_APPROVE)
+
+        # create few projects for current user
+        sample_flow = baseCramsFlow.NectarCramsFlow(self.user)
+        sample_flow.flow_upto(baseCramsFlow.BaseCramsFlow.CREATE_NEW_PROJECT)
+        sample_flow.flow_upto(baseCramsFlow.BaseCramsFlow.SUBMITTED_TO_APPROVE)
+        sample_flow.flow_upto(
+            baseCramsFlow.BaseCramsFlow.PROVISION_PROJECT_RETURN_RESPONSE)
+
+        # fetch projects through API
+        view = views.ProjectViewSet.as_view({'get': 'list'})
+        request = self.factory.get('api/project')
+        request.user = self.user
+        response = view(request)
+        self.assertEqual(
+            response.status_code, status.HTTP_200_OK, response.data)
+
+        for p_json in response.data:
+            contact_filter = ProjectContact.objects.filter(
+                project__id=p_json.get('id'),
+                contact__email=self.user.email
+            )
+            err_msg = 'user not current projectContact, should not have access'
+            self.assertTrue(contact_filter.exists(), err_msg)
+
     # Test Rest GET for Approver Reviewer Request only returns request status
     # 'X', 'E' & 'N'
     def test_approver_reviewer_request_view(self):
@@ -244,7 +274,7 @@ class ApproveRequestViewSetTest(AdminBaseTstCase):
 
     # tests get list of projects from fixtures
     def test_approve_get_request(self):
-        view = ApproveRequestViewSet.as_view({'get': 'list'})
+        view = views.ApproveRequestViewSet.as_view({'get': 'list'})
         request = self.factory.get('api/approve_request')
         request.user = self.user
         response = view(request)
@@ -258,17 +288,6 @@ class ApproveRequestViewSetTest(AdminBaseTstCase):
             Q(requests__request_status__code="X"))
         self.assertEquals(len(response.data), len(projects), response.data)
 
-    # def test_approve_get_request_without_authorization(self):
-    #     keystoneRoles = ['not_crams_provisioner']
-    #     self._setUserRoles(keystoneRoles)
-    #     view = ApproveRequestViewSet.as_view({'get': 'list'})
-    #     request = self.factory.get('api/approve_request')
-    #     request.user = self.user
-    #     response = view(request)
-    #
-    #     self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    # testing change of request status from 'E - Submitted' to 'A - Approved'
     def test_approve_submitted_request(self):
         # setup test_data
         # .get(title="Test Project 2 - E: Submitted")

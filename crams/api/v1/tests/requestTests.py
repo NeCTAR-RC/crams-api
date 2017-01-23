@@ -151,7 +151,7 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
         self._update_project_common(project, requestData.get(
             'id'), instances, cores, quota, _updateFailFn)
 
-    def test_request_get(self):
+    def test_request_get_validate_access(self):
         # create atleast one project/request for testing get
         self._create_project_common(self.test_data)
 
@@ -160,12 +160,17 @@ class CramsProjectViewSetTest(CRAMSApiTstCase):
         request = self.factory.get('api/project')
         request.user = self.user
 
-        for p in Project.objects.filter(
-                requests__isnull=False,
-                parent_project__isnull=True):
+        for p in Project.objects.all():
             response = view(request, pk=str(p.id))
-            if response.status_code == status.HTTP_404_NOT_FOUND:
+            c_fltr = p.project_contacts.filter(contact__email=self.user.email)
+            if response.status_code == status.HTTP_403_FORBIDDEN:
+                # Ensure user is not a current contact
+                err_msg = 'Project Contact should have access'
+                self.assertFalse(c_fltr.exists(), err_msg)
                 continue  # Ignore rows for which user is not authorized
+
+            err_msg = 'user not current projectContact, should not have access'
+            self.assertTrue(c_fltr.exists(), err_msg)
             # Expecting HTTP 200 response status
             self.assertEqual(response.status_code,
                              status.HTTP_200_OK, response.data)

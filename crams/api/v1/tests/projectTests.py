@@ -17,7 +17,7 @@ from crams import roleUtils
 class ProjectViewSetTest(CRAMSApiTstCase):
     fixtures = ['v1/test_common_data']
 
-    def test_project_fetch(self):
+    def test_project_sans_request_post(self):
         view = ProjectViewSet.as_view({'get': 'list', 'post': 'create'})
         project_data = get_project_only_no_request_data(self.user.id,
                                                         self.user_contact)
@@ -169,7 +169,7 @@ class BaseProjectTests(_AbstractCramsBase):
                 "system": self.system_id_map.get(sys),
             })
 
-    def validate_project_access(self):
+    def validate_project_access_using_request_id_param(self):
         def fetch_project_by_request_param():
             view = ProjectViewSet.as_view({'get': 'list',
                                            'post': 'update'})
@@ -274,7 +274,7 @@ class NectarProjectTests(BaseProjectTests):
         super().validate_concurrent_project_update()
 
     def test_request_id_param_access(self):
-        super().validate_project_access()
+        super().validate_project_access_using_request_id_param()
 
     def test_duplicate_project_id_fail(self):
         req_set = set([DBConstants.SYSTEM_NECTAR])

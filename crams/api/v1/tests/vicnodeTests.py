@@ -131,7 +131,7 @@ class VicNodeProjectViewSetTest(CRAMSApiTstCase):
                                         requests__isnull=False,
                                         parent_project__isnull=True):
             response = view(request, pk=str(p.id))
-            if response.status_code == status.HTTP_404_NOT_FOUND:
+            if response.status_code == status.HTTP_403_FORBIDDEN:
                 continue  # Ignore rows for which user is not authorized
             # Expecting HTTP 200 response status
             self.assertEqual(response.status_code,

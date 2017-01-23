@@ -215,6 +215,25 @@ def _get_crams_token_for_keystone_user(request, ks_user):
     return roleUtils.setup_case_insensitive_roles(user, user_roles)
 
 
+class ViewsetData(object):
+    def __init__(self, viewset_self):
+        http_request = viewset_self.request
+        self.email = http_request.user.email
+        self.user_fb_list = dbUtils.get_fb_obj_for_fb_names(
+            roleUtils.fetch_user_role_fb_list(http_request.user))
+
+        self.request_id = http_request.query_params.get('request_id')
+        if self.request_id and not self.request_id.isnumeric():
+            raise exceptions.ValidationError(
+                'request_id param must be numeric')
+
+        self.pk = None
+        lookup_url_kwarg = \
+            viewset_self.lookup_url_kwarg or viewset_self.lookup_field
+        if lookup_url_kwarg and lookup_url_kwarg in viewset_self.kwargs:
+            self.pk = viewset_self.kwargs[lookup_url_kwarg]
+
+
 class AbstractCramsRequestViewSet(django_utils.CramsModelViewSet):
     def __init__(self, **kwargs):
         self.crams_object_level = False
@@ -230,65 +249,84 @@ class AbstractCramsRequestViewSet(django_utils.CramsModelViewSet):
         :return:
         """
         def get_project_contact_filter(data):
+            # list filter
             q_obj = Q(project_contacts__contact__email=data.email)
-            f_l = data.user_fb_list
-            if f_l:
-                q_obj = q_obj | \
-                        Q(requests__funding_scheme__funding_body__in=f_l)
             if not self.crams_object_level:
                 q_obj = q_obj & Q(parent_project__isnull=True)
             return q_obj
 
         def get_request_contact_filter(data):
+            # list filter
             q_obj = Q(project__project_contacts__contact__email=data.email)
-            f_l = data.user_fb_list
-            if f_l:
-                q_obj = q_obj | \
-                        Q(requests__funding_scheme__funding_body__in=f_l)
             if not self.crams_object_level:
                 q_obj = q_obj & Q(parent_request__isnull=True,
                                   project__parent_project__isnull=True)
             return q_obj
 
         def get_project_request_id_filter(data):
+            # object level filter
+            m = data.email
+            c_q = Q(parent_project__isnull=True,
+                    project_contacts__contact__email=m)
+
+            # Allow current contacts to view historical requests
+            c_q |= Q(parent_project__isnull=False,
+                     parent_project__project_contacts__contact__email=m)
+
+            # Allow approvers access to requests they are entitled to
             f_l = data.user_fb_list
-            c_q = Q(project_contacts__contact__email=data.email)
             if f_l:
                 c_q = c_q | Q(requests__funding_scheme__funding_body__in=f_l)
-            return Q(requests__id=data.request_id) & c_q
+
+            if data.pk:
+                c_q = c_q & Q(id=data.pk)
+            if data.request_id:
+                c_q = c_q & Q(requests__id=data.request_id)
+            return c_q
 
         def get_request_id_filter(data):
-            fb_list = data.user_fb_list
-            c_q = Q(project__project_contacts__contact__email=data.email)
-            if fb_list:
-                c_q = c_q | Q(funding_scheme__funding_body__in=fb_list)
-            return Q(id=data.request_id) & c_q
+            # object level filter
+            m = data.email
 
-        class TempObject(object):
-            user_obj = self.request.user
-            email = user_obj.email
-            user_fb_list = dbUtils.get_fb_obj_for_fb_names(
-                roleUtils.fetch_user_role_fb_list(user_obj))
-            request_id = self.request.query_params.get('request_id', None)
+            # Allow current contacts to view historical requests
+            c_q = Q(project__parent_project__isnull=False,
+                    project__parent_project__project_contacts__contact__email=m
+                    )
+
+            c_q |= Q(project__parent_project__isnull=True,
+                     project__project_contacts__contact__email=m)
+
+            # Allow approvers access to requests they are entitled to
+            f_l = data.user_fb_list
+            if f_l:
+                c_q = c_q | Q(funding_scheme__funding_body__in=f_l)
+
+            if data.request_id:
+                if data.pk:
+                    raise exceptions.ValidationError(
+                        'request_id param not valid for Request object fetch')
+                pk = data.request_id
+            else:
+                pk = data.pk
+            return Q(id=pk) & c_q
 
         queryset = self.queryset
         qs_filter = Q(id__isnull=True)  # exclude everything by default
 
-        data = TempObject()
-        if data.request_id and data.request_id.isnumeric():
+        data = ViewsetData(self)
+        if data.request_id or self.crams_object_level:
             if queryset.model is Project:
                 qs_filter = get_project_request_id_filter(data)
             elif queryset.model is Request:
                 qs_filter = get_request_id_filter(data)
+
+            if not queryset.filter(qs_filter).exists():
+                raise exceptions.PermissionDenied()
         else:
             if queryset.model is Project:
                 qs_filter = get_project_contact_filter(data)
             elif queryset.model is Request:
                 qs_filter = get_request_contact_filter(data)
-
-        if (data.request_id or self.crams_object_level) and \
-                not queryset.filter(qs_filter).exists():
-            raise exceptions.PermissionDenied()
 
         return queryset.filter(qs_filter).distinct()
 
