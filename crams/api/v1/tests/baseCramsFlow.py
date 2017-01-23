@@ -14,6 +14,8 @@ from crams.api.v1.tests.baseTest import CRAMSApiTstCase, AdminBaseTstCase
 from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
 from crams.api.v1.utils import get_random_string
 
+from tests.sampleData import get_base_nectar_project_data
+
 
 class AdminActionData:
 
@@ -233,11 +235,14 @@ class _AbstractCramsBase(CRAMSApiTstCase):
 
 
 class BaseCramsFlow(_AbstractCramsBase):
-
-    def setUp(self):
+    def setUp(self, user=None):
         _AbstractCramsBase.setUp(self)
         self.test_data = None
         self.provisioner_name = None
+        if user:
+            self.user = user
+            self.user_contact.email = user.email
+            self.user_contact.save()
 
     # def _debugProjectData(self, proj_data):
     #     print('@@@@@ ', proj_data.get('id'), 'project ',
@@ -520,3 +525,16 @@ class BaseCramsFlow(_AbstractCramsBase):
             expected_provision_response_code,
             expected_provision_request_status_code,
             debug)
+
+
+class NectarCramsFlow:
+    def __init__(self, user=None):
+        flow_obj = BaseCramsFlow()
+        flow_obj.setUp(user)
+        self.flow_obj = flow_obj
+
+    def flow_upto(self, flow_count):
+        # setup new test data
+        self.flow_obj.test_data = get_base_nectar_project_data(
+            self.flow_obj.user.id, self.flow_obj.user_contact)
+        return self.flow_obj.flowUpTo(flow_count)
