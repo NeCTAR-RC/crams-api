@@ -22,6 +22,30 @@
       "revId": "94eb8a54ffb40ec9a59d92f4b6725f6d91ca1ca3",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5adbc538_acf7ab8b",
+        "filename": "crams/migrations/0008_update_grant_model.py",
+        "patchSetId": 8
+      },
+      "lineNbr": 30,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2017-01-27T05:21:27Z",
+      "side": 1,
+      "message": "This has now become a required field, \n     so blank\u003dFalse and default\u003ddatetime.datetime.now().year,\nhas been removed.",
+      "parentUuid": "5adbc538_8cecafc9",
+      "range": {
+        "startLine": 26,
+        "startChar": 8,
+        "endLine": 30,
+        "endChar": 10
+      },
+      "revId": "94eb8a54ffb40ec9a59d92f4b6725f6d91ca1ca3",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
     }
   ]
 }
