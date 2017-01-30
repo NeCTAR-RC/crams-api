@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5adbc538_f71c206d",
+        "filename": "crams/DBConstants.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 17,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2017-01-30T05:10:36Z",
+      "side": 1,
+      "message": "1. This is a DB Constant, based on SQL value inserted, prefer to keep them all in one place. \n2. Test settings file is no longer loaded. So might not be a good place.",
+      "parentUuid": "5adbc538_e69e3463",
+      "range": {
+        "startLine": 15,
+        "startChar": 0,
+        "endLine": 17,
+        "endChar": 33
+      },
+      "revId": "50db680a82def6d1e2f19c8f0d28a1db87baf1b5",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "5adbc538_c6913854",
         "filename": "crams/migrations/0009_add_start_year_to_grant.py",
         "patchSetId": 4
@@ -36,6 +60,24 @@
       "writtenOn": "2017-01-18T22:00:24Z",
       "side": 1,
       "message": "I can\u0027t see the change for this, still a little confused why there are 3 migrations",
+      "revId": "50db680a82def6d1e2f19c8f0d28a1db87baf1b5",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5adbc538_cc7317e6",
+        "filename": "crams/migrations/0009_add_start_year_to_grant.py",
+        "patchSetId": 4
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1000172
+      },
+      "writtenOn": "2017-01-30T05:10:36Z",
+      "side": 1,
+      "message": "Have combined migrations to a single file 0008_request_national_percent.py. During merge, this file might have to be renamed 0009....",
+      "parentUuid": "5adbc538_c6913854",
       "revId": "50db680a82def6d1e2f19c8f0d28a1db87baf1b5",
       "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
       "unresolved": false
