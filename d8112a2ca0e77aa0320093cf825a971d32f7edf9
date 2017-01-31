@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_b70b782a",
+        "filename": "crams/migrations/0009_request_national_percent.py",
+        "patchSetId": 11
+      },
+      "lineNbr": 34,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-01-31T05:52:36Z",
+      "side": 1,
+      "message": "should this be here? I can\u0027t see it changed in the model? and looks like a duplicate of 8",
+      "range": {
+        "startLine": 30,
+        "startChar": 0,
+        "endLine": 34,
+        "endChar": 10
+      },
+      "revId": "d8112a2ca0e77aa0320093cf825a971d32f7edf9",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
