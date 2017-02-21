@@ -19,14 +19,14 @@ class Bug_740_TestCase(CRAMSApiTstCase):
         return response
 
     def test_powerSet_generator_util_method(self):
-        testList = set(['NecTAR', 'Vicnode', 'NCI'])
+        testList = set(['NecTAR', 'TPAC', 'NCI'])
         actualList = list(power_set_generator(testList))
         expectedList = [
-            set(), {'Vicnode'}, {'NCI'}, {'NecTAR'}, {
-                'Vicnode', 'NCI'}, {
-                'Vicnode', 'NecTAR'}, {
+            set(), {'TPAC'}, {'NCI'}, {'NecTAR'}, {
+                'TPAC', 'NCI'}, {
+                'TPAC', 'NecTAR'}, {
                 'NCI', 'NecTAR'}, {
-                    'Vicnode', 'NCI', 'NecTAR'}]
+                    'TPAC', 'NCI', 'NecTAR'}]
         self.assertTrue(compare_two_lists_or_sets(expectedList, actualList),
                         'Expected powerset does not match returned powerset')
 
@@ -69,15 +69,3 @@ class Bug_740_TestCase(CRAMSApiTstCase):
                     'Did not return expected funding body list for user, '
                     'Expected: {}/Got: {}'.format(sampleSet, response_fb_names)
                 )
-
-        # sampleResponse = [   {'approver': True, 'id': 3,
-        #                       'name': 'Intersect'},
-        #     {'approver': True, 'id': 5, 'name': 'Monash'},
-        #     {'approver': True, 'id': 6, 'name': 'NCI'},
-        #     {'approver': True, 'id': 1, 'name': 'NeCTAR'},
-        #     {'approver': True, 'id': 7, 'name': 'Pawsey'},
-        #     {'approver': True, 'id': 8, 'name': 'QCIF'},
-        #     {'approver': True, 'id': 10, 'name': 'TPAC'},
-        #     {'approver': True, 'id': 4, 'name': 'UoM'},
-        #     {'approver': True, 'id': 2, 'name': 'VicNode'},
-        #     {'approver': True, 'id': 9, 'name': 'eRSA'}]

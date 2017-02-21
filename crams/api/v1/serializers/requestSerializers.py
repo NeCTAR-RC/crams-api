@@ -730,7 +730,13 @@ class CramsRequestSerializer(ActionStateModelSerializer):
             sender = settings.EMAIL_SENDER
             recipient_list = get_request_contact_email_ids(alloc_req)
             funding_body = alloc_req.funding_scheme.funding_body
-            cc_list = [funding_body.email]
+            cc_list = None
+            if template_obj.alert_funding_body:
+                if funding_body.email:
+                    cc_list = [funding_body.email]
+                else:
+                    p_msg = 'Email not found, Unable to send notification to '
+                    LOG.error(p_msg + funding_body.name)
             reply_to = FB_REPLY_TO_MAP.get(strip_lower(funding_body.name))
             mail_sender.send_notification(
                 sender=sender,

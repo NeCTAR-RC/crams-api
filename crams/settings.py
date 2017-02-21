@@ -107,7 +107,7 @@ DATABASES = {
     'default': {
         # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'ENGINE': 'django.db.backends.sqlite3',
-        # 'vicnode',  # Or path to database file if using sqlite3.
+        # path to database file if using sqlite3.
         'NAME': 'crams.db',
         'USER': '',
         'PASSWORD': 'vn_',
@@ -144,7 +144,6 @@ TOKEN_EXPIRY_TIME_SECONDS = 4 * 60 * 60
 
 # APPROVER ROLES
 NECTAR_APPROVER_ROLE = 'AllocationAdmin'
-VICNODE_APPROVER_ROLE = 'vicnode_approver'
 
 # PROJECT_ID Prefix Validation
 NECTAR_PREFIX_INVALID = ['pt-']

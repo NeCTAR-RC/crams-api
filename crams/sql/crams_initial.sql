@@ -1,15 +1,15 @@
 -- noinspection SqlDialectInspectionForFile
 -- noinspection SqlNoDataSourceInspectionForFile
-INSERT INTO crams_fundingbody (id, name, email) VALUES (1, 'NeCTAR', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (2, 'VicNode', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (3, 'Intersect', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (4, 'UoM', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (5, 'Monash', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (6, 'NCI', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (7, 'Pawsey', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (8, 'QCIF', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (9, 'eRSA', 'sebastian.barney@monash.edu');
-INSERT INTO crams_fundingbody (id, name, email) VALUES (10, 'TPAC', 'sebastian.barney@monash.edu');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (1, 'NeCTAR', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (2, 'VicNode', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (3, 'Intersect', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (4, 'UoM', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (5, 'Monash', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (6, 'NCI', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (7, 'Pawsey', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (8, 'QCIF', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (9, 'eRSA', 'crams@rc.test.nectar.org.au');
+INSERT INTO crams_fundingbody (id, name, email) VALUES (10, 'TPAC', 'crams@rc.test.nectar.org.au');
 
 INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (1, 'NeCTAR National Merit', 1);
 INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (2, 'NeCTAR Monash Priority Share', 5);
@@ -20,11 +20,6 @@ INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (6,
 INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (7, 'NeCTAR Pawsey Priority Share', 7);
 INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (8, 'NeCTAR QCIF Priority Share', 8);
 INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (9, 'NeCTAR eRSA Priority Share', 9);
-INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (10, 'VicNode ReDS 1 + 2', 2);
-INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (11, 'VicNode ReDS 3', 2);
-INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (12, 'VicNode CDS', 2);
-INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (13, 'VicNode Victorian Merit', 2);
-INSERT INTO crams_fundingscheme (id, funding_scheme, funding_body_id) VALUES (14, 'R@CMon Storage', 5);
 
 INSERT INTO crams_granttype (id, description) VALUES (1, 'ARC');
 INSERT INTO crams_granttype (id, description) VALUES (2, 'NHMRC');
@@ -36,17 +31,11 @@ INSERT INTO crams_granttype (id, description) VALUES (7, 'Industry funding');
 
 INSERT INTO crams_contactrole (id, name) VALUES (1, 'Applicant');
 INSERT INTO crams_contactrole (id, name) VALUES (2, 'Chief Investigator');
-INSERT INTO crams_contactrole (id, name) VALUES (3, 'Technical Contact');
-INSERT INTO crams_contactrole (id, `name`) VALUES (4, 'Data Custodian');
-INSERT INTO crams_contactrole (id, `name`) VALUES (5, 'Data Provider');
 
 INSERT INTO crams_projectidsystem (id, system) VALUES (1, 'NeCTAR');
-INSERT INTO crams_projectidsystem (id, system) VALUES (2, 'VicNode');
-INSERT INTO crams_projectidsystem (id, system) VALUES (3, 'SONAS');
-INSERT INTO crams_projectidsystem (id, system) VALUES(4, 'NeCTAR_UUID');
-INSERT INTO crams_projectidsystem (id, system) VALUES(5, 'NeCTAR_Created_By');
-INSERT INTO crams_projectidsystem (id, system) VALUES(6, 'NeCTAR_DB_Id');
-INSERT INTO crams_projectidsystem (id, system) VALUES(7, 'DB_SYSTEM_ID_VicNode');
+INSERT INTO crams_projectidsystem (id, system) VALUES(2, 'NeCTAR_UUID');
+INSERT INTO crams_projectidsystem (id, system) VALUES(3, 'NeCTAR_Created_By');
+INSERT INTO crams_projectidsystem (id, system) VALUES(4, 'NeCTAR_DB_Id');
 
 INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (1, 'Intersect', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
 INSERT INTO crams_provider (id, name, active, crams_user_id, created_by_id, creation_ts, description, last_modified_ts, start_date, updated_by_id) VALUES (2, 'UoM', 't', NULL, NULL, '2016-02-01 09:42:48.669521+11', NULL, '2016-02-01 09:42:53.378836+11', '2016-02-01', NULL);
@@ -95,16 +84,7 @@ INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storag
 INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id, zone_id) VALUES (8, 'Volume (TPAC)', 1, 9, 1, 8);
 INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id, zone_id) VALUES (9, 'Volume (NeCTAR)', 1, 9, 1, 9);
 INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id, zone_id) VALUES (10, 'Object (NeCTAR)', 1, 9, 2, 9);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (11, 'VicNode Computational (Melbourne)', 2, 2, 1);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (12, 'VicNode Computational (Monash)', 2, 3, 1);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (13, 'VicNode Market (Melbourne)', 2, 2, 3);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (14, 'VicNode Market (Monash)', 2, 3, 3);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (15, 'VicNode Vault (Melbourne)', 2, 2, 2);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (16, 'VicNode Vault (Monash)', 2, 3, 3);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (17, 'R@CMon Computational', 5, 3, 1);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (18, 'R@CMon Market', 5, 3, 3);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (19, 'R@CMon Vault', 5, 3, 3);
-INSERT INTO crams_storageproduct (id, name, funding_body_id, provider_id, storage_type_id) VALUES (20, 'R@CMon Object', 5, 3, 2);
+
 
 INSERT INTO crams_duration (id, duration, duration_label) VALUES (1, 1, '1-month');
 INSERT INTO crams_duration (id, duration, duration_label) VALUES (2, 3, '3-months');
@@ -135,13 +115,3 @@ INSERT INTO crams_question (id, key, question_type, question) VALUES (11, 'n_app
 INSERT INTO crams_question (id, key, question_type, question) VALUES (12, 'n_volume_storage_zone', 'nectar-storage-request', 'Volume Storage Zone');
 INSERT INTO crams_question (id, key, question_type, question) VALUES (13, 'n_object_storage_zone', 'nectar-storage-request', 'Object Storage Zone');
 INSERT INTO crams_question (id, key, question_type, question) VALUES (14, 'n_primary_instance_type', 'nectar-compute-request', 'Primary Instance Type');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (15, 'vn_authorization', 'vicnode-general-request', 'Please confirm that you have the authority to store this collection on VicNode infrastructure.');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (16, 'vn_data_migration_src', 'vicnode-general-request', 'Where is the collection currently stored?');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (17, 'vn_data_migration_assistance', 'vicnode-general-request', 'Do you require assistance to migrate your data?');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (18, 'vn_current_access_method', 'vicnode-general-request', 'How do you or your users currently access your collection?');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (19, 'vn_preferred_access_method', 'vicnode-general-request', 'What is your preferred access method?');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (20, 'vn_data_format', 'vicnode-usage information-request', 'Identify the format(s) of the data to be stored on VicNode');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (21, 'vn_only_copy', 'vicnode-usage information-request', 'Will VicNode be hosting the only copy of the collection?');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (22, 'vn_can_be_regenerated', 'vicnode-usage information-request', 'If yes, how easily can the data be regenerated? Delete the options that do not apply.');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (23, 'vn_loss_impact', 'vicnode-usage information-request', 'What would be the impact and/or cost incurred if data is lost?');
-INSERT INTO crams_question (id, key, question_type, question) VALUES (24, 'vn_current_size', 'vicnode-usage information-request', 'Current size of data ');
