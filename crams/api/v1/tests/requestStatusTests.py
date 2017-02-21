@@ -2,7 +2,6 @@ from rest_framework import status
 
 from crams.DBConstants import REQUEST_STATUS_APPROVED
 from crams.DBConstants import REQUEST_STATUS_DECLINED
-from crams.DBConstants import REQUEST_STATUS_NEW
 from crams.DBConstants import REQUEST_STATUS_PROVISIONED
 from crams.DBConstants import REQUEST_STATUS_SUBMITTED
 from crams.DBConstants import REQUEST_STATUS_UPDATE_OR_EXTEND
@@ -151,26 +150,3 @@ class NectarRequestStatusTests(BaseCramsFlow):
             declined_project,
             expected_http_status=status.HTTP_404_NOT_FOUND,
             getProjectDataFlag=False)
-
-
-class VicnodeRequestStatus(BaseCramsFlow):
-
-    def setUp(self):
-        BaseCramsFlow.setUp(self)
-        self.provisioner_name = 'Vicnode'
-        self.requestStatusLookups = get_request_status_lookups()
-        # override default Nectar test_data
-        self.test_data = sampleData.get_vicnode_test_data(
-            self.user.id, self.user_contact)
-
-    def test_new_vicnode_request_status_is_new(self):
-        testCount = self.CREATE_NEW_PROJECT
-        response = self.flowUpTo(testCount)
-        self._checkProjectRequestStatusCode(response, REQUEST_STATUS_NEW)
-
-    def test_new_status_changes_to_submitted_on_update(self):
-        testCount = self.NEW_PROJECT_TO_SUBMITTED
-        response = self.flowUpTo(testCount)
-        self._checkProjectRequestStatusCode(response, REQUEST_STATUS_SUBMITTED)
-
-    # No additional Tests Required

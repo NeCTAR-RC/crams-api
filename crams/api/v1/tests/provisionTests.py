@@ -2,12 +2,12 @@ from django.db.models import Q
 from rest_framework import status
 
 from crams import roleUtils
-from crams.DBConstants import REQUEST_STATUS_PROVISIONED, FUNDING_BODY_NECTAR
+from crams import DBConstants
 from crams.api.v1.tests.baseCramsFlow import BaseCramsFlow
 from crams.api.v1.tests.baseTest import ProvisionBaseTstCase
 from crams.api.v1.views import ProvisionProjectViewSet, ProvisionRequestViewSet
 from crams.api.v1.views import UpdateProvisionProjectViewSet, ProjectViewSet
-from crams.models import ProvisionDetails
+from crams.models import ProvisionDetails, ProjectIDSystem
 from crams.models import Request, Project
 from crams.tests import sampleData
 
@@ -354,31 +354,37 @@ class NectarProjectProvisionTest(BaseCramsFlow):
 
     @classmethod
     def _get_nectar_db_id_data(cls):
+        n_obj = ProjectIDSystem.objects.get(
+            system=DBConstants.SYSTEM_NECTAR_DB_ID)
         return {
             "identifier": "90345",
             "system": {
-                "id": 6,
-                "system": "NeCTAR_DB_Id"
+                "id": n_obj.id,
+                "system": n_obj.system
             }
         }
 
     @classmethod
     def _get_nectar_created_by_data(cls):
+        n_obj = ProjectIDSystem.objects.get(
+            system=DBConstants.SYSTEM_NECTAR_CREATED_BY)
         return {
             "identifier": "7eea469ec8ff4f9bba3f46766323b388",
             "system": {
-                "id": 5,
-                "system": "NeCTAR_Created_By"
+                "id": n_obj.id,
+                "system": n_obj.system
             }
         }
 
     @classmethod
     def _get_nectar_uuid_data(cls):
+        n_uuid_obj = ProjectIDSystem.objects.get(
+            system=DBConstants.SYSTEM_NECTAR_UUID)
         return {
             "identifier": "dfgh563477515b4dsdsda0618d21a6228e50",
             "system": {
-                "id": 4,
-                "system": "NeCTAR_UUID"
+                "id": n_uuid_obj.id,
+                "system": n_uuid_obj.system
             }
         }
 
@@ -412,7 +418,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         return response
 
     def test_provision_NeCTAR_UUID_success(self):
-        system_name = 'NeCTAR_UUID'
+        system_name = DBConstants.SYSTEM_NECTAR_UUID
         response = self._preProvisionSetup(system_name)
 
         project_ids = response.data.get('project_ids', [])
@@ -425,7 +431,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
                                                debug=False)
 
         self._checkProjectRequestStatusCode(
-            proj_data_response, REQUEST_STATUS_PROVISIONED)
+            proj_data_response, DBConstants.REQUEST_STATUS_PROVISIONED)
         self._verify_db_project_provisioning_details(
             proj_data_response,
             expected_provision_status=ProvisionDetails.PROVISIONED,
@@ -444,7 +450,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
                          'ProjectId value in DB does not match input value')
 
     def test_provision_NeCTAR_UUID_fail(self):
-        system_name = 'NeCTAR_UUID'
+        system_name = DBConstants.SYSTEM_NECTAR_UUID
         response = self._preProvisionSetup(system_name)
 
         provision_response, proj_data_response = \
@@ -455,7 +461,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         # Request status will update based on product request, not on project
         # provisioning result
         self._checkProjectRequestStatusCode(
-            proj_data_response, REQUEST_STATUS_PROVISIONED)
+            proj_data_response, DBConstants.REQUEST_STATUS_PROVISIONED)
 
         self._verify_db_project_provisioning_details(
             proj_data_response,
@@ -470,7 +476,7 @@ class NectarProjectProvisionTest(BaseCramsFlow):
         # verify FB Admin Users can see project provision error message
         # Validate access as FB Admin
         request_fb_role = \
-            roleUtils.FB_ROLE_MAP_REVERSE.get(FUNDING_BODY_NECTAR)
+            roleUtils.FB_ROLE_MAP_REVERSE.get(DBConstants.FUNDING_BODY_NECTAR)
         role_list = [request_fb_role]
         self.set_user_roles(role_list)
         project_id = proj_data_response.data['id']
@@ -484,13 +490,14 @@ class NectarProjectProvisionTest(BaseCramsFlow):
 
         provisioner, list_response = self._get_provisioner(
             self.provisioner_name, make_ready_for_provisioning_flag=False)
+        p_status = DBConstants.REQUEST_STATUS_PROVISIONED
         self._provision_project_request(
             provisioner,
             response,
             getProjectDataFlag=False,
             project_provision_success_flag=True,
             expected_provision_response_code=status.HTTP_400_BAD_REQUEST,
-            expected_provision_request_status_code=REQUEST_STATUS_PROVISIONED,
+            expected_provision_request_status_code=p_status,
             debug=False)
 
     def test_get_provision_list_after_extend_approve(self):

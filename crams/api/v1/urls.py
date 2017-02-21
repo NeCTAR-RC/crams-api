@@ -51,7 +51,6 @@ urlpatterns = [
     url(r'for_codes', lookup.for_codes),
     # Storage Products
     url(r'nectar_sps', lookup.fb_storage_product, {'searchKey': 'NeCTAR'}),
-    url(r'vicnode_sps', lookup.fb_storage_product, {'searchKey': 'VicNode'}),
 
     url(r'contacts', lookup.contacts),
     url(r'^contact/(?P<email>[\w.@+-]+)/$', ContactDetail.as_view()),

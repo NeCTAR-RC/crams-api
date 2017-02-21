@@ -219,7 +219,7 @@ class FundingBody(models.Model):
         max_length=200
     )
 
-    email = models.EmailField()
+    email = models.EmailField(null=True, blank=True)
 
     class Meta:
         app_label = 'crams'
@@ -828,6 +828,7 @@ class NotificationTemplate(models.Model):
                                      related_name='notification_templates')
     request_status = models.ForeignKey(RequestStatus)
     template_file_path = models.CharField(max_length=99)
+    alert_funding_body = models.BooleanField(default=False)
 
     class Meta:
         app_label = 'crams'
