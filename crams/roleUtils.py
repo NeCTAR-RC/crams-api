@@ -2,9 +2,9 @@ from json import loads as json_loads
 
 from rest_framework.exceptions import ParseError
 
-from crams.DBConstants import FUNDING_BODY_NECTAR, FUNDING_BODY_VICNODE
+from crams.DBConstants import FUNDING_BODY_NECTAR
 from crams.lang_utils import reverse_dict, strip_lower
-from crams.settings import NECTAR_APPROVER_ROLE, VICNODE_APPROVER_ROLE
+from crams.settings import NECTAR_APPROVER_ROLE
 from crams.settings import CRAMS_PROVISIONER_ROLE
 from crams.settings import NECTAR_NOTIFICATION_REPLY_TO
 from crams.models import CramsToken
@@ -18,7 +18,6 @@ FB_REPLY_TO_MAP = {
 # Funding Body Role Map
 ROLE_FB_MAP = {
     strip_lower(NECTAR_APPROVER_ROLE): FUNDING_BODY_NECTAR,
-    strip_lower(VICNODE_APPROVER_ROLE): FUNDING_BODY_VICNODE
 }
 FB_ROLE_MAP_REVERSE = reverse_dict(ROLE_FB_MAP)
 

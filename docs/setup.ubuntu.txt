@@ -67,7 +67,7 @@
                RewriteRule ^/(.*) https://%{HTTP_HOST}/$1 [NC,R=301,L]
 
 12. Modify Apache Config params
-   6.1 change Apache User to Vicnode user
+   6.1 change Apache User to Crams user
     User <username>
     #User apache
 
