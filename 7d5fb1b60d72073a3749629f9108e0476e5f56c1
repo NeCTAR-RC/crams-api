@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "5adbc538_6ed02d54",
+        "filename": "crams/api/v1/tests/bugTests/sprint29_Tests.py",
+        "patchSetId": 1
+      },
+      "lineNbr": 39,
+      "author": {
+        "id": 1000000
+      },
+      "writtenOn": "2017-02-28T03:41:33Z",
+      "side": 1,
+      "message": "this can go too?\n\nMight be worth having a look through and cleaning up the code throughout",
+      "range": {
+        "startLine": 33,
+        "startChar": 0,
+        "endLine": 39,
+        "endChar": 5
+      },
+      "revId": "7d5fb1b60d72073a3749629f9108e0476e5f56c1",
+      "serverId": "f182a8af-62ca-4ceb-ab81-14f8fec9c6c5",
+      "unresolved": false
+    }
+  ]
+}
